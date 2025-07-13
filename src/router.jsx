@@ -13,6 +13,7 @@ import Drugs from "./Pages/User/Drugs/Drugs";
 import ContactUs from "./Pages/User/ContactUs/ContactUs";
 import JobsTracked from "./Pages/User/Jobs/JobsTracked";
 import Home from "./Pages/User/Home/Home";
+import SavedJobs from "./Pages/User/Jobs/SavedJobs";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "jobs",
         element: <Jobs />
+      },
+      {
+        path: "saved_jobs",
+        element: <SavedJobs />
       },
       {
         path: "tracking_jobs",

@@ -49,7 +49,7 @@ export default function Navbar({ className }) {
   const listItems = [
     { to: "/companies", label: t("Companies"), icon: Building },
     { to: "/drugs", label: t("Drugs"), icon: Pill },
-    // { to: "/saved-jobs", label: t("Saved Jobs"), icon: Bookmark },
+    { to: "/saved_jobs", label: t("Saved Jobs"), icon: Bookmark },
     { to: "/tracking_jobs", label: t("Job Tracker"), icon: List },
   ];
 
