@@ -2,42 +2,20 @@
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { usePost } from "@/Hooks/UsePost";
-import { useDelete } from "@/Hooks/useDelete";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FiFilter, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiCalendar, FiFileText, FiAward } from "react-icons/fi";
+import { FiFilter, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiFileText, FiAward } from "react-icons/fi";
 import { FaBookmark } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
 
 const SavedJobs = () => {
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [allJobs, setAllJobs] = useState([]);
-  const [displayedJobs, setDisplayedJobs] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [nextPageUrl, setNextPageUrl] = useState(null);
-  const [prevPageUrl, setPrevPageUrl] = useState(null);
-  const [firstPageUrl, setFirstPageUrl] = useState(null);
-  const [lastPageUrl, setLastPageUrl] = useState(null);
-  const [filters, setFilters] = useState({
-    city_id: null,
-    company_id: null,
-    job_category_id: null,
-    job_titel_id: null,
-    type: null,
-    experience: null,
-  });
-  const [showFilters, setShowFilters] = useState(false);
+  const apiUrl = "https://backMarfea.marfaa-alex.com/api";
   const [savedJobs, setSavedJobs] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [titels, setTitels] = useState([]);
-  const [types, setTypes] = useState([]);
-  const [experiences, setExperiences] = useState([]);
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
   const [selectedCv, setSelectedCv] = useState(null);
@@ -45,12 +23,6 @@ const SavedJobs = () => {
   const [message, setMessage] = useState('');
   const [selectedJobDetails, setSelectedJobDetails] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-
-  const { deleteData, loading: loadingDelete } = useDelete();
-
-  const { refetch: refetchList, loading: loadingList, data: listData } = useGet({
-    url: `${apiUrl}/user/jobfilterids`,
-  });
 
   const { refetch: refetchCVS, loading: loadingCVS, data: cvsData } = useGet({
     url: `${apiUrl}/user/get-usercv`,
@@ -60,65 +32,48 @@ const SavedJobs = () => {
     url: `${apiUrl}/user/get-saved-jobs`,
   });
 
-  const { postData, loading: loadingPost, response: searchResponse } = usePost({
-    url: `${apiUrl}/user/get-saved-jobs`,
+  const { postData: postCv, loading: loadingPostCv, response: cvResponse } = usePost({
+    url: `${apiUrl}/user/apply-job`,
+  });
+
+  const { postData: postSavedJob, loading: loadingPostSavedJob } = usePost({
+    url: `${apiUrl}/user/save-job`,
   });
 
   // Fetch initial data
   useEffect(() => {
-    refetchList();
-    refetchCVS();
     refetchSavedJobs();
-  }, [refetchList, refetchCVS, refetchSavedJobs]);
-
-  // Process filter options
-  useEffect(() => {
-    if (listData) {
-      setCompanies(listData.companies?.map(c => ({ value: c.id, label: c.name })) || []);
-      setCities(listData.cities?.map(c => ({ value: c.id, label: c.name })) || []);
-      setCategories(listData.job_categories?.map(c => ({ value: c.id, label: c.name })) || []);
-      setTitels(listData.job_titels?.map(t => ({ value: t.id, label: t.name })) || []);
-      setTypes(listData.types?.map(t => ({ value: t, label: t.replace('_', ' ').toUpperCase() })) || []);
-      setExperiences(listData.experiences?.map(e => ({ value: e, label: e.toUpperCase() })) || []);
-    }
-  }, [listData]);
+    refetchCVS();
+  }, [refetchSavedJobs, refetchCVS]);
 
   // Process saved jobs data
   useEffect(() => {
-    if (savedJobsData?.saved_jobs && !isFiltered) {
-      const jobsArray = savedJobsData.saved_jobs.map(job => ({
-        ...job.job_offer,
-        id: job.job_offer_id
+    if (savedJobsData?.saved_jobs) {
+      // Map through saved jobs and extract the job_offer details
+      const jobsWithDetails = savedJobsData.saved_jobs.map(savedJob => ({
+        ...savedJob.job_offer,
+        is_saved: true, // Add this flag to indicate it's a saved job
+        id: savedJob.job_offer_id, // Ensure we keep the job offer ID
+        saved_job_id: savedJob.id // Keep the saved job relationship ID
       }));
-      setAllJobs(jobsArray);
-      setDisplayedJobs(jobsArray.slice(0, 20));
-      setSavedJobs(savedJobsData.saved_jobs.map(job => job.job_offer_id));
-      setTotalPages(1);
-      setNextPageUrl(null);
-      setPrevPageUrl(null);
-      setFirstPageUrl(null);
-      setLastPageUrl(null);
+      setSavedJobs(jobsWithDetails);
+      setFilteredJobs(jobsWithDetails);
     }
-  }, [savedJobsData, isFiltered]);
+  }, [savedJobsData]);
 
-  // Process search response for filtered saved jobs
+  // Apply search filter
   useEffect(() => {
-    if (searchResponse?.data?.saved_jobs) {
-      const jobsArray = searchResponse.data.saved_jobs.map(job => ({
-        ...job.job_offer,
-        id: job.job_offer_id
-      }));
-      setAllJobs(jobsArray);
-      setDisplayedJobs(jobsArray);
-      setCurrentPage(searchResponse.data.current_page || 1);
-      setTotalPages(searchResponse.data.last_page || 1);
-      setNextPageUrl(searchResponse.data.next_page_url);
-      setPrevPageUrl(searchResponse.data.prev_page_url);
-      setFirstPageUrl(searchResponse.data.first_page_url);
-      setLastPageUrl(searchResponse.data.last_page_url);
-      setIsFiltered(true);
+    if (searchTerm) {
+      const filtered = savedJobs.filter(job => 
+        (job.job_titel?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || '') ||
+        (job.company?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || '') ||
+        (job.description?.toLowerCase().includes(searchTerm.toLowerCase()) || '')
+      );
+      setFilteredJobs(filtered);
+    } else {
+      setFilteredJobs(savedJobs);
     }
-  }, [searchResponse]);
+  }, [searchTerm, savedJobs]);
 
   // Handle apply job submission
   const handleApplyJob = async () => {
@@ -140,7 +95,7 @@ const SavedJobs = () => {
         message: message
       };
 
-      await postData(payload, `${apiUrl}/user/apply-job`);
+      await postCv(payload);
 
       setSelectedCv(null);
       setHasExperience('');
@@ -155,112 +110,25 @@ const SavedJobs = () => {
     }
   };
 
-  // Handle filter changes
-  const handleFilterChange = (name, value) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Apply filters to saved jobs
-  const applyFilters = async () => {
-    const payload = {
-      city_id: filters.city_id?.value || null,
-      company_id: filters.company_id?.value || null,
-      job_category_id: filters.job_category_id?.value || null,
-      job_titel_id: filters.job_titel_id?.value || null,
-      type: filters.type?.value || null,
-      experience: filters.experience?.value || null,
-    };
+  // Remove saved job
+  const removeSavedJob = async (savedJobId) => {
     try {
-      await postData(payload);
-      setShowFilters(false);
-    } catch (error) {
-      console.error("Error applying filters:", error);
-    }
-  };
-
-  // Fetch saved jobs for a specific page
-  const fetchPage = async (url) => {
-    if (!url) return;
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          city_id: filters.city_id?.value || null,
-          company_id: filters.company_id?.value || null,
-          job_category_id: filters.job_category_id?.value || null,
-          job_titel_id: filters.job_titel_id?.value || null,
-          type: filters.type?.value || null,
-          experience: filters.experience?.value || null,
-        }),
+      await postSavedJob({
+        job_offer_id: savedJobId,
+        key: 0 // This unsaves the job
       });
-      const data = await response.json();
-
-      const jobsArray = data.saved_jobs?.map(job => ({
-        ...job.job_offer,
-        id: job.job_offer_id
-      })) || [];
-      setAllJobs(jobsArray);
-      setDisplayedJobs(jobsArray);
-      setCurrentPage(data.current_page || 1);
-      setTotalPages(data.last_page || 1);
-      setNextPageUrl(data.next_page_url);
-      setPrevPageUrl(data.prev_page_url);
-      setFirstPageUrl(data.first_page_url);
-      setLastPageUrl(data.last_page_url);
+      
+      // Update the UI immediately
+      setSavedJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
+      setFilteredJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
+      
+      // If the detailed view is open for this job, close it
+      if (selectedJobDetails?.saved_job_id === savedJobId) {
+        setIsDetailsDialogOpen(false);
+      }
     } catch (error) {
-      console.error("Error fetching page:", error);
-    }
-  };
-
-  // Handle pagination
-  const goToNextPage = () => {
-    if (nextPageUrl) {
-      fetchPage(nextPageUrl);
-    }
-  };
-
-  const goToPreviousPage = () => {
-    if (prevPageUrl) {
-      fetchPage(prevPageUrl);
-    } else if (firstPageUrl) {
-      fetchPage(firstPageUrl);
-    }
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilters({
-      city_id: null,
-      company_id: null,
-      job_category_id: null,
-      job_titel_id: null,
-      type: null,
-      experience: null,
-    });
-    setCurrentPage(1);
-    setIsFiltered(false);
-    refetchSavedJobs();
-  };
-
-  // Unsave job
-  const unsaveJob = async (jobId) => {
-    console.log("savedJobsData",jobId)
-    try {
-      await deleteData(
-          `${apiUrl}/user/delete-saved-job`,
-          { job_offer_id: jobId },
-          'Job unsaved successfully.'
-        );
-        setSavedJobs(prev => prev.filter(id => id !== jobId));
-        refetchSavedJobs();
-    } catch (error) {
-      console.error("Error unsaving job:", error);
-      alert('Failed to unsave job. Please try again.');
+      console.error("Error removing saved job:", error);
+      alert('Failed to remove saved job. Please try again.');
     }
   };
 
@@ -295,38 +163,40 @@ const SavedJobs = () => {
     setIsDetailsDialogOpen(true);
   };
 
-  if (loadingList || loadingSavedJobs) {
+  if (loadingSavedJobs) {
     return <FullPageLoader />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header Section */}
-      {/* <div className="w-full h-64 relative">
+      <div className="w-full h-64 relative">
         <img
           src={companyImage}
-          alt="Saved Jobs Banner"
+          alt="Jobs Banner"
           className="object-cover md:object-fill h-full w-full"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <h1 className="text-4xl font-bold text-white drop-shadow-lg">Your Saved Jobs</h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            View and manage your saved job opportunities
+          <p className="text-xl text-white/90 diag max-w-2xl mx-auto">
+            Browse through your saved job opportunities
           </p>
         </div>
-      </div> */}
+      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Filter Bar */}
+        {/* Simplified Filter Bar */}
         <div className="mb-8 bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex-1">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search your saved jobs by title, company, or keywords"
+                  placeholder="Search your saved jobs..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <FiSearch className="absolute left-3 top-3 text-gray-400" />
               </div>
@@ -341,79 +211,65 @@ const SavedJobs = () => {
             </Button>
           </div>
 
-          {/* Filter Section */}
+          {/* Simple Filter Section */}
           {showFilters && (
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Select
-                options={[{ value: null, label: 'All Cities' }, ...cities]}
-                value={filters.city_id}
-                onChange={(selected) => handleFilterChange('city_id', selected)}
-                placeholder="Select City"
+                options={[
+                  { value: 'all', label: 'All Types' },
+                  { value: 'full_time', label: 'Full Time' },
+                  { value: 'part_time', label: 'Part Time' },
+                  { value: 'freelance', label: 'Freelance' },
+                  { value: 'internship', label: 'Internship' },
+                  { value: 'hybrid', label: 'Hybrid' },
+                ]}
+                onChange={(selected) => {
+                  if (!selected || selected.value === 'all') {
+                    setFilteredJobs(savedJobs);
+                  } else {
+                    setFilteredJobs(savedJobs.filter(job => job.type === selected.value));
+                  }
+                }}
+                placeholder="Filter by Type"
                 isClearable
               />
               <Select
-                options={[{ value: null, label: 'All Companies' }, ...companies]}
-                value={filters.company_id}
-                onChange={(selected) => handleFilterChange('company_id', selected)}
-                placeholder="Select Company"
+                options={[
+                  { value: 'all', label: 'All Experiences' },
+                  { value: 'fresh', label: 'Fresh Graduate' },
+                  { value: 'junior', label: 'Junior' },
+                  { value: 'mid', label: 'Mid-Level' },
+                  { value: 'senior', label: 'Senior' },
+                  { value: '+1 year', label: '1+ Years' },
+                  { value: '+2 years', label: '2+ Years' },
+                  { value: '+3 years', label: '3+ Years' },
+                ]}
+                onChange={(selected) => {
+                  if (!selected || selected.value === 'all') {
+                    setFilteredJobs(savedJobs);
+                  } else {
+                    setFilteredJobs(savedJobs.filter(job => job.experience === selected.value));
+                  }
+                }}
+                placeholder="Filter by Experience"
                 isClearable
               />
-              <Select
-                options={[{ value: null, label: 'All Categories' }, ...categories]}
-                value={filters.job_category_id}
-                onChange={(selected) => handleFilterChange('job_category_id', selected)}
-                placeholder="Select Category"
-                isClearable
-              />
-              <Select
-                options={[{ value: null, label: 'All Titles' }, ...titels]}
-                value={filters.job_titel_id}
-                onChange={(selected) => handleFilterChange('job_titel_id', selected)}
-                placeholder="Select Title"
-                isClearable
-              />
-              <Select
-                options={[{ value: null, label: 'All Types' }, ...types]}
-                value={filters.type}
-                onChange={(selected) => handleFilterChange('type', selected)}
-                placeholder="Select Type"
-                isClearable
-              />
-              <Select
-                options={[{ value: null, label: 'All Experiences' }, ...experiences]}
-                value={filters.experience}
-                onChange={(selected) => handleFilterChange('experience', selected)}
-                placeholder="Select Experience"
-                isClearable
-              />
-              <div className="flex gap-2">
-                <Button onClick={applyFilters} disabled={loadingPost}>
-                  {loadingPost ? 'Applying...' : 'Apply Filters'}
-                </Button>
-                <Button onClick={resetFilters} variant="outline">
-                  Reset Filters
-                </Button>
-              </div>
             </div>
           )}
         </div>
 
         {/* Results Count */}
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-800">
-            {allJobs.length} Saved {allJobs.length === 1 ? 'Job' : 'Jobs'} Found
+            {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Saved
+            {searchTerm && ` matching "${searchTerm}"`}
           </h2>
-          {allJobs.length > 0 && (
-            <div className="text-sm text-gray-500">
-              Page {currentPage} of {totalPages}
-            </div>
-          )}
         </div>
 
         {/* Jobs List */}
-        {displayedJobs.length > 0 ? (
+        {filteredJobs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedJobs.map((job) => (
+            {filteredJobs.map((job) => (
               <div
                 key={job.id}
                 className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
@@ -424,9 +280,9 @@ const SavedJobs = () => {
                     <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
                   </div>
                   <button
-                    onClick={() => unsaveJob(job.id)}
+                    onClick={() => removeSavedJob(job.saved_job_id)}
                     className="text-yellow-500 hover:text-yellow-600 transition-colors"
-                    disabled={loadingDelete}
+                    disabled={loadingPostSavedJob}
                   >
                     <FaBookmark className="text-xl" />
                   </button>
@@ -475,39 +331,23 @@ const SavedJobs = () => {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-700 mb-2">No saved jobs found</h3>
+            <h3 className="text-xl font-medium text-gray-700 mb-2">
+              {searchTerm ? 'No matching saved jobs found' : 'No saved jobs found'}
+            </h3>
             <p className="text-gray-500">
-              {Object.values(filters).some(f => f !== null)
-                ? "Try adjusting your filters to see more results."
-                : "You have no saved jobs. Save some jobs to see them here."}
+              {searchTerm 
+                ? "Try a different search term."
+                : "You haven't saved any jobs yet. Start browsing jobs to save them for later."}
             </p>
-            {Object.values(filters).some(f => f !== null) && (
-              <Button onClick={resetFilters} variant="link" className="mt-4">
-                Reset all filters
+            {searchTerm && (
+              <Button 
+                onClick={() => setSearchTerm('')} 
+                variant="link" 
+                className="mt-4"
+              >
+                Clear search
               </Button>
             )}
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex justify-center gap-4">
-            <Button
-              onClick={goToPreviousPage}
-              disabled={!prevPageUrl && currentPage === 1}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={goToNextPage}
-              disabled={!nextPageUrl}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              Next
-            </Button>
           </div>
         )}
 
@@ -619,11 +459,10 @@ const SavedJobs = () => {
                       Apply Now
                     </Button>
                     <Button
-                      onClick={() => unsaveJob(selectedJobDetails.id)}
+                      onClick={() => removeSavedJob(selectedJobDetails.saved_job_id)}
                       className="bg-red-600 hover:bg-red-700 text-white transition-colors"
-                      disabled={loadingDelete}
                     >
-                      Unsave Job
+                      Remove Saved Job
                     </Button>
                     <Dialog.Close asChild>
                       <Button variant="outline">Close</Button>
@@ -657,7 +496,7 @@ const SavedJobs = () => {
                   }))}
                   value={selectedCv ? {
                     value: selectedCv,
-                    label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`
+                    label: `CV - ${selectedCv.user_address} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`
                   } : null}
                   onChange={(selected) => setSelectedCv(selected?.value)}
                   placeholder="Select a CV"
@@ -711,9 +550,9 @@ const SavedJobs = () => {
                 </Dialog.Close>
                 <Button
                   onClick={handleApplyJob}
-                  disabled={loadingPost || !selectedCv || !hasExperience}
+                  disabled={loadingPostCv || !selectedCv || !hasExperience}
                 >
-                  {loadingPost ? 'Submitting...' : 'Submit Application'}
+                  {loadingPostCv ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </div>
             </Dialog.Content>

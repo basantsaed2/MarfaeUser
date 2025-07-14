@@ -301,10 +301,10 @@ const Profile = () => {
                                 <FiBriefcase className="mr-2 text-blue-500" /> Professional Information
                             </h2>
                             <div className="space-y-3">
-                                <div>
+                                {/* <div>
                                     <p className="text-sm text-gray-500">Status</p>
                                     <p className="font-medium capitalize">{profile.status}</p>
-                                </div>
+                                </div> */}
                                 <div>
                                     <p className="text-sm text-gray-500">Specializations</p>
                                     <div className="flex flex-wrap gap-1 mt-1">
