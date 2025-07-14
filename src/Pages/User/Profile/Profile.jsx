@@ -36,7 +36,7 @@ const Profile = () => {
         user_address: "",
         age: "",
         specialization: [],
-        cv_files: [], // Now supports multiple files
+        cv_files: [],
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -53,12 +53,12 @@ const Profile = () => {
                 last_name: profileData.user.last_name || "",
                 email: profileData.user.email || "",
                 phone: profileData.user.phone || "",
-                password: "",
-                password_confirmation: "",
+                password: "", // Explicitly empty to prevent autofill
+                password_confirmation: "", // Explicitly empty to prevent autofill
                 user_address: profileData.user.user_address || "",
                 age: profileData.user.age ? String(profileData.user.age) : "",
                 specialization: profileData.user.specializations?.map(spec => spec.id) || [],
-                cv_files: profileData.user.usercvs || [], // Array of CVs
+                cv_files: profileData.user.usercvs || [],
             });
         }
     }, [profileData]);
@@ -70,44 +70,28 @@ const Profile = () => {
     }, [specializationData]);
 
     const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length === 0) return;
+        const file = e.target.files[0];
+        if (!file) return;
 
-        const newFiles = [];
         const errors = {};
-        
-        files.forEach((file, index) => {
-            if (file.type !== "application/pdf") {
-                errors[`cv_files_${index}`] = "Please upload a valid PDF file";
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                newFiles.push({
-                    name: file.name,
-                    content: event.target.result,
-                    isNew: true
-                });
-                
-                // Update state when all files are processed
-                if (newFiles.length === files.length) {
-                    setFormData(prev => ({
-                        ...prev,
-                        cv_files: [...prev.cv_files, ...newFiles]
-                    }));
-                }
-            };
-            reader.onerror = () => {
-                errors[`cv_files_${index}`] = "Failed to read PDF file";
-                setFormErrors(prev => ({ ...prev, ...errors }));
-            };
-            reader.readAsDataURL(file);
-        });
-
-        if (Object.keys(errors).length > 0) {
+        if (file.type !== "application/pdf") {
+            errors.cv_files = "Please upload a valid PDF file";
             setFormErrors(prev => ({ ...prev, ...errors }));
+            return;
         }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setFormData(prev => ({
+                ...prev,
+                cv_files: [{ name: file.name, content: event.target.result, isNew: true }]
+            }));
+        };
+        reader.onerror = () => {
+            errors.cv_files = "Failed to read PDF file";
+            setFormErrors(prev => ({ ...prev, ...errors }));
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleRemoveCv = (index) => {
@@ -123,7 +107,12 @@ const Profile = () => {
         // Client-side validation
         const errors = {};
         if (!formData.age) errors.age = "Age is required";
-        if (formData.cv_files.length === 0) errors.cv_files = "At least one CV file is required";
+        if (!profile.usercvs?.length && formData.cv_files.length === 0) {
+            errors.cv_files = "At least one CV file is required";
+        }
+        if (formData.password && formData.password !== formData.password_confirmation) {
+            errors.password_confirmation = "Passwords do not match";
+        }
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             return;
@@ -138,13 +127,18 @@ const Profile = () => {
             user_address: formData.user_address,
             age: parseInt(formData.age),
             specialization: formData.specialization,
-            cv_file: formData.cv_files.filter(f => f.isNew).map(f => f.content),
         };
 
         // Only include password fields if provided
         if (formData.password) {
             payload.password = formData.password;
             payload.password_confirmation = formData.password_confirmation;
+        }
+
+        // Only include cv_file if new files were uploaded
+        const newCvFiles = formData.cv_files.filter(f => f.isNew);
+        if (newCvFiles.length > 0) {
+            payload.cv_file = newCvFiles[0].content;
         }
 
         try {
@@ -160,6 +154,11 @@ const Profile = () => {
             );
             setIsEditOpen(false);
             setFormErrors({});
+            setFormData(prev => ({
+                ...prev,
+                password: "", // Clear password fields after submission
+                password_confirmation: "",
+            }));
             refetchProfile();
         } catch (error) {
             console.error("Error updating profile:", error.response?.data || error);
@@ -398,12 +397,13 @@ const Profile = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <label className="label block text-sm font-medium text-gray-700 mb-1">Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
+                                autoComplete="off" // Prevent autofill for email
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                             {formErrors.email && (
@@ -433,8 +433,9 @@ const Profile = () => {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleInputChange}
+                                autoComplete="new-password" // Prevent autofill
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Leave blank to keep current"
+                                placeholder="Enter new password"
                             />
                             {formErrors.password && (
                                 <p className="mt-1 text-sm text-red-600">{formErrors.password}</p>
@@ -447,9 +448,13 @@ const Profile = () => {
                                 name="password_confirmation"
                                 value={formData.password_confirmation}
                                 onChange={handleInputChange}
+                                autoComplete="new-password" // Prevent autofill
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Leave blank to keep current"
+                                placeholder="Confirm new password"
                             />
+                            {formErrors.password_confirmation && (
+                                <p className="mt-1 text-sm text-red-600">{formErrors.password_confirmation}</p>
+                            )}
                         </div>
                     </div>
 
@@ -457,7 +462,7 @@ const Profile = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
                             <input
-                                type="number"
+                                type преп="number"
                                 name="age"
                                 value={formData.age}
                                 onChange={handleInputChange}
@@ -486,7 +491,7 @@ const Profile = () => {
                         </div>
                     </div>
 
-                     <div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                         <input
                             type="text"
@@ -502,7 +507,7 @@ const Profile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CV Files</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">CV File</label>
                         <div className="space-y-3">
                             {formData.cv_files.length > 0 && (
                                 <div className="space-y-2">
@@ -530,7 +535,6 @@ const Profile = () => {
                                     onChange={handleFileChange}
                                     className="hidden"
                                     id="cv-upload"
-                                    multiple
                                 />
                                 <label
                                     htmlFor="cv-upload"
@@ -538,7 +542,7 @@ const Profile = () => {
                                 >
                                     <FiFileText className="mr-2" /> Upload CV (PDF)
                                 </label>
-                                <p className="mt-2 text-xs text-gray-500">Upload one or multiple PDF files</p>
+                                <p className="mt-2 text-xs text-gray-500">Upload a single PDF file</p>
                             </div>
                             {formErrors.cv_files && (
                                 <p className="mt-1 text-sm text-red-600">{formErrors.cv_files}</p>
