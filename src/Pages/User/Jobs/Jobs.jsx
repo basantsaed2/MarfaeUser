@@ -854,16 +854,22 @@ const Jobs = () => {
 
               {loadingCVS && <FullPageLoader />}
 
-              {!loadingCVS && cvsData?.usercv && cvsData.usercv.length > 0 ? (
+              {!loadingCVS && cvsData?.userCv && cvsData?.userCv.length > 0 ? (
                 <div className="mb-4">
                   <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">Select your CV:</label>
                   <Select
-                    id="cvSelect"
-                    options={cvsData.usercv.map(cv => ({ value: cv.id, label: cv.file_name, cv_file_url: cv.cv_file_url }))}
-                    onChange={setSelectedCv}
-                    value={selectedCv}
-                    placeholder="Choose your CV"
-                    styles={customSelectStyles}
+                    options={cvsData?.userCv?.map(cv => ({
+                      value: cv,
+                      label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
+                      cv_file_url: cv.cv_file_url,
+                    }))}
+                    value={selectedCv ? {
+                      value: selectedCv,
+                      label: `CV - ${selectedCv.user_address} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`
+                    } : null}
+                    onChange={(selected) => setSelectedCv(selected?.value)}
+                    placeholder="Select a CV"
+                    isClearable
                   />
                 </div>
               ) : (
