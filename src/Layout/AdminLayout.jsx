@@ -13,7 +13,7 @@ export default function AdminLayout() {
   return (
       <div className="w-full flex flex-col min-h-screen font-cairo">
           {!isLoginPage && <Navbar className="p-2" />}
-          <div className="w-full relative flex-1">
+          <div className="w-full relative flex-1 overflow-hidden">
             {isLoading && <Loading />}
             <Outlet />
           </div>
