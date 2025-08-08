@@ -19,8 +19,8 @@ const Profile = () => {
     const { refetch: refetchSpecialization, loading: loadingSpecialization, data: specializationData } = useGet({
         url: `${apiUrl}/user/specializations/get`,
     });
-    const { changeState, loadingChange } = useChangeState();
-    const { deleteData, loadingDelete } = useDelete();
+    const { changeState, loading: loadingChange } = useChangeState();
+    const { deleteData, loading: loadingDelete } = useDelete();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -39,6 +39,8 @@ const Profile = () => {
         cv_files: [],
     });
     const [formErrors, setFormErrors] = useState({});
+    const [uploadCvError, setUploadCvError] = useState(null); // New state for CV upload errors
+    const [uploadCvSuccess, setUploadCvSuccess] = useState(null); // New state for CV upload success
 
     useEffect(() => {
         refetchProfile();
@@ -53,8 +55,8 @@ const Profile = () => {
                 last_name: profileData.user.last_name || "",
                 email: profileData.user.email || "",
                 phone: profileData.user.phone || "",
-                password: "", // Explicitly empty to prevent autofill
-                password_confirmation: "", // Explicitly empty to prevent autofill
+                password: "",
+                password_confirmation: "",
                 user_address: profileData.user.user_address || "",
                 age: profileData.user.age ? String(profileData.user.age) : "",
                 specialization: profileData.user.specializations?.map(spec => spec.id) || [],
@@ -77,6 +79,7 @@ const Profile = () => {
         if (file.type !== "application/pdf") {
             errors.cv_files = "Please upload a valid PDF file";
             setFormErrors(prev => ({ ...prev, ...errors }));
+            setUploadCvError(errors.cv_files); // Set error for direct upload
             return;
         }
 
@@ -84,12 +87,15 @@ const Profile = () => {
         reader.onload = (event) => {
             setFormData(prev => ({
                 ...prev,
-                cv_files: [{ name: file.name, content: event.target.result, isNew: true }]
+                cv_files: [{ name: file.name, content: event.target.result, isNew: true }],
             }));
+            setFormErrors(prev => ({ ...prev, cv_files: null }));
+            setUploadCvError(null); // Clear error on valid file
         };
         reader.onerror = () => {
             errors.cv_files = "Failed to read PDF file";
             setFormErrors(prev => ({ ...prev, ...errors }));
+            setUploadCvError(errors.cv_files);
         };
         reader.readAsDataURL(file);
     };
@@ -97,14 +103,13 @@ const Profile = () => {
     const handleRemoveCv = (index) => {
         setFormData(prev => ({
             ...prev,
-            cv_files: prev.cv_files.filter((_, i) => i !== index)
+            cv_files: prev.cv_files.filter((_, i) => i !== index),
         }));
     };
 
     const handleChangeProfile = async (e) => {
         e.preventDefault();
 
-        // Client-side validation
         const errors = {};
         if (!formData.age) errors.age = "Age is required";
         if (!profile.usercvs?.length && formData.cv_files.length === 0) {
@@ -118,7 +123,6 @@ const Profile = () => {
             return;
         }
 
-        // Prepare JSON payload
         const payload = {
             first_name: formData.first_name,
             last_name: formData.last_name,
@@ -129,13 +133,11 @@ const Profile = () => {
             specialization: formData.specialization,
         };
 
-        // Only include password fields if provided
         if (formData.password) {
             payload.password = formData.password;
             payload.password_confirmation = formData.password_confirmation;
         }
 
-        // Only include cv_file if new files were uploaded
         const newCvFiles = formData.cv_files.filter(f => f.isNew);
         if (newCvFiles.length > 0) {
             payload.cv_file = newCvFiles[0].content;
@@ -148,21 +150,65 @@ const Profile = () => {
                 payload,
                 {
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                    },
                 }
             );
             setIsEditOpen(false);
             setFormErrors({});
             setFormData(prev => ({
                 ...prev,
-                password: "", // Clear password fields after submission
+                password: "",
                 password_confirmation: "",
             }));
             refetchProfile();
         } catch (error) {
             console.error("Error updating profile:", error.response?.data || error);
             setFormErrors(error.response?.data?.errors || { general: "Failed to update profile" });
+        }
+    };
+
+    // New function to handle direct CV upload
+    const handleUploadCv = async () => {
+        const newCvFiles = formData.cv_files.filter(f => f.isNew);
+        if (newCvFiles.length === 0) {
+            setUploadCvError("Please select a PDF file to upload");
+            return;
+        }
+
+        const payload = {
+            cv_file: newCvFiles[0].content,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            email: formData.email,
+            phone: formData.phone,
+            user_address: formData.user_address,
+            age: parseInt(formData.age),
+            specialization: formData.specialization,
+        };
+
+        try {
+            await changeState(
+                `${apiUrl}/user/profile/update`,
+                "CV Uploaded Successfully.",
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            setUploadCvError(null);
+            setUploadCvSuccess("CV uploaded successfully!");
+            setFormData(prev => ({
+                ...prev,
+                cv_files: [], // Clear the temporary CV file after upload
+            }));
+            refetchProfile(); // Refresh profile to show the new CV
+            setTimeout(() => setUploadCvSuccess(null), 3000); // Clear success message after 3 seconds
+        } catch (error) {
+            console.error("Error uploading CV:", error.response?.data || error);
+            setUploadCvError(error.response?.data?.errors?.cv_file || "Failed to upload CV");
         }
     };
 
@@ -221,10 +267,10 @@ const Profile = () => {
 
     const specializationOptions = specializations.map(spec => ({
         value: spec.id,
-        label: spec.name
+        label: spec.name,
     }));
 
-    const selectedSpecializations = specializationOptions.filter(option => 
+    const selectedSpecializations = specializationOptions.filter(option =>
         formData.specialization.includes(option.value)
     );
 
@@ -301,10 +347,6 @@ const Profile = () => {
                                 <FiBriefcase className="mr-2 text-blue-500" /> Professional Information
                             </h2>
                             <div className="space-y-3">
-                                {/* <div>
-                                    <p className="text-sm text-gray-500">Status</p>
-                                    <p className="font-medium capitalize">{profile.status}</p>
-                                </div> */}
                                 <div>
                                     <p className="text-sm text-gray-500">Specializations</p>
                                     <div className="flex flex-wrap gap-1 mt-1">
@@ -345,6 +387,58 @@ const Profile = () => {
                             ) : (
                                 <p className="text-gray-500">No CVs uploaded</p>
                             )}
+                            {/* CV Upload Button */}
+                            <div className="mt-4">
+                                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6">
+                                    <input
+                                        type="file"
+                                        name="cv_upload"
+                                        accept="application/pdf"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        id="cv-upload-direct"
+                                    />
+                                    <label
+                                        htmlFor="cv-upload-direct"
+                                        className="cursor-pointer bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg flex items-center"
+                                    >
+                                        <FiFileText className="mr-2" /> Upload New CV
+                                    </label>
+                                    <p className="mt-2 text-xs text-gray-500">Upload a single PDF file</p>
+                                </div>
+                                {formData.cv_files.length > 0 && (
+                                    <div className="mt-4">
+                                        <p className="text-sm font-medium text-gray-700">Selected CV:</p>
+                                        {formData.cv_files.map((cv, index) => (
+                                            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
+                                                <div className="flex items-center truncate">
+                                                    <FiFileText className="text-blue-500 mr-2 flex-shrink-0" />
+                                                    <span className="truncate">{cv.name}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemoveCv(index)}
+                                                    className="text-red-500 hover:text-red-700 ml-2 p-1 rounded-full hover:bg-red-50"
+                                                >
+                                                    <FiTrash2 />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <Button
+                                            onClick={handleUploadCv}
+                                            disabled={loadingChange || formData.cv_files.length === 0}
+                                            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full"
+                                        >
+                                            {loadingChange ? "Uploading..." : "Confirm Upload"}
+                                        </Button>
+                                    </div>
+                                )}
+                                {uploadCvError && (
+                                    <p className="mt-2 text-sm text-red-600">{uploadCvError}</p>
+                                )}
+                                {uploadCvSuccess && (
+                                    <p className="mt-2 text-sm text-green-600">{uploadCvSuccess}</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -397,13 +491,13 @@ const Profile = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="label block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                autoComplete="off" // Prevent autofill for email
+                                autoComplete="off"
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                             {formErrors.email && (
@@ -433,7 +527,7 @@ const Profile = () => {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleInputChange}
-                                autoComplete="new-password" // Prevent autofill
+                                autoComplete="new-password"
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter new password"
                             />
@@ -448,7 +542,7 @@ const Profile = () => {
                                 name="password_confirmation"
                                 value={formData.password_confirmation}
                                 onChange={handleInputChange}
-                                autoComplete="new-password" // Prevent autofill
+                                autoComplete="new-password"
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Confirm new password"
                             />
@@ -462,7 +556,7 @@ const Profile = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
                             <input
-                                type преп="number"
+                                type="number"
                                 name="age"
                                 value={formData.age}
                                 onChange={handleInputChange}

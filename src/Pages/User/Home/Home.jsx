@@ -718,13 +718,16 @@ import Partners from "./Partners";
 import Contact from "./Contact";
 import Testimonials from "./Testimonials";
 import CTA from "./CTA";
+import JobsSection from "./JobsSection";
 
 const Home = () => {
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Hero />
       <Features />
       <Partners />
+      <JobsSection />
       <Contact />
       <Testimonials />
       <CTA />

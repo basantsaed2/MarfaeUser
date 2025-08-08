@@ -9,16 +9,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"; // Import Dialog components
-import image from "../../assets/Login.png";
+} from "@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
-import { FaIdCard } from "react-icons/fa6";
-import { PiBagFill } from "react-icons/pi";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 const LoginEmployer = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -27,11 +26,10 @@ const LoginEmployer = () => {
   });
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState("Employer");
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
@@ -56,107 +54,163 @@ const LoginEmployer = () => {
   useEffect(() => {
     if (!loadingPost && response) {
       if (response.data.message === "Employeer account is not active yet") {
-        setIsModalOpen(true); // Open modal if account is not active
+        setIsModalOpen(true);
       } else if (response.status === 200 && response.data?.user?.role === "user") {
-        toast.success("Login successfully")
+        toast.success("Login successfully");
         dispatch(setUser(response?.data));
         localStorage.setItem("user", JSON.stringify(response?.data));
         localStorage.setItem("token", response?.data.token);
         const redirectTo = new URLSearchParams(location.search).get("redirect");
         navigate(redirectTo || "/");
-      }
-      else if (response.status === 200 && response.data?.user?.role !== "user") {
-        toast.error("You do not have user role")
+      } else if (response.status === 200 && response.data?.user?.role !== "user") {
+        toast.error("You do not have user role");
       }
     }
   }, [response, loadingPost, navigate, dispatch]);
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-
   };
 
   return (
-    <div
-      className="w-full h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: `url(${image})` }}
-    >
-      <Card className="w-full max-w-2xl bg-white shadow-lg rounded-lg p-0">
-        <CardContent className="p-0">
-          {/* <div className="w-full flex justify-center mb-6">
-            <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tl-lg px-4 py-2 font-semibold ${activeTab === "Candidate"
-                  ? "text-white bg-blue-600"
-                  : "text-bg-primary bg-gray-100"
-                }`}
-              onClick={() => setActiveTab("Candidate")}
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-teal-50 to-white bg-cover bg-center relative overflow-hidden">
+      {/* Doctor-themed background image */}
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1580281780460-82d277b0e3f8')] bg-cover bg-center opacity-20"></div>
+
+      {/* Decorative medical elements */}
+      <div
+        className="absolute top-8 left-8 text-teal-400 opacity-30 text-6xl"
+      >
+        <FaStethoscope />
+      </div>
+      <div
+        className="absolute bottom-8 right-8 text-teal-400 opacity-30 text-6xl"
+      >
+        <FaHeartbeat />
+      </div>
+      <div
+        className="absolute top-1/4 right-12 text-teal-400 opacity-25 text-5xl"
+      >
+        <FaUserMd />
+      </div>
+      <div
+        className="absolute bottom-1/4 left-12 text-teal-400 opacity-25 text-5xl"
+      >
+        <FaSyringe />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 max-w-md w-full"
+      >
+        <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-teal-100/50 overflow-hidden ring-1 ring-teal-300/30">
+          <CardContent className="p-12">
+            <motion.div
+              initial={{ y: -40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="text-center mb-10"
             >
-              <FaIdCard /> Candidate
-            </button>
-            <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tr-lg px-4 py-2 font-semibold ${activeTab === "Employer"
-                  ? "text-white bg-blue-600"
-                  : "text-bg-primary bg-gray-100"
-                }`}
-              onClick={() => setActiveTab("Employer")}
-            >
-              <PiBagFill /> Employer
-            </button>
-          </div> */}
-          <div className="p-6">
-            <h2 className="text-3xl text-bg-primary underline font-bold text-center mb-3">
-              Log in
-            </h2>
-            <p className="text-center text-blue-600 mb-6">
-              <Link className="underline font-semibold" to="/register">
-                Register a new account
+              <h2 className="text-5xl font-extrabold text-teal-700 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-teal-400">
+                Mrfae
+              </h2>
+              <p className="text-gray-500 mt-4 text-lg font-medium">
+                Seamless access for medical jobs
+              </p>
+            </motion.div>
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Input
+                  type="text"
+                  placeholder="Email or Username"
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  disabled={loadingPost}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <FaUserMd />
+                </span>
+              </motion.div>
+
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  disabled={loadingPost}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <FaHeartbeat />
+                </span>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.94 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  type="submit"
+                  className="w-full p-4 text-lg bg-gradient-to-r from-teal-600 to-teal-400 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
+                  disabled={loadingPost}
+                >
+                  {loadingPost ? "Logging in..." : "Login Mrfae"}
+                </Button>
+              </motion.div>
+            </form>
+
+            <p className="text-center text-gray-500 mt-6 text-sm">
+              New to Mrfae?{" "}
+              <Link
+                to="/register"
+                className="text-teal-600 font-semibold hover:underline hover:text-teal-500 transition-colors duration-200"
+              >
+                Register Now
               </Link>
             </p>
-            <form onSubmit={handleLogin} className="space-y-6">
-              <Input
-                type="text"
-                placeholder="Email or Username"
-                value={emailOrUsername}
-                onChange={(e) => setEmailOrUsername(e.target.value)}
-                className="w-full p-3 border rounded"
-                disabled={loadingPost}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border rounded"
-                disabled={loadingPost}
-              />
-              <Button
-                type="submit"
-                className="w-full p-4 text-base bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
-                disabled={loadingPost}
-              >
-                {loadingPost ? "Logging in..." : "Log in"}
-              </Button>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Modal for inactive account */}
-      <Dialog className="bg-white" open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Account Not Active</DialogTitle>
-            <DialogDescription>
-              Your account is not active yet.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={handleModalClose} variant="default">
-              OK
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AnimatePresence>
+        {isModalOpen && (
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen} className="bg-transparent">
+            <DialogContent className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-8 max-w-md border border-teal-100/50">
+              <DialogHeader>
+                <DialogTitle className="text-teal-700 text-2xl font-bold">
+                  Account Inactive
+                </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Your account is not active yet. Please contact our support team or await admin approval.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  onClick={handleModalClose}
+                  className="bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition-colors duration-200"
+                >
+                  OK
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       <ToastContainer />
     </div>

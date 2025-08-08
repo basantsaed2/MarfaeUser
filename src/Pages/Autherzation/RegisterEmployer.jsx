@@ -13,14 +13,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"; // Shadcn/UI Dialog components
-import Select from "react-select";
-import image from "../../assets/Login.png";
+} from "@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
-import { FaIdCard } from "react-icons/fa6";
-import { PiBagFill } from "react-icons/pi";
-import { useGet } from "@/Hooks/UseGet";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 const RegisterEmployer = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -33,9 +30,9 @@ const RegisterEmployer = () => {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false); // State for OTP modal
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]); // 6-digit OTP state
-  const otpInputs = useRef([]); // Refs for OTP input fields
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const otpInputs = useRef([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -51,45 +48,38 @@ const RegisterEmployer = () => {
 
   useEffect(() => {
     if (!loadingPost && response) {
-      console.log("response",response)
-      // Open OTP modal on successful registration
-      if(response.status === 200){
-      setIsOtpModalOpen(true);
-      }
-      else{
-        return;
+      if (response.status === 200) {
+        setIsOtpModalOpen(true);
+      } else {
+        toast.error(response?.data?.message || "Registration failed");
       }
     }
   }, [response, loadingPost]);
 
   useEffect(() => {
     if (!loadingOTP && responseOTP) {
-      // Handle successful OTP verification
       dispatch(setUser(responseOTP?.data));
       localStorage.setItem("user", JSON.stringify(responseOTP?.data));
       localStorage.setItem("token", responseOTP?.data.token);
       const redirectTo = new URLSearchParams(location.search).get("redirect");
       navigate(redirectTo || "/login");
-      setIsOtpModalOpen(false); // Close modal
+      setIsOtpModalOpen(false);
       toast.success("OTP verified successfully!");
     }
   }, [responseOTP, loadingOTP, navigate, dispatch]);
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
-    if (!emailOrUsername || !password || !firstName || !lastName || !phone ) {
+    if (!emailOrUsername || !password || !firstName || !lastName || !phone) {
       toast.error("All fields are required");
       return;
     }
-
     const body = new FormData();
     body.append("first_name", firstName);
     body.append("last_name", lastName);
     body.append("email", emailOrUsername);
     body.append("phone", phone);
     body.append("password", password);
-
     await postData(body, "Please check your email for OTP");
   };
 
@@ -99,8 +89,6 @@ const RegisterEmployer = () => {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
-      // Move to next input if a digit is entered
       if (value && index < 5) {
         otpInputs.current[index + 1].focus();
       }
@@ -120,140 +108,220 @@ const RegisterEmployer = () => {
       toast.error("Please enter a valid 6-digit OTP");
       return;
     }
-
     const body = new FormData();
     body.append("email", emailOrUsername);
     body.append("code", otpCode);
-
     await postOTP(body, "OTP verification successful!");
   };
 
   return (
-    <div
-      className="w-full h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: `url(${image})` }}
-    >
-      <Card className="w-full max-w-2xl bg-white shadow-lg rounded-lg p-0">
-        <CardContent className="p-0">
-          {/* <div className="w-full flex justify-center">
-            <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tl-lg px-4 py-2 font-semibold ${
-                activeTab === "Candidate" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("Candidate")}
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-teal-50 to-white bg-cover bg-center relative overflow-hidden">
+      {/* Doctor-themed background image */}
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1580281780460-82d277b0e3f8')] bg-cover bg-center opacity-20"></div>
+
+      {/* Decorative medical elements */}
+      <div
+        className="absolute top-8 left-8 text-teal-400 opacity-30 text-6xl"
+      >
+        <FaStethoscope />
+      </div>
+      <div
+        className="absolute bottom-8 right-8 text-teal-400 opacity-30 text-6xl"
+      >
+        <FaHeartbeat />
+      </div>
+      <div
+        className="absolute top-1/4 right-12 text-teal-400 opacity-25 text-5xl"
+      >
+        <FaUserMd />
+      </div>
+      <div
+        className="absolute bottom-1/4 left-12 text-teal-400 opacity-25 text-5xl"
+      >
+        <FaSyringe />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 max-w-2xl p-4 w-full"
+      >
+        <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-teal-100/50 overflow-hidden ring-1 ring-teal-300/30">
+          <CardContent className="p-4 md:p-8">
+            <motion.div
+              initial={{ y: -40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="text-center mb-5"
             >
-              <FaIdCard /> Candidate
-            </button>
-            <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tr-lg px-4 py-2 font-semibold ${
-                activeTab === "Employer" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("Employer")}
-            >
-              <PiBagFill /> Employer
-            </button>
-          </div> */}
-          <div className="p-6">
-            <h2 className="text-3xl text-bg-primary underline font-bold text-center mb-3">
-              Register a new account
-            </h2>
-            <p className="text-center text-blue-600 mb-6">
-              <Link className="underline font-semibold" to="/login">
+              <h2 className="text-5xl font-extrabold text-teal-700 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-teal-400">
+                Mrfae
+              </h2>
+              <p className="text-gray-500 mt-4 text-lg font-medium">
+                Join the medical job platform
+              </p>
+            </motion.div>
+
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <motion.div
+                  className="relative"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Input
+                    type="text"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                    disabled={loadingPost}
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                    <FaUserMd />
+                  </span>
+                </motion.div>
+                <motion.div
+                  className="relative"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Input
+                    type="text"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                    disabled={loadingPost}
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                    <FaUserMd />
+                  </span>
+                </motion.div>
+              </div>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  disabled={loadingPost}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <FaStethoscope />
+                </span>
+              </motion.div>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Input
+                  type="text"
+                  placeholder="Phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  disabled={loadingPost}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <FaSyringe />
+                </span>
+              </motion.div>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  disabled={loadingPost}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <FaHeartbeat />
+                </span>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.94 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  type="submit"
+                  className="w-full p-4 text-lg bg-gradient-to-r from-teal-600 to-teal-400 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
+                  disabled={loadingPost}
+                >
+                  {loadingPost ? "Registering..." : "Register Mrfae"}
+                </Button>
+              </motion.div>
+            </form>
+
+            <p className="text-center text-gray-500 mt-6 text-sm">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-teal-600 font-semibold hover:underline hover:text-teal-500 transition-colors duration-200"
+              >
                 Log In
               </Link>
             </p>
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Input
-                  type="text"
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full p-3 border rounded"
-                  disabled={loadingPost}
-                />
-                <Input
-                  type="text"
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full p-3 border rounded"
-                  disabled={loadingPost}
-                />
-              </div>
-              <Input
-                type="email"
-                placeholder="Email"
-                value={emailOrUsername}
-                onChange={(e) => setEmailOrUsername(e.target.value)}
-                className="w-full p-3 border rounded"
-                disabled={loadingPost}
-              />
-              <Input
-                type="text"
-                placeholder="Phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-3 border rounded"
-                disabled={loadingPost}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border rounded"
-                disabled={loadingPost}
-              />
-              <Button
-                type="submit"
-                className="w-full p-4 text-base bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
-                disabled={loadingPost}
-              >
-                {loadingPost ? "Registering..." : "Register"}
-              </Button>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* OTP Verification Modal */}
-      <Dialog className="bg-white" open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen}>
-        <DialogContent className="sm:max-w-md bg-white">
-          <DialogHeader>
-            <DialogTitle>Verify OTP</DialogTitle>
-            <DialogDescription>
-              Enter the 6-digit OTP sent to your email ({emailOrUsername}).
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleOtpSubmit} className="space-y-6">
-            <div className="flex justify-between gap-2">
-              {otp.map((digit, index) => (
-                <Input
-                  key={index}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(e, index)}
-                  onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                  ref={(el) => (otpInputs.current[index] = el)}
-                  className="w-12 h-12 text-center text-lg border rounded-md focus:ring-2 focus:ring-blue-600"
-                  disabled={loadingOTP}
-                />
-              ))}
-            </div>
-            <DialogFooter>
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                disabled={loadingOTP}
-              >
-                {loadingOTP ? "Verifying..." : "Verify OTP"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <AnimatePresence>
+        {isOtpModalOpen && (
+          <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen} className="bg-transparent">
+            <DialogContent className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-8 max-w-md border border-teal-100/50">
+              <DialogHeader>
+                <DialogTitle className="text-teal-700 text-2xl font-bold">
+                  Verify OTP
+                </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Enter the 6-digit OTP sent to your email ({emailOrUsername}).
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleOtpSubmit} className="space-y-6">
+                <div className="flex justify-between gap-2">
+                  {otp.map((digit, index) => (
+                    <Input
+                      key={index}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(e, index)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                      ref={(el) => (otpInputs.current[index] = el)}
+                      className="w-12 h-12 text-center text-lg border border-teal-100/50 rounded-md focus:ring-2 focus:ring-teal-500 text-teal-800"
+                      disabled={loadingOTP}
+                    />
+                  ))}
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-teal-600 to-teal-400 text-white hover:from-teal-700 hover:to-teal-500 rounded-lg transition-all duration-200"
+                    disabled={loadingOTP}
+                  >
+                    {loadingOTP ? "Verifying..." : "Verify OTP"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       <ToastContainer />
     </div>
