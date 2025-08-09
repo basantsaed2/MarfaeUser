@@ -78,10 +78,10 @@ const CTA = () => {
   const handleRegister = () => navigate("/register");
 
   return (
-    <section ref={ctaRef} className="py-16 bg-blue-800 text-white">
-      <div className="container mx-auto px-6 lg:px-12 text-center">
+    <section ref={ctaRef} className="py-16 bg-bg-primary text-white">
+      <div className="container mx-auto px-6 lg:px-12 text-center max-w-4xl">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold mb-6"
+          className="text-3xl md:text-4xl font-bold mb-6 tracking-tight"
           variants={titleVariants}
           initial="hidden"
           animate={isCtaInView ? "visible" : "hidden"}
@@ -89,7 +89,7 @@ const CTA = () => {
           Ready to Advance Your Medical Career?
         </motion.h2>
         <motion.p
-          className="text-xl mb-8 max-w-2xl mx-auto"
+          className="text-xl mb-8 max-w-2xl mx-auto leading-relaxed"
           variants={itemVariants}
           initial="hidden"
           animate={isCtaInView ? "visible" : "hidden"}
@@ -97,7 +97,7 @@ const CTA = () => {
           Join thousands of healthcare professionals who found their dream jobs through our platform.
         </motion.p>
         <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4"
+          className="flex flex-col sm:flex-row justify-center gap-4 mb-8"
           variants={containerVariants}
           initial="hidden"
           animate={isCtaInView ? "visible" : "hidden"}
@@ -106,24 +106,45 @@ const CTA = () => {
             <>
               <motion.button
                 onClick={handleRegister}
-                className="bg-white text-blue-800 hover:bg-blue-100 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
+                className="bg-white text-blue-600 hover:bg-blue-100 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
+                aria-label="Register Now"
               >
                 Register Now
               </motion.button>
               <motion.button
                 onClick={handleLogin}
-                className="bg-transparent border-2 border-white hover:bg-white/10 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
+                className="bg-transparent border-2 border-white hover:bg-white/20 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
+                aria-label="Log In"
               >
-                LogIn
+                Log In
               </motion.button>
             </>
           )}
+        </motion.div>
+
+        {/* Powered by Link */}
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate={isCtaInView ? "visible" : "hidden"}
+        >
+          <p className="text-md text-white">
+            Powered by{" "}
+            <a
+              href="https://connecttocode.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-white transition-colors"
+            >
+              ConnectToCode
+            </a>
+          </p>
         </motion.div>
       </div>
     </section>

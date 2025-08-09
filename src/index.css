@@ -8,7 +8,7 @@ body {
 
 @theme {
   /* Accent */
-  --color-bg-primary: #161D6F;
+  --color-bg-primary: #1E90FF; /* Updated to match logo blue */
   --color-bg-secondary: #2563EB;
   --color-bg-tertiary: #E5E7EB;
   --color-white: #FFFFFF;

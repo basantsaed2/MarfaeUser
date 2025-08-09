@@ -1,14 +1,38 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import companyImage from "@/assets/company.png";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { useGet } from "@/Hooks/UseGet";
 
 const Partners = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+  // State for Companies
+  const {
+    refetch: refetchCompanies,
+    loading: loadingCompanies,
+    data: CompaniesData,
+  } = useGet({
+    url: `${apiUrl}/guest/getCompanies`,
+  });
+
+  const [Companies, setCompanies] = useState([]);
   const partnersRef = useRef(null);
-  const isPartnersInView = useInView(partnersRef, { threshold: 0.3, once: false });
+  const isPartnersInView = useInView(partnersRef, {
+    threshold: 0.3,
+    once: false,
+  });
 
   const { scrollY } = useScroll();
-  const partnersImageY = useTransform(scrollY, [1200, 1800], [0, 80]);
+
+  // ✅ Limit animation movement on small screens
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 1024;
+  const partnersImageY = useTransform(
+    scrollY,
+    [1200, 1800],
+    [0, isMobile ? 20 : 80]
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -68,12 +92,23 @@ const Partners = () => {
     },
   };
 
+  useEffect(() => {
+    refetchCompanies();
+  }, [refetchCompanies]);
+
+  useEffect(() => {
+    if (CompaniesData && CompaniesData.companies) {
+      setCompanies(CompaniesData.companies);
+    }
+  }, [CompaniesData]);
+
   return (
     <section ref={partnersRef} className="py-10 bg-gray-100">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex flex-col lg:flex-row items-center gap-10">
+          {/* Left Side: Image */}
           <motion.div
-            className="lg:w-1/2"
+            className="lg:w-1/2 w-full"
             variants={imageVariants}
             initial="hidden"
             animate={isPartnersInView ? "visible" : "hidden"}
@@ -83,11 +118,17 @@ const Partners = () => {
               alt="Medical facility"
               className="rounded-2xl shadow-lg w-full h-auto object-cover"
               style={{ y: partnersImageY }}
-              whileHover={{ scale: 1, rotate: -1, transition: { duration: 0.3 } }}
+              whileHover={{
+                scale: 1,
+                rotate: -1,
+                transition: { duration: 0.3 },
+              }}
             />
           </motion.div>
+
+          {/* Right Side: Content */}
           <motion.div
-            className="lg:w-1/2"
+            className="lg:w-1/2 w-full"
             variants={containerVariants}
             initial="hidden"
             animate={isPartnersInView ? "visible" : "hidden"}
@@ -102,25 +143,47 @@ const Partners = () => {
               className="text-lg text-gray-600 mb-8"
               variants={itemVariants}
             >
-              We've established partnerships with over 500 hospitals, clinics, and research centers across the globe to bring you exclusive career opportunities.
+              We've established partnerships with over 500 hospitals, clinics,
+              and research centers across the globe to bring you exclusive
+              career opportunities.
             </motion.p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((item, index) => (
+
+            {/* Companies Slider */}
+            {Companies.length > 0 && (
+              <div className="overflow-hidden">
                 <motion.div
-                  key={item}
-                  className="bg-white p-4 rounded-lg shadow-md flex items-center justify-center h-20"
-                  variants={itemVariants}
-                  whileHover={{
-                    scale: 1.1,
-                    rotate: index % 2 === 0 ? 5 : -5,
-                    boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
-                    transition: { duration: 0.3 },
+                  className="flex gap-6"
+                  animate={{ x: ["100%", "-100%"] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: Companies.length * 6,
+                    ease: "linear",
                   }}
                 >
-                  <span className="text-gray-400 font-bold">Logo {item}</span>
+                  {Companies.map((company) => (
+                    <div
+                      key={company.id}
+                      className="bg-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-4 min-w-[220px] hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+                    >
+                      {company.logo_link ? (
+                        <img
+                          src={company.logo_link}
+                          alt={company.name}
+                          className="w-12 h-12 object-contain rounded-full border border-gray-200 p-1 bg-gray-50"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 text-blue-700 font-bold text-lg border border-gray-200">
+                          {company.name?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-gray-700 font-semibold whitespace-nowrap truncate">
+                        {company.name}
+                      </span>
+                    </div>
+                  ))}
                 </motion.div>
-              ))}
-            </div>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

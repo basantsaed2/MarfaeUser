@@ -115,29 +115,21 @@ const RegisterEmployer = () => {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-teal-50 to-white bg-cover bg-center relative overflow-hidden">
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-bg-primary/40 to-white bg-cover bg-center relative overflow-hidden">
       {/* Doctor-themed background image */}
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1580281780460-82d277b0e3f8')] bg-cover bg-center opacity-20"></div>
 
       {/* Decorative medical elements */}
-      <div
-        className="absolute top-8 left-8 text-teal-400 opacity-30 text-6xl"
-      >
+      <div className="absolute top-8 left-8 text-bg-primary opacity-30 text-6xl">
         <FaStethoscope />
       </div>
-      <div
-        className="absolute bottom-8 right-8 text-teal-400 opacity-30 text-6xl"
-      >
+      <div className="absolute bottom-8 right-8 text-bg-primary opacity-30 text-6xl">
         <FaHeartbeat />
       </div>
-      <div
-        className="absolute top-1/4 right-12 text-teal-400 opacity-25 text-5xl"
-      >
+      <div className="absolute top-1/4 right-12 text-bg-primary opacity-25 text-5xl">
         <FaUserMd />
       </div>
-      <div
-        className="absolute bottom-1/4 left-12 text-teal-400 opacity-25 text-5xl"
-      >
+      <div className="absolute bottom-1/4 left-12 text-bg-primary opacity-25 text-5xl">
         <FaSyringe />
       </div>
 
@@ -147,7 +139,7 @@ const RegisterEmployer = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-10 max-w-2xl p-4 w-full"
       >
-        <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-teal-100/50 overflow-hidden ring-1 ring-teal-300/30">
+        <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-bg-primary/50 overflow-hidden ring-1 ring-bg-primary/30">
           <CardContent className="p-4 md:p-8">
             <motion.div
               initial={{ y: -40, opacity: 0 }}
@@ -155,7 +147,7 @@ const RegisterEmployer = () => {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-center mb-5"
             >
-              <h2 className="text-5xl font-extrabold text-teal-700 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-teal-400">
+              <h2 className="text-5xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
                 Mrfae
               </h2>
               <p className="text-gray-500 mt-4 text-lg font-medium">
@@ -175,10 +167,10 @@ const RegisterEmployer = () => {
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                    className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70  placeholder-bg-primary/70"
                     disabled={loadingPost}
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
                     <FaUserMd />
                   </span>
                 </motion.div>
@@ -192,10 +184,10 @@ const RegisterEmployer = () => {
                     placeholder="Last Name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                    className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                     disabled={loadingPost}
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
                     <FaUserMd />
                   </span>
                 </motion.div>
@@ -210,10 +202,10 @@ const RegisterEmployer = () => {
                   placeholder="Email"
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
-                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaStethoscope />
                 </span>
               </motion.div>
@@ -227,10 +219,10 @@ const RegisterEmployer = () => {
                   placeholder="Phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaSyringe />
                 </span>
               </motion.div>
@@ -244,10 +236,10 @@ const RegisterEmployer = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-4 pr-12 border border-teal-100/50 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/70 text-teal-800 placeholder-teal-400"
+                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaHeartbeat />
                 </span>
               </motion.div>
@@ -258,7 +250,7 @@ const RegisterEmployer = () => {
               >
                 <Button
                   type="submit"
-                  className="w-full p-4 text-lg bg-gradient-to-r from-teal-600 to-teal-400 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
+                  className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
                   disabled={loadingPost}
                 >
                   {loadingPost ? "Registering..." : "Register Mrfae"}
@@ -270,7 +262,7 @@ const RegisterEmployer = () => {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-teal-600 font-semibold hover:underline hover:text-teal-500 transition-colors duration-200"
+                className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
               >
                 Log In
               </Link>
@@ -283,9 +275,9 @@ const RegisterEmployer = () => {
       <AnimatePresence>
         {isOtpModalOpen && (
           <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen} className="bg-transparent">
-            <DialogContent className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-8 max-w-md border border-teal-100/50">
+            <DialogContent className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-8 max-w-md border border-bg-primary/50">
               <DialogHeader>
-                <DialogTitle className="text-teal-700 text-2xl font-bold">
+                <DialogTitle className="text-bg-primary text-2xl font-bold">
                   Verify OTP
                 </DialogTitle>
                 <DialogDescription className="text-gray-600">
@@ -303,7 +295,7 @@ const RegisterEmployer = () => {
                       onChange={(e) => handleOtpChange(e, index)}
                       onKeyDown={(e) => handleOtpKeyDown(e, index)}
                       ref={(el) => (otpInputs.current[index] = el)}
-                      className="w-12 h-12 text-center text-lg border border-teal-100/50 rounded-md focus:ring-2 focus:ring-teal-500 text-teal-800"
+                      className="w-12 h-12 text-center text-lg border border-bg-primary/50 rounded-md focus:ring-2 focus:ring-bg-primary text-bg-primary"
                       disabled={loadingOTP}
                     />
                   ))}
@@ -311,7 +303,7 @@ const RegisterEmployer = () => {
                 <DialogFooter>
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-teal-600 to-teal-400 text-white hover:from-teal-700 hover:to-teal-500 rounded-lg transition-all duration-200"
+                    className="w-full bg-gradient-to-r from-bg-primary to-blue-300 text-white hover:from-blue-700 hover:to-blue-500 rounded-lg transition-all duration-200"
                     disabled={loadingOTP}
                   >
                     {loadingOTP ? "Verifying..." : "Verify OTP"}

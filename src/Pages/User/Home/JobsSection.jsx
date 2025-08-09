@@ -8,6 +8,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import Select from 'react-select';
 import { Button } from "@/components/ui/button"; // Adjust import based on your setup
 import { usePost } from "@/Hooks/UsePost";
+import { toast, ToastContainer } from "react-toastify";
 
 const JobsSection = () => {
   const router = useNavigate();
@@ -78,18 +79,18 @@ const JobsSection = () => {
       setIsApplyDialogOpen(false);
       setSelectedJobId(null);
 
-      alert('Application submitted successfully!');
+      toast.success('Application submitted successfully!');
     } catch (error) {
       console.error('Error applying for job:', error);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Failed to submit application. Please try again.');
     }
   };
 
   const handleBrowseMore = () => {
     if (!user) {
-      router("/jobs");
-    } else {
       router("/login");
+    } else {
+      router("/jobs");
     }
   };
 
@@ -169,7 +170,7 @@ const JobsSection = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-6">
-                  <span className="text-xl font-extrabold text-blue-600">{job.expected_salary}EGP/month</span>
+                  <span className="text-xl font-extrabold text-blue-600">{job.expected_salary}EGP</span>
                   <button
                     onClick={() => {
                       if (!user) {

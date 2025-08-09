@@ -116,13 +116,15 @@ const Features = () => {
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
               variants={titleVariants}
             >
-              Smart Solutions for Smarter Career Moves
+              Connecting Medical Talent with Leading Healthcare Employers
             </motion.h2>
             <motion.p
               className="text-gray-600 mb-8"
               variants={itemVariants}
             >
-              Volutpat mus orci a maximus interdum adipiscing eleifend eros bibendum rutrum. Montes congue a orci habitant nascetur malesuada.
+              Your gateway to top healthcare jobs and trusted medical institutions.
+              Whether you’re a skilled professional seeking your next role or a hospital
+              looking to hire the best talent, we provide the bridge to make it happen.
             </motion.p>
             <div className="space-y-6">
               {/* Feature 1 */}
@@ -133,8 +135,14 @@ const Features = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-lg">Thousands of jobs available</h4>
-                  <p className="text-gray-600 mt-1">Lobortis nullam sagittis diam nostra ligula viverra suscipit. Vulputate natoque adipiscing tempus libero curae sagittis.</p>
+                  <h4 className="font-semibold text-gray-900 text-lg">
+                    Thousands of healthcare jobs available
+                  </h4>
+                  <p className="text-gray-600 mt-1">
+                    Explore opportunities in hospitals, clinics, research labs, and
+                    healthcare companies across the region — from doctors and nurses to
+                    lab technicians and administrative staff.
+                  </p>
                 </div>
               </motion.div>
               {/* Feature 2 */}
@@ -145,20 +153,27 @@ const Features = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-lg">The right job for your skills</h4>
-                  <p className="text-gray-600 mt-1">Lobortis nullam sagittis diam nostra ligula viverra suscipit. Vulputate natoque adipiscing tempus libero curae sagittis.</p>
+                  <h4 className="font-semibold text-gray-900 text-lg">
+                    The right match for your skills
+                  </h4>
+                  <p className="text-gray-600 mt-1">
+                    We connect healthcare professionals with roles that fit their
+                    expertise, and help employers find candidates who meet their exact
+                    requirements.
+                  </p>
                 </div>
               </motion.div>
             </div>
             <motion.button
-              className="mt-8 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+              className="mt-8 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
             >
-              Get To Know Us
+              Learn More About Us
             </motion.button>
           </motion.div>
+
         </div>
       </div>
     </section>

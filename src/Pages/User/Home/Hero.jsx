@@ -115,7 +115,7 @@ const Hero = () => {
         animate={isHeroInView ? "visible" : "hidden"}
       />
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-transparent flex items-center"
+        className="absolute inset-0 bg-gradient-to-r from-blue-500/50 to-transparent flex items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, ease: [0.6, 0.05, 0.01, 0.9] }}
@@ -141,7 +141,7 @@ const Hero = () => {
             </motion.p>
             <motion.button
               onClick={handleBrowseJobs}
-              className="bg-white text-blue-800 hover:bg-blue-100 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
+              className="bg-white text-blue-600 hover:bg-blue-100 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"

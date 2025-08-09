@@ -41,8 +41,6 @@ export default function Navbar({ className }) {
 
   const handleRegionChange = (newRegion) => {
     setRegion(newRegion);
-    // Optional: Trigger an action to update job listings based on region
-    // e.g., dispatch an action or update a context
     setDropdownOpen(false); // Close dropdown on mobile after selection
   };
 
@@ -62,7 +60,7 @@ export default function Navbar({ className }) {
 
   return (
     <header
-      className={`w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
+      className={`w-full bg-gradient-to-r from-indigo-400 via-bg-primary to-bg-primary h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
     >
       <div className="flex items-center">
         <Link to="/">

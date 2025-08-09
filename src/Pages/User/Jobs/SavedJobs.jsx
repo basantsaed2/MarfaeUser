@@ -11,7 +11,7 @@ import { FaBookmark } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
 
 const SavedJobs = () => {
-  const apiUrl = "https://backMarfea.marfaa-alex.com/api";
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [savedJobs, setSavedJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,7 +64,7 @@ const SavedJobs = () => {
   // Apply search filter
   useEffect(() => {
     if (searchTerm) {
-      const filtered = savedJobs.filter(job => 
+      const filtered = savedJobs.filter(job =>
         (job.job_titel?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || '') ||
         (job.company?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || '') ||
         (job.description?.toLowerCase().includes(searchTerm.toLowerCase()) || '')
@@ -117,11 +117,11 @@ const SavedJobs = () => {
         job_offer_id: savedJobId,
         key: 0 // This unsaves the job
       });
-      
+
       // Update the UI immediately
       setSavedJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
       setFilteredJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
-      
+
       // If the detailed view is open for this job, close it
       if (selectedJobDetails?.saved_job_id === savedJobId) {
         setIsDetailsDialogOpen(false);
@@ -335,14 +335,14 @@ const SavedJobs = () => {
               {searchTerm ? 'No matching saved jobs found' : 'No saved jobs found'}
             </h3>
             <p className="text-gray-500">
-              {searchTerm 
+              {searchTerm
                 ? "Try a different search term."
                 : "You haven't saved any jobs yet. Start browsing jobs to save them for later."}
             </p>
             {searchTerm && (
-              <Button 
-                onClick={() => setSearchTerm('')} 
-                variant="link" 
+              <Button
+                onClick={() => setSearchTerm('')}
+                variant="link"
                 className="mt-4"
               >
                 Clear search

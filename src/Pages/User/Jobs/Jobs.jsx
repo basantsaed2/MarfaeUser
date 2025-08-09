@@ -6,10 +6,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FiFilter, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiCalendar, FiFileText, FiAward, FiXCircle } from "react-icons/fi";
+import { FiFilter, FiInfo, FiLink, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiCalendar, FiFileText, FiAward, FiXCircle } from "react-icons/fi";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion, AnimatePresence, useInView, useScroll, useMotionValueEvent } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
 
 // Custom styles for react-select to fix dropdown issues and control visible options
 const customSelectStyles = {
@@ -36,7 +37,7 @@ const customSelectStyles = {
 };
 
 const Jobs = () => {
-  const apiUrl = "https://backMarfea.marfaa-alex.com/api";
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [currentPage, setCurrentPage] = useState(1);
   const [allJobs, setAllJobs] = useState([]);
   const [displayedJobs, setDisplayedJobs] = useState([]);
@@ -70,6 +71,7 @@ const Jobs = () => {
   const [selectedJobDetails, setSelectedJobDetails] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isFetchingPage, setIsFetchingPage] = useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false); // State to toggle description
 
   const { refetch: refetchList, loading: loadingList, data: listData } = useGet({
     url: `${apiUrl}/user/jobfilterids`,
@@ -92,7 +94,7 @@ const Jobs = () => {
   });
 
   const { postData: postSavedJob, loading: loadingPostSavedJob, response: savedJobResponse } = usePost({
-    url: `https://backMarfea.marfaa-alex.com/api/user/save-job`,
+    url: `${apiUrl}/user/save-job`,
   });
 
   // Refs for scroll-triggered animations
@@ -222,10 +224,10 @@ const Jobs = () => {
       setIsApplyDialogOpen(false);
       setSelectedJobId(null);
 
-      alert('Application submitted successfully!');
+      toast.success('Application submitted successfully!');
     } catch (error) {
       console.error('Error applying for job:', error);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Failed to submit application. Please try again.');
     }
   };
 
@@ -467,7 +469,7 @@ const Jobs = () => {
             {showFilters && (
               <motion.div
                 variants={filterVariants}
-                initial="hidden"
+                initial="auto"
                 animate="visible"
                 exit="hidden"
                 className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -568,73 +570,92 @@ const Jobs = () => {
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           {displayedJobs.length > 0 ? (
-            displayedJobs.map((job, index) => (
-              <motion.div
-                key={job.id}
-                className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
-                variants={itemVariants}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isJobsInView ? (scrollDirection === "down" ? "down" : "up") : "up"}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">{job.job_title?.name || 'Unknown Position'}</h3>
-                    <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
+            displayedJobs.map((job, index) => {
+              const isLongDescription = (job.description?.length || 0) > 150; // Threshold for truncation
+
+              return (
+                <motion.div
+                  key={job.id}
+                  className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isJobsInView ? (scrollDirection === "down" ? "down" : "up") : "up"}
+                  transition={{ duration: 0.4, delay: 0.1 * index }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">{job.job_titel?.name || 'Unknown Position'}</h3>
+                      <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
+                    </div>
+                    <button
+                      onClick={() => toggleSavedJob(job)}
+                      className="text-gray-400 hover:text-yellow-500 transition-colors"
+                      disabled={loadingPostSavedJob}
+                    >
+                      {job.is_saved === 1 ? (
+                        <FaBookmark className="text-yellow-500 text-xl" />
+                      ) : (
+                        <FaRegBookmark className="text-xl" />
+                      )}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => toggleSavedJob(job)}
-                    className="text-gray-400 hover:text-yellow-500 transition-colors"
-                    disabled={loadingPostSavedJob}
-                  >
-                    {job.is_saved === 1 ? (
-                      <FaBookmark className="text-yellow-500 text-xl" />
-                    ) : (
-                      <FaRegBookmark className="text-xl" />
-                    )}
-                  </button>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <FiBriefcase className="mr-1" />
-                    {getTypeLabel(job.type)}
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <FiClock className="mr-1" />
-                    {getExperienceLabel(job.experience)}
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    <FiMapPin className="mr-1" />
-                    {job.city?.name || 'Unknown'}, {job.city?.country?.name || 'N/A'}
-                  </span>
-                  {job.expected_salary && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                      <FiDollarSign className="mr-1" />
-                      {job.expected_salary} {job.city?.country?.name === 'Egypt' ? 'EGP' : ''}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <FiBriefcase className="mr-1" />
+                      {getTypeLabel(job.type)}
                     </span>
-                  )}
-                </div>
-                <p className="text-gray-600 mt-4 line-clamp-3">{job.description || 'No description available.'}</p>
-                <div className="mt-4 flex gap-2">
-                  <Button
-                    onClick={() => {
-                      setSelectedJobId(job.id);
-                      setIsApplyDialogOpen(true);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
-                  >
-                    Apply Now
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => openJobDetails(job)}
-                    className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300"
-                  >
-                    View Details
-                  </Button>
-                </div>
-              </motion.div>
-            ))
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <FiClock className="mr-1" />
+                      {getExperienceLabel(job.experience)}
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      <FiMapPin className="mr-1" />
+                      {job.city?.name || 'Unknown'}, {job.city?.country?.name || 'N/A'}
+                    </span>
+                    {job.expected_salary && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        <FiDollarSign className="mr-1" />
+                        {job.expected_salary} {job.city?.country?.name === 'Egypt' ? 'EGP' : ''}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <p
+                      className={`text-gray-600 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'
+                        }`}
+                    >
+                      {job.description || 'No description available.'}
+                    </p>
+                    {isLongDescription && (
+                      <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors duration-200"
+                      >
+                        {isExpanded ? 'Read Less' : 'Read More'}
+                      </button>
+                    )}
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <Button
+                      onClick={() => {
+                        setSelectedJobId(job.id);
+                        setIsApplyDialogOpen(true);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
+                      Apply Now
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => openJobDetails(job)}
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300"
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </motion.div>
+              );
+            })
           ) : (
             <motion.div
               className="bg-white rounded-lg shadow-md p-8 text-center"
@@ -723,7 +744,7 @@ const Jobs = () => {
                     transition={{ duration: 0.4, delay: 0.2 }}
                   >
                     <Dialog.Title className="text-3xl font-bold text-gray-900 mb-2">
-                      {selectedJobDetails.job_title?.name || 'Job Details'}
+                      {selectedJobDetails.job_titel?.name || 'Job Details'}
                     </Dialog.Title>
                     <div className="flex items-center text-gray-600 mb-6">
                       <span className="font-semibold">{selectedJobDetails.company?.name}</span>
@@ -731,59 +752,35 @@ const Jobs = () => {
                       <span>{selectedJobDetails.city?.name}, {selectedJobDetails.city?.country?.name}</span>
                     </div>
                   </motion.div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm mb-6">
-                    <motion.div
-                      className="flex items-center"
-                      variants={itemVariants}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.3 }}
-                    >
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
                       <FiAward className="text-blue-500 mr-2 text-lg" />
                       <strong>Experience:</strong> {getExperienceLabel(selectedJobDetails.experience)}
                     </motion.div>
-                    <motion.div
-                      className="flex items-center"
-                      variants={itemVariants}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.4 }}
-                    >
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
                       <FiBriefcase className="text-blue-500 mr-2 text-lg" />
                       <strong>Type:</strong> {getTypeLabel(selectedJobDetails.type)}
                     </motion.div>
-                    <motion.div
-                      className="flex items-center"
-                      variants={itemVariants}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.5 }}
-                    >
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.5 }}>
                       <FiCalendar className="text-blue-500 mr-2 text-lg" />
-                      <strong>Posted:</strong> {new Date(selectedJobDetails.created_at).toLocaleDateString()}
+                      <strong>Posted:</strong> {selectedJobDetails.created_at ? new Date(selectedJobDetails.created_at).toLocaleDateString() : 'Not specified'}
                     </motion.div>
                     {selectedJobDetails.expected_salary && (
-                      <motion.div
-                        className="flex items-center"
-                        variants={itemVariants}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.6 }}
-                      >
+                      <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.6 }}>
                         <FiDollarSign className="text-blue-500 mr-2 text-lg" />
                         <strong>Salary:</strong> {selectedJobDetails.expected_salary} {selectedJobDetails.city?.country?.name === 'Egypt' ? 'EGP' : ''}
                       </motion.div>
                     )}
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.7 }}>
+                      <FiMapPin className="text-blue-500 mr-2 text-lg" />
+                      <strong>Zone:</strong> {selectedJobDetails.zone?.name || 'Not specified'}
+                    </motion.div>
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.8 }}>
+                      <FiCalendar className="text-blue-500 mr-2 text-lg" />
+                      <strong>Expiry Date:</strong> {selectedJobDetails.expire_date ? new Date(selectedJobDetails.expire_date).toLocaleDateString() : 'Not specified'}
+                    </motion.div>
                   </div>
-
-                  <motion.div
-                    className="mb-6"
-                    variants={itemVariants}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.7 }}
-                  >
+                  <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.9 }}>
                     <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
                       <FiFileText className="mr-2 text-xl" /> Job Description
                     </h4>
@@ -791,13 +788,33 @@ const Jobs = () => {
                       {selectedJobDetails.description || 'No detailed description available.'}
                     </p>
                   </motion.div>
-
+                  <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 1.0 }}>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                      <FiInfo className="mr-2 text-xl" /> Qualifications
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {selectedJobDetails.qualifications || 'No qualifications provided.'}
+                    </p>
+                  </motion.div>
+                  <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 1.1 }}>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                      <FiLink className="mr-2 text-xl" /> Location Link
+                    </h4>
+                    <a
+                      href={selectedJobDetails.location_link || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {selectedJobDetails.location_link || 'No location link provided.'}
+                    </a>
+                  </motion.div>
                   <motion.div
                     className="flex justify-end gap-3"
                     variants={itemVariants}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.8 }}
+                    transition={{ duration: 0.4, delay: 1.2 }}
                   >
                     <Button
                       onClick={() => toggleSavedJob(selectedJobDetails)}
@@ -814,17 +831,15 @@ const Jobs = () => {
                     <Button
                       onClick={() => {
                         setSelectedJobId(selectedJobDetails.id);
-                        setIsDetailsDialogOpen(false); // Close details dialog
-                        setIsApplyDialogOpen(true); // Open apply dialog
+                        setIsDetailsDialogOpen(false);
+                        setIsApplyDialogOpen(true);
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                       Apply Now
                     </Button>
                     <Dialog.Close asChild>
-                      <Button
-                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
-                      >
+                      <Button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg">
                         Close
                       </Button>
                     </Dialog.Close>
