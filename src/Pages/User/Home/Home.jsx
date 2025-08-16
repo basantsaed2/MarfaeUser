@@ -35,14 +35,14 @@
 //   const featuresRef = useRef(null);
 //   const partnersRef = useRef(null);
 //   const contactRef = useRef(null);
-//   const testimonialsRef = useRef(null);
-//   const ctaRef = useRef(null);
+//   const ReviewsRef = useRef(null);
+//   const FooterRef = useRef(null);
 //   const isHeroInView = useInView(heroRef, { threshold: 0.3, once: false });
 //   const isFeaturesInView = useInView(featuresRef, { threshold: 0.3, once: false });
 //   const isPartnersInView = useInView(partnersRef, { threshold: 0.3, once: false });
 //   const isContactInView = useInView(contactRef, { threshold: 0.3, once: false });
-//   const isTestimonialsInView = useInView(testimonialsRef, { threshold: 0.3, once: false });
-//   const isCtaInView = useInView(ctaRef, { threshold: 0.3, once: false });
+//   const isReviewsInView = useInView(ReviewsRef, { threshold: 0.3, once: false });
+//   const isFooterterInView = useInView(FooterterRef, { threshold: 0.3, once: false });
 
 //   // Parallax effect for images
 //   const { scrollY } = useScroll();
@@ -51,7 +51,7 @@
 //   const featuresImageY = useTransform(scrollY, [600, 1200], [0, 100]);
 //   const partnersImageY = useTransform(scrollY, [1200, 1800], [0, 80]);
 //   const contactImageY = useTransform(scrollY, [1800, 2400], [0, 60]);
-//   const testimonialsImageY = useTransform(scrollY, [2400, 3000], [0, 50]); // New parallax for Testimonials image
+//   const ReviewsImageY = useTransform(scrollY, [2400, 3000], [0, 50]); // New parallax for Reviews image
 
 //   const handleInputChange = (e) => {
 //     const { id, value } = e.target;
@@ -573,14 +573,14 @@
 //         </div>
 //       </section>
 
-//       {/* Testimonials Section */}
-//       <section ref={testimonialsRef} className="py-20 bg-white">
+//       {/* Reviews Section */}
+//       <section ref={ReviewsRef} className="py-20 bg-white">
 //         <div className="container mx-auto px-6 lg:px-12">
 //           <motion.div
 //             className="text-center mb-12"
 //             variants={containerVariants}
 //             initial="hidden"
-//             animate={isTestimonialsInView ? "visible" : "hidden"}
+//             animate={isReviewsw ? "visible" : "hidden"}
 //           >
 //             <motion.h2
 //               className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 relative"
@@ -653,14 +653,14 @@
 //         </div>
 //       </section>
 
-//       {/* CTA Section */}
-//       <section ref={ctaRef} className="py-16 bg-blue-800 text-white">
+//       {/* Footerter Section */}
+//       <section ref={FooterRef} className="py-16 bg-blue-800 text-white">
 //         <div className="container mx-auto px-6 lg:px-12 text-center">
 //           <motion.h2
 //             className="text-3xl md:text-4xl font-bold mb-6"
 //             variants={titleVariants(true)}
 //             initial="hidden"
-//             animate={isCtaInView ? "visible" : "hidden"}
+//             animate={isFooterterterterterInView ? "visible" : "hidden"}
 //           >
 //             Ready to Advance Your Medical Career?
 //           </motion.h2>
@@ -668,7 +668,7 @@
 //             className="text-xl mb-8 max-w-2xl mx-auto"
 //             variants={itemVariants}
 //             initial="hidden"
-//             animate={isCtaInView ? "visible" : "hidden"}
+//             animate={isFooterterInView ? "visible" : "hidden"}
 //           >
 //             Join thousands of healthcare professionals who found their dream jobs through our platform.
 //           </motion.p>
@@ -676,7 +676,7 @@
 //             className="flex flex-col sm:flex-row justify-center gap-4"
 //             variants={containerVariants}
 //             initial="hidden"
-//             animate={isCtaInView ? "visible" : "hidden"}
+//             animate={isFooterInView ? "visible" : "hidden"}
 //           >
 //             {!user && (
 //               <>
@@ -716,8 +716,8 @@ import Hero from "./Hero";
 import Features from "./Features";
 import Partners from "./Partners";
 import Contact from "./Contact";
-import Testimonials from "./Testimonials";
-import CTA from "./CTA";
+import Reviews from "./Reviews";
+import Footer from "./Footer";
 import JobsSection from "./JobsSection";
 
 const Home = () => {
@@ -729,8 +729,8 @@ const Home = () => {
       <Partners />
       <JobsSection />
       <Contact />
-      <Testimonials />
-      <CTA />
+      <Reviews />
+      <Footer />
     </div>
   );
 };
