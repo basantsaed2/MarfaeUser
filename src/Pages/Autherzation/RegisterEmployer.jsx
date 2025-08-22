@@ -267,6 +267,15 @@ const RegisterEmployer = () => {
                 Log In
               </Link>
             </p>
+            <p className="mt-3 text-center text-sm text-gray-500">
+              Register as an Employer?{" "}
+              <a
+                href="https://employermrfae.mrfae.com/register"
+                className="font-semibold text-blue-600 hover:underline hover:text-blue-700 transition-colors duration-200"
+              >
+                Employer Register
+              </a>
+            </p>
           </CardContent>
         </Card>
       </motion.div>
