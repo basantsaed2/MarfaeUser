@@ -408,7 +408,7 @@ const Profile = () => {
                                 </div>
                                 {formData.cv_files.length > 0 && (
                                     <div className="mt-4">
-                                        <p className="text-sm font-medium text-gray-700">Selected CV:</p>
+                                        {/* <p className="text-sm font-medium text-gray-700">Selected CV:</p>
                                         {formData.cv_files.map((cv, index) => (
                                             <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
                                                 <div className="flex items-center truncate">
@@ -422,7 +422,7 @@ const Profile = () => {
                                                     <FiTrash2 />
                                                 </button>
                                             </div>
-                                        ))}
+                                        ))} */}
                                         <Button
                                             onClick={handleUploadCv}
                                             disabled={loadingChange || formData.cv_files.length === 0}
