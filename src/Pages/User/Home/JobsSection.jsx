@@ -324,19 +324,19 @@ import Select from 'react-select';
 import { Button } from "@/components/ui/button";
 import { usePost } from "@/Hooks/UsePost";
 import { toast, ToastContainer } from "react-toastify";
-import { 
-  FaWhatsapp, 
-  FaEnvelope, 
-  FaShareAlt, 
-  FaClock, 
+import {
+  FaWhatsapp,
+  FaEnvelope,
+  FaShareAlt,
+  FaClock,
   FaMapMarkerAlt,
   FaCopy,
   FaBriefcase,
   FaTimes
 } from "react-icons/fa";
-import { 
-  SiLinkedin, 
-  SiFacebook, 
+import {
+  SiLinkedin,
+  SiFacebook,
 } from "react-icons/si";
 
 const JobsSection = () => {
@@ -387,12 +387,12 @@ const JobsSection = () => {
   // Handle apply job submission
   const handleApplyJob = async (jobId) => {
     if (!jobId || !selectedCv) {
-      alert('Please select a CV to apply with');
+      toast.error('Please select a CV to apply with');
       return;
     }
 
     if (!hasExperience) {
-      alert('Please specify if you have experience for this job');
+      toast.error('Please specify if you have experience for this job');
       return;
     }
 
@@ -432,11 +432,12 @@ const JobsSection = () => {
 
   const copyToClipboard = () => {
     if (!jobToShare) return;
-    
-    const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
+
+    const shareText = `Check out this job opportunity: ${jobToShare.image} ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
     const jobUrl = generateJobUrl(jobToShare.id);
+    // const fullText = `${shareText + ' ' + jobUrl + '' + jobToShare.image_link}`;
     const fullText = `${jobUrl}`;
-    
+
     navigator.clipboard.writeText(fullText)
       .then(() => {
         toast.success('Job details copied to clipboard!');
@@ -449,33 +450,33 @@ const JobsSection = () => {
 
   const shareViaWhatsApp = () => {
     if (!jobToShare) return;
-    
+
     const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
     const jobUrl = generateJobUrl(jobToShare.id);
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl)}`;
-    
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl + '' + jobToShare.image_link)}`;
+
     window.open(whatsappUrl, '_blank');
   };
 
   const shareViaEmail = () => {
     if (!jobToShare) return;
-    
+
     const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
     const jobUrl = generateJobUrl(jobToShare.id);
     const emailSubject = `Job Opportunity: ${jobToShare.job_titel.name}`;
     const emailBody = `${shareText}\n\nCheck it out: ${jobUrl}`;
-    
+
     window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
   };
 
   const shareViaSocial = (platform) => {
     if (!jobToShare) return;
-    
+
     const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name}`;
     const jobUrl = generateJobUrl(jobToShare.id);
-    
+
     let shareUrl;
-    switch(platform) {
+    switch (platform) {
       case 'twitter':
         shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(jobUrl)}`;
         break;
@@ -488,24 +489,25 @@ const JobsSection = () => {
       default:
         return;
     }
-    
+
     window.open(shareUrl, '_blank', 'width=600,height=400');
   };
 
   const shareViaNative = () => {
     if (!jobToShare) return;
-    
+
     if (navigator.share) {
       const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
       const jobUrl = generateJobUrl(jobToShare.id);
-      
+
       navigator.share({
+        image: jobToShare.image_link,
         title: jobToShare.job_titel.name,
         text: shareText,
         url: jobUrl,
       })
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.log('Error sharing:', error));
+        .then(() => console.log('Shared successfully'))
+        .catch((error) => console.log('Error sharing:', error));
     } else {
       copyToClipboard();
     }
@@ -650,22 +652,33 @@ const JobsSection = () => {
 
             {!loadingCVS && cvsData?.userCv && cvsData?.userCv.length > 0 ? (
               <div className="mb-4">
-                <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">Select your CV:</label>
+                <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">
+                  Select your CV:
+                </label>
                 <Select
-                  options={cvsData?.userCv?.map((cv) => ({
+                  options={cvsData?.userCv?.map((cv, index) => ({
                     value: cv,
-                    label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
+                    label: `CV ${index + 1} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
                     cv_file_url: cv.cv_file_url,
                   }))}
-                  value={selectedCv ? {
-                    value: selectedCv,
-                    label: `CV - ${selectedCv.cv_file_url} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`,
-                  } : null}
+                  value={
+                    selectedCv
+                      ? {
+                        value: selectedCv,
+                        label: `CV ${cvsData?.userCv?.findIndex(
+                          (cv) => cv === selectedCv
+                        ) + 1} (Uploaded: ${new Date(
+                          selectedCv.created_at
+                        ).toLocaleDateString()})`,
+                      }
+                      : null
+                  }
                   onChange={(selected) => setSelectedCv(selected?.value)}
                   placeholder="Select a CV"
                   isClearable
                 />
               </div>
+
             ) : (
               <div className="mb-4 text-center text-gray-600">
                 <p>No CVs found. Please upload a CV in your profile to apply.</p>
@@ -758,7 +771,7 @@ const JobsSection = () => {
                 </button>
               </Dialog.Close>
             </div>
-            
+
             {jobToShare && (
               <div className="mb-6">
                 <div className="flex items-center mb-4">
@@ -770,7 +783,7 @@ const JobsSection = () => {
                     <p className="text-sm text-gray-600">{jobToShare.company.name}</p>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-4 rounded-lg mb-4">
                   <p className="text-sm text-gray-700 mb-2">
                     <span className="font-medium">Location:</span> {jobToShare.city.name}, {jobToShare.city.country.name}
@@ -779,13 +792,13 @@ const JobsSection = () => {
                     <span className="font-medium">Salary:</span> {jobToShare.expected_salary} EGP
                   </p>
                 </div>
-                
+
                 <div className="bg-blue-50 p-3 rounded-lg mb-4">
                   <p className="text-xs text-blue-700 break-all">
                     Share URL: {generateJobUrl(jobToShare.id)}
                   </p>
                 </div>
-                
+
                 <p className="text-gray-600 text-sm mb-6">
                   Share this job opportunity with your network.
                 </p>
@@ -801,7 +814,7 @@ const JobsSection = () => {
                 <FaCopy className="w-5 h-5 mb-2" />
                 <span className="text-xs">Copy</span>
               </button>
-              
+
               <button
                 onClick={shareViaWhatsApp}
                 className="flex flex-col items-center justify-center bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
@@ -810,7 +823,7 @@ const JobsSection = () => {
                 <FaWhatsapp className="w-5 h-5 mb-2" />
                 <span className="text-xs">WhatsApp</span>
               </button>
-              
+
               <button
                 onClick={shareViaEmail}
                 className="flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
@@ -819,7 +832,7 @@ const JobsSection = () => {
                 <FaEnvelope className="w-5 h-5 mb-2" />
                 <span className="text-xs">Email</span>
               </button>
-              
+
               <button
                 onClick={shareViaNative}
                 className="flex flex-col items-center justify-center bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"

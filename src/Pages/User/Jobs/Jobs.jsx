@@ -7,10 +7,23 @@ import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
 import { FiFilter, FiInfo, FiLink, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiCalendar, FiFileText, FiAward, FiXCircle } from "react-icons/fi";
-import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { FaRegBookmark, FaBookmark, FaShareAlt } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion, AnimatePresence, useInView, useScroll, useMotionValueEvent } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  FaWhatsapp,
+  FaEnvelope,
+  FaClock,
+  FaMapMarkerAlt,
+  FaCopy,
+  FaBriefcase,
+  FaTimes
+} from "react-icons/fa";
+import {
+  SiLinkedin,
+  SiFacebook,
+} from "react-icons/si";
 
 // Custom styles for react-select to fix dropdown issues and control visible options
 const customSelectStyles = {
@@ -114,6 +127,10 @@ const Jobs = () => {
   const [scrollDirection, setScrollDirection] = useState("down");
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  // State for share dialog
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [jobToShare, setJobToShare] = useState(null);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrollDirection(latest > lastScrollY ? "down" : "up");
     setLastScrollY(latest);
@@ -151,12 +168,6 @@ const Jobs = () => {
   // Process filter options with debugging
   useEffect(() => {
     if (listData) {
-      console.log('Cities:', listData.cities);
-      console.log('Companies:', listData.companies);
-      console.log('Categories:', listData.job_categories);
-      console.log('Titles:', listData.job_titles);
-      console.log('Types:', listData.types);
-      console.log('Experiences:', listData.experiences);
       setCompanies(listData.companies?.map(c => ({ value: c.id, label: c.name })) || []);
       setCities(listData.cities?.map(c => ({ value: c.id, label: c.name })) || []);
       setCategories(listData.job_categories?.map(c => ({ value: c.id, label: c.name })) || []);
@@ -199,12 +210,12 @@ const Jobs = () => {
   // Handle apply job submission
   const handleApplyJob = async () => {
     if (!selectedJobId || !selectedCv) {
-      alert('Please select a CV to apply with');
+      toast.error('Please select a CV to apply with');
       return;
     }
 
     if (!hasExperience) {
-      alert('Please specify if you have experience for this job');
+      toast.error('Please specify if you have experience for this job');
       return;
     }
 
@@ -212,7 +223,7 @@ const Jobs = () => {
       const payload = {
         job_offer_id: selectedJobId,
         cv_file: selectedCv.cv_file_url,
-        has_experience: hasExperience,
+        has_experience: hasExperience == 1 ? "yes" : "no",
         message: message
       };
 
@@ -228,6 +239,98 @@ const Jobs = () => {
     } catch (error) {
       console.error('Error applying for job:', error);
       toast.error('Failed to submit application. Please try again.');
+    }
+  };
+
+  // Handle share functionality
+  const handleShareJob = (job) => {
+    setJobToShare(job);
+    setIsShareDialogOpen(true);
+  };
+
+  const generateJobUrl = (jobId) => {
+    // In a real app, this would be your actual domain
+    return `${window.location.origin}/jobs/${jobId}`;
+  };
+
+  const copyToClipboard = () => {
+    if (!jobToShare) return;
+
+    const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
+    const jobUrl = generateJobUrl(jobToShare.id);
+    const fullText = `${jobUrl}`;
+
+    navigator.clipboard.writeText(fullText)
+      .then(() => {
+        toast.success('Job details copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        toast.error('Failed to copy to clipboard');
+      });
+  };
+
+  const shareViaWhatsApp = () => {
+    if (!jobToShare) return;
+
+    const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
+    const jobUrl = generateJobUrl(jobToShare.id);
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl)}`;
+
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const shareViaEmail = () => {
+    if (!jobToShare) return;
+
+    const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
+    const jobUrl = generateJobUrl(jobToShare.id);
+    const emailSubject = `Job Opportunity: ${jobToShare.job_titel.name}`;
+    const emailBody = `${shareText}\n\nCheck it out: ${jobUrl}`;
+
+    window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+  };
+
+  const shareViaSocial = (platform) => {
+    if (!jobToShare) return;
+
+    const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name}`;
+    const jobUrl = generateJobUrl(jobToShare.id);
+
+    let shareUrl;
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(jobUrl)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(jobUrl)}&quote=${encodeURIComponent(shareText)}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`;
+        break;
+      default:
+        return;
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+
+  const shareViaNative = () => {
+    if (!jobToShare) return;
+
+    if (navigator.share) {
+      const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
+      const jobUrl = generateJobUrl(jobToShare.id);
+
+      navigator.share({
+        title: jobToShare.job_titel.name,
+        text: shareText,
+        url: jobUrl,
+      })
+        .then(() => console.log('Shared successfully'))
+        .catch((error) => console.log('Error sharing:', error));
+    } else {
+      copyToClipboard();
     }
   };
 
@@ -576,66 +679,75 @@ const Jobs = () => {
               return (
                 <motion.div
                   key={job.id}
-                  className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                  className="bg-white flex flex-col justify-between rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
                   variants={itemVariants}
                   initial={{ opacity: 0, y: 20 }}
                   animate={isJobsInView ? (scrollDirection === "down" ? "down" : "up") : "up"}
                   transition={{ duration: 0.4, delay: 0.1 * index }}
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">{job.job_titel?.name || 'Unknown Position'}</h3>
-                      <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
-                    </div>
-                    <button
-                      onClick={() => toggleSavedJob(job)}
-                      className="text-gray-400 hover:text-yellow-500 transition-colors"
-                      disabled={loadingPostSavedJob}
-                    >
-                      {job.is_saved === 1 ? (
-                        <FaBookmark className="text-yellow-500 text-xl" />
-                      ) : (
-                        <FaRegBookmark className="text-xl" />
-                      )}
-                    </button>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      <FiBriefcase className="mr-1" />
-                      {getTypeLabel(job.type)}
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      <FiClock className="mr-1" />
-                      {getExperienceLabel(job.experience)}
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      <FiMapPin className="mr-1" />
-                      {job.city?.name || 'Unknown'}, {job.city?.country?.name || 'N/A'}
-                    </span>
-                    {job.expected_salary && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        <FiDollarSign className="mr-1" />
-                        {job.expected_salary} {job.city?.country?.name === 'Egypt' ? 'EGP' : ''}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4">
-                    <p
-                      className={`text-gray-600 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'
-                        }`}
-                    >
-                      {job.description || 'No description available.'}
-                    </p>
-                    {isLongDescription && (
+                  <div>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800">{job.job_titel?.name || 'Unknown Position'}</h3>
+                        <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
+                      </div>
                       <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors duration-200"
+                        onClick={() => toggleSavedJob(job)}
+                        className="text-gray-400 hover:text-yellow-500 transition-colors"
+                        disabled={loadingPostSavedJob}
                       >
-                        {isExpanded ? 'Read Less' : 'Read More'}
+                        {job.is_saved === 1 ? (
+                          <FaBookmark className="text-yellow-500 text-xl" />
+                        ) : (
+                          <FaRegBookmark className="text-xl" />
+                        )}
                       </button>
-                    )}
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <FiBriefcase className="mr-1" />
+                        {getTypeLabel(job.type)}
+                      </span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <FiClock className="mr-1" />
+                        {getExperienceLabel(job.experience)}
+                      </span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        <FiMapPin className="mr-1" />
+                        {job.city?.name || 'Unknown'}, {job.city?.country?.name || 'N/A'}
+                      </span>
+                      {job.expected_salary && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                          <FiDollarSign className="mr-1" />
+                          {job.expected_salary} {job.city?.country?.name === 'Egypt' ? 'EGP' : ''}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-4">
+                      <p
+                        className={`text-gray-600 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'
+                          }`}
+                      >
+                        {job.description || 'No description available.'}
+                      </p>
+                      {isLongDescription && (
+                        <button
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors duration-200"
+                        >
+                          {isExpanded ? 'Read Less' : 'Read More'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => handleShareJob(job)}
+                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full text-sm transition-all duration-300 shadow-md hover:shadow-lg"
+                      aria-label="Share job"
+                    >
+                      <FaShareAlt className="w-4 h-4" />
+                    </button>
                     <Button
                       onClick={() => {
                         setSelectedJobId(job.id);
@@ -871,22 +983,33 @@ const Jobs = () => {
 
               {!loadingCVS && cvsData?.userCv && cvsData?.userCv.length > 0 ? (
                 <div className="mb-4">
-                  <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">Select your CV:</label>
+                  <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">
+                    Select your CV:
+                  </label>
                   <Select
-                    options={cvsData?.userCv?.map(cv => ({
+                    options={cvsData?.userCv?.map((cv, index) => ({
                       value: cv,
-                      label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
+                      label: `CV ${index + 1} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
                       cv_file_url: cv.cv_file_url,
                     }))}
-                    value={selectedCv ? {
-                      value: selectedCv,
-                      label: `CV - ${selectedCv.user_address} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`
-                    } : null}
+                    value={
+                      selectedCv
+                        ? {
+                          value: selectedCv,
+                          label: `CV ${cvsData?.userCv?.findIndex(
+                            (cv) => cv === selectedCv
+                          ) + 1} (Uploaded: ${new Date(
+                            selectedCv.created_at
+                          ).toLocaleDateString()})`,
+                        }
+                        : null
+                    }
                     onChange={(selected) => setSelectedCv(selected?.value)}
                     placeholder="Select a CV"
                     isClearable
                   />
                 </div>
+
               ) : (
                 <div className="mb-4 text-center text-gray-600">
                   <p>No CVs found. Please upload a CV in your profile to apply.</p>
@@ -949,6 +1072,121 @@ const Jobs = () => {
                     Cancel
                   </Button>
                 </Dialog.Close>
+              </div>
+            </motion.div>
+          </Dialog.Portal>
+        </Dialog.Root>
+
+        {/* Share Job Dialog */}
+        <Dialog.Root open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+            <motion.div
+              variants={dialogVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-md shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-gray-50"
+              aria-label="Share Job Dialog"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <Dialog.Title className="text-2xl font-bold text-gray-900">Share Job</Dialog.Title>
+                <Dialog.Close asChild>
+                  <button className="text-gray-500 hover:text-gray-700 transition-colors">
+                    <FaTimes className="w-5 h-5" />
+                  </button>
+                </Dialog.Close>
+              </div>
+
+              {jobToShare && (
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-blue-600 text-lg font-semibold">{jobToShare.company.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">{jobToShare.job_titel.name}</h3>
+                      <p className="text-sm text-gray-600">{jobToShare.company.name}</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                    <p className="text-sm text-gray-700 mb-2">
+                      <span className="font-medium">Location:</span> {jobToShare.city.name}, {jobToShare.city.country.name}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium">Salary:</span> {jobToShare.expected_salary} EGP
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 p-3 rounded-lg mb-4">
+                    <p className="text-xs text-blue-700 break-all">
+                      Share URL: {generateJobUrl(jobToShare.id)}
+                    </p>
+                  </div>
+
+                  <p className="text-gray-600 text-sm mb-6">
+                    Share this job opportunity with your network.
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                <button
+                  onClick={copyToClipboard}
+                  className="flex flex-col items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  title="Copy to clipboard"
+                >
+                  <FaCopy className="w-5 h-5 mb-2" />
+                  <span className="text-xs">Copy</span>
+                </button>
+
+                <button
+                  onClick={shareViaWhatsApp}
+                  className="flex flex-col items-center justify-center bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  title="Share via WhatsApp"
+                >
+                  <FaWhatsapp className="w-5 h-5 mb-2" />
+                  <span className="text-xs">WhatsApp</span>
+                </button>
+
+                <button
+                  onClick={shareViaEmail}
+                  className="flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  title="Share via Email"
+                >
+                  <FaEnvelope className="w-5 h-5 mb-2" />
+                  <span className="text-xs">Email</span>
+                </button>
+
+                <button
+                  onClick={shareViaNative}
+                  className="flex flex-col items-center justify-center bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  title="Share via other apps"
+                >
+                  <FaShareAlt className="w-5 h-5 mb-2" />
+                  <span className="text-xs">Other</span>
+                </button>
+              </div>
+
+              <div className="border-t pt-4">
+                <p className="text-sm text-gray-600 mb-3 text-center">Or share on social media</p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => shareViaSocial('facebook')}
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-3 rounded-full transition-all duration-300"
+                    title="Share on Facebook"
+                  >
+                    <SiFacebook className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => shareViaSocial('linkedin')}
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-3 rounded-full transition-all duration-300"
+                    title="Share on LinkedIn"
+                  >
+                    <SiLinkedin className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </motion.div>
           </Dialog.Portal>

@@ -6,9 +6,10 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FiFilter, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiFileText, FiAward } from "react-icons/fi";
+import { FiFilter,FiCalendar , FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiFileText, FiAward } from "react-icons/fi";
 import { FaBookmark } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
+import { toast } from "react-toastify";
 
 const SavedJobs = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -78,12 +79,12 @@ const SavedJobs = () => {
   // Handle apply job submission
   const handleApplyJob = async () => {
     if (!selectedJobId || !selectedCv) {
-      alert('Please select a CV to apply with');
+      toast.error('Please select a CV to apply with');
       return;
     }
 
     if (!hasExperience) {
-      alert('Please specify if you have experience for this job');
+      toast.error('Please specify if you have experience for this job');
       return;
     }
 
@@ -103,10 +104,10 @@ const SavedJobs = () => {
       setIsApplyDialogOpen(false);
       setSelectedJobId(null);
 
-      alert('Application submitted successfully!');
+      toast.success('Application submitted successfully!');
     } catch (error) {
       console.error('Error applying for job:', error);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Failed to submit application. Please try again.');
     }
   };
 
@@ -128,7 +129,7 @@ const SavedJobs = () => {
       }
     } catch (error) {
       console.error("Error removing saved job:", error);
-      alert('Failed to remove saved job. Please try again.');
+      toast.error('Failed to remove saved job. Please try again.');
     }
   };
 
@@ -487,17 +488,27 @@ const SavedJobs = () => {
               </Dialog.Description>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Select CV</label>
+                <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">
+                  Select your CV:
+                </label>
                 <Select
-                  options={cvsData?.userCv?.map(cv => ({
+                  options={cvsData?.userCv?.map((cv, index) => ({
                     value: cv,
-                    label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
+                    label: `CV ${index + 1} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
                     cv_file_url: cv.cv_file_url,
                   }))}
-                  value={selectedCv ? {
-                    value: selectedCv,
-                    label: `CV - ${selectedCv.user_address} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`
-                  } : null}
+                  value={
+                    selectedCv
+                      ? {
+                        value: selectedCv,
+                        label: `CV ${cvsData?.userCv?.findIndex(
+                          (cv) => cv === selectedCv
+                        ) + 1} (Uploaded: ${new Date(
+                          selectedCv.created_at
+                        ).toLocaleDateString()})`,
+                      }
+                      : null
+                  }
                   onChange={(selected) => setSelectedCv(selected?.value)}
                   placeholder="Select a CV"
                   isClearable
