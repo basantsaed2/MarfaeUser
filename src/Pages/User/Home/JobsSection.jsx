@@ -453,7 +453,7 @@ const JobsSection = () => {
 
     const shareText = `Check out this job opportunity: ${jobToShare.job_titel.name} at ${jobToShare.company.name} in ${jobToShare.city.name}, ${jobToShare.city.country.name}.`;
     const jobUrl = generateJobUrl(jobToShare.id);
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl + '' + jobToShare.image_link)}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl)}`;
 
     window.open(whatsappUrl, '_blank');
   };
@@ -501,7 +501,7 @@ const JobsSection = () => {
       const jobUrl = generateJobUrl(jobToShare.id);
 
       navigator.share({
-        image: jobToShare.image_link,
+        // image: jobToShare.image_link,
         title: jobToShare.job_titel.name,
         text: shareText,
         url: jobUrl,
