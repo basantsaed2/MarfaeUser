@@ -1,11 +1,11 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import AdminLayout from "./Layout/AdminLayout";
 import ProtAuth from "./Auth/ProtAuth";
-import LoginEmployer from "./Pages/Autherzation/LoginEmployer";
+import LoginUser from "./Pages/Autherzation/LoginUser";
 import NotFound from "./Pages/NotFound";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import AuthLayout from "./Layout/AuthLayout";
-import RegisterEmployer from "./Pages/Autherzation/RegisterEmployer";
+import RegisterUser from "./Pages/Autherzation/RegisterUser";
 import Profile from "./Pages/User/Profile/Profile";
 import Companies from "./Pages/User/Companies/Companies";
 import Jobs from "./Pages/User/Jobs/Jobs";
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         path: "login",
         element: (
           <ProtAuth>
-            <LoginEmployer />
+            <LoginUser />
           </ProtAuth>
         ),
       },
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         path: "register",
         element: (
           <ProtAuth>
-            <RegisterEmployer />
+            <RegisterUser />
           </ProtAuth>
         ),
       },

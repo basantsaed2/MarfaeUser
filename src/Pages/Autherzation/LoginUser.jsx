@@ -19,7 +19,7 @@ import { usePost } from "@/Hooks/UsePost";
 import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const LoginEmployer = () => {
+const LoginUser = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { postData, loadingPost, response } = usePost({
     url: `${apiUrl}/login`,
@@ -218,4 +218,4 @@ const LoginEmployer = () => {
   );
 };
 
-export default LoginEmployer;
+export default LoginUser;

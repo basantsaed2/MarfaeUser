@@ -18,13 +18,22 @@ import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
 import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGet } from "@/Hooks/UseGet";
+import Select from "react-select";
 
-const RegisterEmployer = () => {
+const RegisterUser = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/registerUser` });
-  const { postData: postOTP, loadingPost: loadingOTP, response: responseOTP } = usePost({
+  const { refetch: refetchList, loading: loadingList, data: listData } = useGet({
+    url: `${apiUrl}/get-specialization-experience`,
+  });
+  const { postData, loading: loadingPost, response } = usePost({ url: `${apiUrl}/registerUser` });
+  const { postData: postOTP, loading: loadingOTP, response: responseOTP } = usePost({
     url: `${apiUrl}/verifyOtp`,
   });
+  const [specializationOptions, setSpecializationOptions] = useState([]);
+  const [experienceOptions, setExperienceOptions] = useState([]);
+  const [selectedSpecializations, setSelectedSpecializations] = useState([]);
+  const [selectedExperience, setSelectedExperience] = useState(null);
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -36,7 +45,30 @@ const RegisterEmployer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState("Employer");
+
+  // Fetch initial data
+  useEffect(() => {
+    refetchList();
+  }, [refetchList]);
+
+  useEffect(() => {
+    if (listData?.data) {
+      const formattedSpecialization =
+        listData.data.specializations?.map((u) => ({
+          label: u.name || "—",
+          value: u.id.toString(),
+        })) || [];
+      const formattedExperience = [
+        { label: "No Experience", value: null },
+        ...(listData.data.experince?.map((u) => ({
+          label: u,
+          value: u,
+        })) || []),
+      ];
+      setSpecializationOptions(formattedSpecialization);
+      setExperienceOptions(formattedExperience);
+    }
+  }, [listData]);
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
@@ -74,12 +106,24 @@ const RegisterEmployer = () => {
       toast.error("All fields are required");
       return;
     }
+    if (selectedSpecializations.length === 0) {
+      toast.error("Please select at least one specialization");
+      return;
+    }
+    if (!selectedExperience) {
+      toast.error("Please select an experience level");
+      return;
+    }
     const body = new FormData();
     body.append("first_name", firstName);
     body.append("last_name", lastName);
     body.append("email", emailOrUsername);
     body.append("phone", phone);
     body.append("password", password);
+    selectedSpecializations.forEach((spec, index) => {
+      body.append(`specialization[${index}]`, spec.value);
+    });
+    body.append("experience", selectedExperience.value);
     await postData(body, "Please check your email for OTP");
   };
 
@@ -114,11 +158,70 @@ const RegisterEmployer = () => {
     await postOTP(body, "OTP verification successful!");
   };
 
+  // Unified styles for react-select to match Input
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderRadius: "0.75rem",
+      borderColor: "rgba(59, 130, 246, 0.5)", // Match Input's border-bg-primary/50
+      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      padding: "0.75rem",
+      minHeight: "56px",
+      boxShadow: state.isFocused
+        ? "0 0 0 2px rgba(59, 130, 246, 0.5)" // Match Input's focus ring
+        : "none",
+      "&:hover": {
+        borderColor: "rgba(59, 130, 246, 0.7)",
+      },
+      transition: "all 0.3s ease",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "rgba(59, 130, 246, 0.7)", // Match Input's placeholder
+    }),
+    menu: (base) => ({
+      ...base,
+      zIndex: 50,
+      borderRadius: "0.75rem",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      backdropFilter: "blur(10px)",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "rgba(59, 130, 246, 0.1)"
+        : state.isFocused
+          ? "rgba(59, 130, 246, 0.05)"
+          : "transparent",
+      color: "black",
+      "&:hover": {
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
+      },
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: "rgba(59, 130, 246, 0.1)",
+      borderRadius: "0.5rem",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "rgba(59, 130, 246, 1)",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: "rgba(59, 130, 246, 1)",
+      "&:hover": {
+        backgroundColor: "rgba(59, 130, 246, 0.3)",
+        color: "white",
+      },
+    }),
+  };
+
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-bg-primary/40 to-white bg-cover bg-center relative overflow-hidden">
+    <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-bg-primary/40 to-white bg-cover bg-center relative overflow-hidden py-4">
+
       {/* Doctor-themed background image */}
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1580281780460-82d277b0e3f8')] bg-cover bg-center opacity-20"></div>
-
       {/* Decorative medical elements */}
       <div className="absolute top-8 left-8 text-bg-primary opacity-30 text-6xl">
         <FaStethoscope />
@@ -132,31 +235,30 @@ const RegisterEmployer = () => {
       <div className="absolute bottom-1/4 left-12 text-bg-primary opacity-25 text-5xl">
         <FaSyringe />
       </div>
-
+      
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 max-w-2xl p-4 w-full"
+        className="relative z-10 max-w-lg w-full p-2"
       >
         <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-bg-primary/50 overflow-hidden ring-1 ring-bg-primary/30">
-          <CardContent className="p-4 md:p-8">
+          <CardContent className="p-4 md:p-6">
             <motion.div
               initial={{ y: -40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-center mb-5"
             >
-              <h2 className="text-5xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
+              <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
                 Mrfae
               </h2>
-              <p className="text-gray-500 mt-4 text-lg font-medium">
+              <p className="text-gray-500 mt-2 text-base font-medium">
                 Join the medical job platform
               </p>
             </motion.div>
-
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleRegister} className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <motion.div
                   className="relative"
                   whileHover={{ scale: 1.03 }}
@@ -167,10 +269,10 @@ const RegisterEmployer = () => {
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70  placeholder-bg-primary/70"
+                    className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                     disabled={loadingPost}
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                     <FaUserMd />
                   </span>
                 </motion.div>
@@ -184,10 +286,10 @@ const RegisterEmployer = () => {
                     placeholder="Last Name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                    className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                     disabled={loadingPost}
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                     <FaUserMd />
                   </span>
                 </motion.div>
@@ -202,10 +304,10 @@ const RegisterEmployer = () => {
                   placeholder="Email"
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
-                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaStethoscope />
                 </span>
               </motion.div>
@@ -219,10 +321,10 @@ const RegisterEmployer = () => {
                   placeholder="Phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaSyringe />
                 </span>
               </motion.div>
@@ -236,12 +338,47 @@ const RegisterEmployer = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-4 pr-12 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
                   disabled={loadingPost}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-bg-primary">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                   <FaHeartbeat />
                 </span>
+              </motion.div>
+              <motion.div
+                className="relative z-30"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Select
+                  options={specializationOptions}
+                  value={selectedSpecializations}
+                  onChange={setSelectedSpecializations}
+                  placeholder="Select Specializations"
+                  isMulti
+                  isLoading={loadingList}
+                  isDisabled={loadingPost}
+                  className="w-full"
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                />
+              </motion.div>
+              <motion.div
+                className="relative z-20"
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Select
+                  options={experienceOptions}
+                  value={selectedExperience}
+                  onChange={setSelectedExperience}
+                  placeholder="Select Experience"
+                  isLoading={loadingList}
+                  isDisabled={loadingPost}
+                  className="w-full"
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                />
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.06 }}
@@ -257,7 +394,6 @@ const RegisterEmployer = () => {
                 </Button>
               </motion.div>
             </form>
-
             <p className="text-center text-gray-500 mt-6 text-sm">
               Already have an account?{" "}
               <Link
@@ -279,7 +415,6 @@ const RegisterEmployer = () => {
           </CardContent>
         </Card>
       </motion.div>
-
       {/* OTP Verification Modal */}
       <AnimatePresence>
         {isOtpModalOpen && (
@@ -323,10 +458,9 @@ const RegisterEmployer = () => {
           </Dialog>
         )}
       </AnimatePresence>
-
       <ToastContainer />
     </div>
   );
 };
 
-export default RegisterEmployer;
+export default RegisterUser;
