@@ -244,18 +244,28 @@ const JobDetailPage = () => {
             {loadingCVS && <div>Loading CVs...</div>}
 
             {!loadingCVS && cvsData?.userCv && cvsData?.userCv.length > 0 ? (
-              <div className="mb-4">
-                <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">Select your CV:</label>
+                <div className="mb-4">
+                <label htmlFor="cvSelect" className="block text-gray-700 font-medium mb-2">
+                  Select your CV:
+                </label>
                 <Select
-                  options={cvsData?.userCv?.map((cv) => ({
+                  options={cvsData?.userCv?.map((cv, index) => ({
                     value: cv,
-                    label: `CV - ${cv.cv_file_url} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
+                    label: `CV ${index + 1} (Uploaded: ${new Date(cv.created_at).toLocaleDateString()})`,
                     cv_file_url: cv.cv_file_url,
                   }))}
-                  value={selectedCv ? {
-                    value: selectedCv,
-                    label: `CV - ${selectedCv.cv_file_url} (Uploaded: ${new Date(selectedCv.created_at).toLocaleDateString()})`,
-                  } : null}
+                  value={
+                    selectedCv
+                      ? {
+                        value: selectedCv,
+                        label: `CV ${cvsData?.userCv?.findIndex(
+                          (cv) => cv === selectedCv
+                        ) + 1} (Uploaded: ${new Date(
+                          selectedCv.created_at
+                        ).toLocaleDateString()})`,
+                      }
+                      : null
+                  }
                   onChange={(selected) => setSelectedCv(selected?.value)}
                   placeholder="Select a CV"
                   isClearable
