@@ -120,11 +120,11 @@ const SavedJobs = () => {
       });
 
       // Update the UI immediately
-      setSavedJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
-      setFilteredJobs(prev => prev.filter(job => job.saved_job_id !== savedJobId));
+      setSavedJobs(prev => prev.filter(job => job.id !== savedJobId));
+      setFilteredJobs(prev => prev.filter(job => job.id !== savedJobId));
 
       // If the detailed view is open for this job, close it
-      if (selectedJobDetails?.saved_job_id === savedJobId) {
+      if (selectedJobDetails?.id === savedJobId) {
         setIsDetailsDialogOpen(false);
       }
     } catch (error) {
@@ -281,7 +281,7 @@ const SavedJobs = () => {
                     <p className="text-gray-600">{job.company?.name || 'Unknown Company'}</p>
                   </div>
                   <button
-                    onClick={() => removeSavedJob(job.saved_job_id)}
+                    onClick={() => removeSavedJob(job.id)}
                     className="text-yellow-500 hover:text-yellow-600 transition-colors"
                     disabled={loadingPostSavedJob}
                   >
@@ -460,7 +460,7 @@ const SavedJobs = () => {
                       Apply Now
                     </Button>
                     <Button
-                      onClick={() => removeSavedJob(selectedJobDetails.saved_job_id)}
+                      onClick={() => removeSavedJob(selectedJobDetails.id)}
                       className="bg-red-600 hover:bg-red-700 text-white transition-colors"
                     >
                       Remove Saved Job
