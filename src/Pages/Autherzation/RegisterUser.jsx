@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
-import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe } from "react-icons/fa";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGet } from "@/Hooks/UseGet";
 import Select from "react-select";
@@ -26,19 +26,32 @@ const RegisterUser = () => {
   const { refetch: refetchList, loading: loadingList, data: listData } = useGet({
     url: `${apiUrl}/get-specialization-experience`,
   });
-  const { postData, loading: loadingPost, response } = usePost({ url: `${apiUrl}/registerUser` });
-  const { postData: postOTP, loading: loadingOTP, response: responseOTP } = usePost({
+  const { refetch: refetchRegion, loading: loadingRegion, data: regionData } = useGet({
+    url: `${apiUrl}/city-country`,
+  });
+  const { postData, loadingPost: loadingPost, response } = usePost({ url: `${apiUrl}/registerUser` });
+  const { postData: postOTP, loadingPost: loadingOTP, response: responseOTP } = usePost({
     url: `${apiUrl}/verifyOtp`,
   });
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState("user");
+  
   const [specializationOptions, setSpecializationOptions] = useState([]);
   const [experienceOptions, setExperienceOptions] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
   const [selectedSpecializations, setSelectedSpecializations] = useState([]);
   const [selectedExperience, setSelectedExperience] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const otpInputs = useRef([]);
@@ -49,7 +62,8 @@ const RegisterUser = () => {
   // Fetch initial data
   useEffect(() => {
     refetchList();
-  }, [refetchList]);
+    refetchRegion();
+  }, [refetchList, refetchRegion]);
 
   useEffect(() => {
     if (listData?.data) {
@@ -71,6 +85,34 @@ const RegisterUser = () => {
   }, [listData]);
 
   useEffect(() => {
+    if (regionData?.countries && regionData?.cities) {
+      const formattedCountries = regionData.countries.map((country) => ({
+        label: country.name,
+        value: country.id.toString(),
+      }));
+      const formattedCities = regionData.cities.map((city) => ({
+        label: city.name,
+        value: city.id.toString(),
+        countryId: city.country_id?.toString(),
+      }));
+      setCountries(formattedCountries);
+      setCities(formattedCities);
+    }
+  }, [regionData]);
+
+  // Filter cities when country selection changes
+  useEffect(() => {
+    if (selectedCountry && cities.length > 0) {
+      const filtered = cities.filter(city => city.countryId === selectedCountry.value);
+      setFilteredCities(filtered);
+      setSelectedCity(null);
+    } else {
+      setFilteredCities([]);
+      setSelectedCity(null);
+    }
+  }, [selectedCountry, cities]);
+
+  useEffect(() => {
     const localUser = localStorage.getItem("user");
     if (localUser) {
       toast.info("You are already logged in");
@@ -89,7 +131,7 @@ const RegisterUser = () => {
   }, [response, loadingPost]);
 
   useEffect(() => {
-    if (!loadingOTP && responseOTP) {
+    if (!loadingOTP && responseOTP && responseOTP.status === 200) {
       dispatch(setUser(responseOTP?.data));
       localStorage.setItem("user", JSON.stringify(responseOTP?.data));
       localStorage.setItem("token", responseOTP?.data.token);
@@ -124,6 +166,12 @@ const RegisterUser = () => {
       body.append(`specialization[${index}]`, spec.value);
     });
     body.append("experience", selectedExperience.value);
+    if (selectedCountry) {
+      body.append("country_id", selectedCountry.value);
+    }
+    if (selectedCity) {
+      body.append("city_id", selectedCity.value);
+    }
     await postData(body, "Please check your email for OTP");
   };
 
@@ -158,17 +206,20 @@ const RegisterUser = () => {
     await postOTP(body, "OTP verification successful!");
   };
 
-  // Unified styles for react-select to match Input
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const selectStyles = {
     control: (base, state) => ({
       ...base,
       borderRadius: "0.75rem",
-      borderColor: "rgba(59, 130, 246, 0.5)", // Match Input's border-bg-primary/50
+      borderColor: "rgba(59, 130, 246, 0.5)",
       backgroundColor: "rgba(255, 255, 255, 0.7)",
-      padding: "0.75rem",
+      padding: "0.30rem",
       minHeight: "56px",
       boxShadow: state.isFocused
-        ? "0 0 0 2px rgba(59, 130, 246, 0.5)" // Match Input's focus ring
+        ? "0 0 0 2px rgba(59, 130, 246, 0.5)"
         : "none",
       "&:hover": {
         borderColor: "rgba(59, 130, 246, 0.7)",
@@ -177,14 +228,19 @@ const RegisterUser = () => {
     }),
     placeholder: (base) => ({
       ...base,
-      color: "rgba(59, 130, 246, 0.7)", // Match Input's placeholder
+      color: "rgba(59, 130, 246, 0.7)",
     }),
     menu: (base) => ({
       ...base,
-      zIndex: 50,
+      zIndex: 9999,
       borderRadius: "0.75rem",
-      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
       backdropFilter: "blur(10px)",
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
     }),
     option: (base, state) => ({
       ...base,
@@ -219,9 +275,9 @@ const RegisterUser = () => {
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-bg-primary/40 to-white bg-cover bg-center relative overflow-hidden py-4">
-
       {/* Doctor-themed background image */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1580281780460-82d277b0e3f8')] bg-cover bg-center opacity-20"></div>
+      <div className="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/0e/82/d4/0e82d4cbbfd783d3d7245fcb927dd358.jpg')] bg-cover bg-center opacity-40"></div>
+      
       {/* Decorative medical elements */}
       <div className="absolute top-8 left-8 text-bg-primary opacity-30 text-6xl">
         <FaStethoscope />
@@ -235,14 +291,46 @@ const RegisterUser = () => {
       <div className="absolute bottom-1/4 left-12 text-bg-primary opacity-25 text-5xl">
         <FaSyringe />
       </div>
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-10 max-w-lg w-full p-2"
       >
-        <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl border border-bg-primary/50 overflow-hidden ring-1 ring-bg-primary/30">
+        <Card className="bg-white/90 gap-0 backdrop-blur-xl shadow-2xl rounded-3xl border border-bg-primary/50 ring-1 ring-bg-primary/30 overflow-hidden">
+          {/* Tab Header */}
+          <div className="relative p-1">
+            <div className="flex rounded-2xl bg-white/50 backdrop-blur-sm p-1">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab("user")}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                  activeTab === "user"
+                    ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
+                    : "text-bg-primary hover:bg-white/70"
+                }`}
+              >
+                <FaUserMd className="text-md md:text-lg" />
+                Medical Professional
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab("employer")}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                  activeTab === "employer"
+                    ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
+                    : "text-bg-primary hover:bg-white/70"
+                }`}
+              >
+                <FaBriefcase className="text-md md:text-lg" />
+                Employer
+              </motion.button>
+            </div>
+          </div>
+
           <CardContent className="p-4 md:p-6">
             <motion.div
               initial={{ y: -40, opacity: 0 }}
@@ -253,168 +341,335 @@ const RegisterUser = () => {
               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
                 Mrfae
               </h2>
-              <p className="text-gray-500 mt-2 text-base font-medium">
-                Join the medical job platform
-              </p>
+              <AnimatePresence mode="wait">
+                {activeTab === "user" ? (
+                  <motion.p
+                    key="user-subtitle"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-gray-500 mt-2 text-base font-medium"
+                  >
+                    Join the medical job platform
+                  </motion.p>
+                ) : (
+                  <motion.p
+                    key="employer-subtitle"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-gray-500 mt-2 text-base font-medium"
+                  >
+                    Find qualified medical professionals
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </motion.div>
-            <form onSubmit={handleRegister} className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+            <AnimatePresence mode="wait">
+              {activeTab === "user" ? (
                 <motion.div
-                  className="relative"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.2 }}
+                  key="user-form"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <Input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                    disabled={loadingPost}
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
-                    <FaUserMd />
-                  </span>
+                  <form onSubmit={handleRegister} className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <motion.div
+                        className="relative"
+                        whileHover={{ scale: 1.03 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="First Name"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                          disabled={loadingPost}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
+                          <FaUserMd />
+                        </span>
+                      </motion.div>
+                      <motion.div
+                        className="relative"
+                        whileHover={{ scale: 1.03 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Last Name"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                          disabled={loadingPost}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
+                          <FaUserMd />
+                        </span>
+                      </motion.div>
+                    </div>
+                    <motion.div
+                      className="relative"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Input
+                        type="email"
+                        placeholder="Email"
+                        value={emailOrUsername}
+                        onChange={(e) => setEmailOrUsername(e.target.value)}
+                        className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                        disabled={loadingPost}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
+                        <FaStethoscope />
+                      </span>
+                    </motion.div>
+                    <motion.div
+                      className="relative"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Input
+                        type="text"
+                        placeholder="Phone"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                        disabled={loadingPost}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
+                        <FaSyringe />
+                      </span>
+                    </motion.div>
+                    
+                    {/* Password field with toggle visibility */}
+                    <motion.div
+                      className="relative"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full p-4 pr-20 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
+                        disabled={loadingPost}
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute right-12 top-1/2 -translate-y-1/2 text-bg-primary hover:text-blue-700 transition-colors duration-200 focus:outline-none"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
+                        <FaHeartbeat />
+                      </span>
+                    </motion.div>
+                    
+                    {/* Specializations */}
+                    <motion.div
+                      className="relative"
+                      style={{ zIndex: 50 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={specializationOptions}
+                        value={selectedSpecializations}
+                        onChange={setSelectedSpecializations}
+                        placeholder="Select Specializations"
+                        isMulti
+                        isLoading={loadingList}
+                        isDisabled={loadingPost}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+                    
+                    {/* Experience */}
+                    <motion.div
+                      className="relative"
+                      style={{ zIndex: 40 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={experienceOptions}
+                        value={selectedExperience}
+                        onChange={setSelectedExperience}
+                        placeholder="Select Experience"
+                        isLoading={loadingList}
+                        isDisabled={loadingPost}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+                    
+                    {/* Country */}
+                    <motion.div
+                      className="relative"
+                      style={{ zIndex: 30 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={countries}
+                        value={selectedCountry}
+                        onChange={setSelectedCountry}
+                        placeholder="Select Country"
+                        isLoading={loadingRegion}
+                        isDisabled={loadingPost}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+                    
+                    {/* City */}
+                    <motion.div
+                      className="relative"
+                      style={{ zIndex: 20 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={filteredCities}
+                        value={selectedCity}
+                        onChange={setSelectedCity}
+                        placeholder={selectedCountry ? "Select City" : "Select Country First"}
+                        isLoading={loadingRegion}
+                        isDisabled={loadingPost || !selectedCountry}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+                    
+                    <motion.div
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Button
+                        type="submit"
+                        className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
+                        disabled={loadingPost}
+                      >
+                        {loadingPost ? "Registering..." : "Register as Medical Professional"}
+                      </Button>
+                    </motion.div>
+                  </form>
+                  
+                  <p className="text-center text-gray-500 mt-6 text-sm">
+                    Already have an account?{" "}
+                    <Link
+                      to="/login"
+                      className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                    >
+                      Log In
+                    </Link>
+                  </p>
                 </motion.div>
+              ) : (
                 <motion.div
-                  className="relative"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.2 }}
+                  key="employer-content"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-center py-2"
                 >
-                  <Input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                    disabled={loadingPost}
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
-                    <FaUserMd />
-                  </span>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="w-24 h-24 bg-gradient-to-br from-bg-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+                  >
+                    <FaUsers className="text-white text-3xl" />
+                  </motion.div>
+                  
+                  <motion.h3
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-2xl font-bold text-bg-primary mb-4"
+                  >
+                    Looking to Hire Medical Professionals?
+                  </motion.h3>
+                  
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-gray-600 mb-4 text-lg leading-relaxed"
+                  >
+                    Post jobs, find qualified medical staff, and build your healthcare team with ease.
+                  </motion.p>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <a
+                      href="https://employermrfae.mrfae.com/register"
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaBriefcase className="mr-3 text-xl group-hover:rotate-12 transition-transform duration-300" />
+                      Register as Employer
+                      <svg 
+                        className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="mt-8 grid grid-cols-2 gap-4 text-sm text-gray-500"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>Easy Job Posting</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Qualified Candidates</span>
+                    </div>
+                  </motion.div>
                 </motion.div>
-              </div>
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={emailOrUsername}
-                  onChange={(e) => setEmailOrUsername(e.target.value)}
-                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                  disabled={loadingPost}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
-                  <FaStethoscope />
-                </span>
-              </motion.div>
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Input
-                  type="text"
-                  placeholder="Phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                  disabled={loadingPost}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
-                  <FaSyringe />
-                </span>
-              </motion.div>
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                  disabled={loadingPost}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
-                  <FaHeartbeat />
-                </span>
-              </motion.div>
-              <motion.div
-                className="relative z-30"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Select
-                  options={specializationOptions}
-                  value={selectedSpecializations}
-                  onChange={setSelectedSpecializations}
-                  placeholder="Select Specializations"
-                  isMulti
-                  isLoading={loadingList}
-                  isDisabled={loadingPost}
-                  className="w-full"
-                  classNamePrefix="select"
-                  styles={selectStyles}
-                />
-              </motion.div>
-              <motion.div
-                className="relative z-20"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Select
-                  options={experienceOptions}
-                  value={selectedExperience}
-                  onChange={setSelectedExperience}
-                  placeholder="Select Experience"
-                  isLoading={loadingList}
-                  isDisabled={loadingPost}
-                  className="w-full"
-                  classNamePrefix="select"
-                  styles={selectStyles}
-                />
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.06 }}
-                whileTap={{ scale: 0.94 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Button
-                  type="submit"
-                  className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
-                  disabled={loadingPost}
-                >
-                  {loadingPost ? "Registering..." : "Register Mrfae"}
-                </Button>
-              </motion.div>
-            </form>
-            <p className="text-center text-gray-500 mt-6 text-sm">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
-              >
-                Log In
-              </Link>
-            </p>
-            <p className="mt-3 text-center text-sm text-gray-500">
-              Register as an Employer?{" "}
-              <a
-                href="https://employermrfae.mrfae.com/register"
-                className="font-semibold text-blue-600 hover:underline hover:text-blue-700 transition-colors duration-200"
-              >
-                Employer Register
-              </a>
-            </p>
+              )}
+            </AnimatePresence>
           </CardContent>
         </Card>
       </motion.div>
+      
       {/* OTP Verification Modal */}
       <AnimatePresence>
         {isOtpModalOpen && (
