@@ -630,7 +630,7 @@ const RegisterUser = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://employermrfae.mrfae.com/register"
+                      href="https://employer.mrfae.com/register"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"
