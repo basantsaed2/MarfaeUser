@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
-import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers } from "react-icons/fa";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers, FaCamera, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGet } from "@/Hooks/UseGet";
 import Select from "react-select";
@@ -33,10 +33,10 @@ const RegisterUser = () => {
   const { postData: postOTP, loadingPost: loadingOTP, response: responseOTP } = usePost({
     url: `${apiUrl}/verifyOtp`,
   });
-  
+
   // Tab state
   const [activeTab, setActiveTab] = useState("user");
-  
+
   const [specializationOptions, setSpecializationOptions] = useState([]);
   const [experienceOptions, setExperienceOptions] = useState([]);
   const [cities, setCities] = useState([]);
@@ -54,6 +54,13 @@ const RegisterUser = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+  // Image upload states
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
   const otpInputs = useRef([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -142,8 +149,118 @@ const RegisterUser = () => {
     }
   }, [responseOTP, loadingOTP, navigate, dispatch]);
 
+  // Image handling functions
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please select a valid image file (JPEG, PNG, GIF)");
+      return;
+    }
+
+    // // Validate file size (max 5MB)
+    // const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    // if (file.size > maxSize) {
+    //   toast.error("Image size should be less than 5MB");
+    //   return;
+    // }
+
+    setProfileImage(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setProfileImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setProfileImage(null);
+    setProfileImagePreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // const convertImageToBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => {
+  //       // Remove the data:image/...;base64, prefix if you only want the base64 string
+  //       const base64String = reader.result.split(',')[1];
+  //       resolve(base64String);
+  //     };
+  //     reader.onerror = error => reject(error);
+  //   });
+  // };
+
+  // const handleRegister = async (e) => {
+  //   e.preventDefault();
+  //   if (!emailOrUsername || !password || !firstName || !lastName || !phone) {
+  //     toast.error("All fields are required");
+  //     return;
+  //   }
+  //   if (selectedSpecializations.length === 0) {
+  //     toast.error("Please select at least one specialization");
+  //     return;
+  //   }
+  //   if (!selectedExperience) {
+  //     toast.error("Please select an experience level");
+  //     return;
+  //   }
+
+  //   setIsUploading(true);
+
+  //   try {
+  //     const body = new FormData();
+  //     body.append("first_name", firstName);
+  //     body.append("last_name", lastName);
+  //     body.append("email", emailOrUsername);
+  //     body.append("phone", phone);
+  //     body.append("password", password);
+  //     selectedSpecializations.forEach((spec, index) => {
+  //       body.append(`specialization[${index}]`, spec.value);
+  //     });
+  //     body.append("experience", selectedExperience.value);
+  //     if (selectedCountry) {
+  //       body.append("country_id", selectedCountry.value);
+  //     }
+  //     if (selectedCity) {
+  //       body.append("city_id", selectedCity.value);
+  //     }
+
+  //     // Add profile image as base64 if exists
+  //     if (profileImage) {
+  //       const base64Image = await convertImageToBase64(profileImage);
+  //       body.append("image", base64Image);
+  //     }
+
+  //     await postData(body, "Please check your email for OTP");
+  //   } catch (error) {
+  //     toast.error("Error processing image. Please try again.");
+  //     console.error("Image conversion error:", error);
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
+
+  const convertImageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // keeps data:image/...;base64,
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (!emailOrUsername || !password || !firstName || !lastName || !phone) {
       toast.error("All fields are required");
       return;
@@ -156,23 +273,35 @@ const RegisterUser = () => {
       toast.error("Please select an experience level");
       return;
     }
-    const body = new FormData();
-    body.append("first_name", firstName);
-    body.append("last_name", lastName);
-    body.append("email", emailOrUsername);
-    body.append("phone", phone);
-    body.append("password", password);
-    selectedSpecializations.forEach((spec, index) => {
-      body.append(`specialization[${index}]`, spec.value);
-    });
-    body.append("experience", selectedExperience.value);
-    if (selectedCountry) {
-      body.append("country_id", selectedCountry.value);
+
+    setIsUploading(true);
+
+    try {
+      let base64Image = null;
+      if (profileImage) {
+        base64Image = await convertImageToBase64(profileImage);
+      }
+
+      const body = {
+        first_name: firstName,
+        last_name: lastName,
+        email: emailOrUsername,
+        phone: phone,
+        password: password,
+        specialization: selectedSpecializations.map(spec => spec.value),
+        experience: selectedExperience.value,
+        country_id: selectedCountry?.value,
+        city_id: selectedCity?.value,
+        image: base64Image, // includes data:image/...;base64,...
+      };
+
+      await postData(body, "Please check your email for OTP");
+    } catch (error) {
+      toast.error("Error processing image. Please try again.");
+      console.error("Image conversion error:", error);
+    } finally {
+      setIsUploading(false);
     }
-    if (selectedCity) {
-      body.append("city_id", selectedCity.value);
-    }
-    await postData(body, "Please check your email for OTP");
   };
 
   const handleOtpChange = (e, index) => {
@@ -277,7 +406,7 @@ const RegisterUser = () => {
     <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-bg-primary/40 to-white bg-cover bg-center relative overflow-hidden py-4">
       {/* Doctor-themed background image */}
       <div className="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/0e/82/d4/0e82d4cbbfd783d3d7245fcb927dd358.jpg')] bg-cover bg-center opacity-40"></div>
-      
+
       {/* Decorative medical elements */}
       <div className="absolute top-8 left-8 text-bg-primary opacity-30 text-6xl">
         <FaStethoscope />
@@ -306,11 +435,10 @@ const RegisterUser = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab("user")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                  activeTab === "user"
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === "user"
                     ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
                     : "text-bg-primary hover:bg-white/70"
-                }`}
+                  }`}
               >
                 <FaUserMd className="text-md md:text-lg" />
                 Medical Professional
@@ -319,11 +447,10 @@ const RegisterUser = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab("employer")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                  activeTab === "employer"
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === "employer"
                     ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
                     : "text-bg-primary hover:bg-white/70"
-                }`}
+                  }`}
               >
                 <FaBriefcase className="text-md md:text-lg" />
                 Employer
@@ -338,7 +465,7 @@ const RegisterUser = () => {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-center mb-5"
             >
-              <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
+              <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text bg-gradient-to-r from-bg-primary to-blue-300">
                 Mrfae
               </h2>
               <AnimatePresence mode="wait">
@@ -378,6 +505,50 @@ const RegisterUser = () => {
                   transition={{ duration: 0.4 }}
                 >
                   <form onSubmit={handleRegister} className="space-y-3">
+                    {/* Profile Image Upload */}
+                    <motion.div
+                      className="flex justify-center mb-4"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-full border-4 border-bg-primary/30 bg-white/80 flex items-center justify-center overflow-hidden cursor-pointer hover:border-bg-primary/50 transition-all duration-300">
+                          {profileImagePreview ? (
+                            <>
+                              <img
+                                src={profileImagePreview}
+                                alt="Profile preview"
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={removeImage}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors duration-200"
+                              >
+                                <FaTimes className="text-xs" />
+                              </button>
+                            </>
+                          ) : (
+                            <div
+                              className="flex flex-col items-center justify-center text-bg-primary/60 hover:text-bg-primary transition-colors duration-200"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <FaCamera className="text-2xl mb-1" />
+                              <span className="text-xs">Add Photo</span>
+                            </div>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleImageUpload}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                      </div>
+                    </motion.div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <motion.div
                         className="relative"
@@ -390,7 +561,7 @@ const RegisterUser = () => {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                          disabled={loadingPost}
+                          disabled={loadingPost || isUploading}
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                           <FaUserMd />
@@ -407,7 +578,7 @@ const RegisterUser = () => {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                          disabled={loadingPost}
+                          disabled={loadingPost || isUploading}
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                           <FaUserMd />
@@ -425,7 +596,7 @@ const RegisterUser = () => {
                         value={emailOrUsername}
                         onChange={(e) => setEmailOrUsername(e.target.value)}
                         className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                        disabled={loadingPost}
+                        disabled={loadingPost || isUploading}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                         <FaStethoscope />
@@ -442,13 +613,13 @@ const RegisterUser = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         className="w-full p-4 pr-10 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                        disabled={loadingPost}
+                        disabled={loadingPost || isUploading}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-bg-primary">
                         <FaSyringe />
                       </span>
                     </motion.div>
-                    
+
                     {/* Password field with toggle visibility */}
                     <motion.div
                       className="relative"
@@ -461,7 +632,7 @@ const RegisterUser = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full p-4 pr-20 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent transition-all duration-300 bg-white/70 placeholder-bg-primary/70"
-                        disabled={loadingPost}
+                        disabled={loadingPost || isUploading}
                       />
                       <button
                         type="button"
@@ -475,7 +646,7 @@ const RegisterUser = () => {
                         <FaHeartbeat />
                       </span>
                     </motion.div>
-                    
+
                     {/* Specializations */}
                     <motion.div
                       className="relative"
@@ -490,14 +661,14 @@ const RegisterUser = () => {
                         placeholder="Select Specializations"
                         isMulti
                         isLoading={loadingList}
-                        isDisabled={loadingPost}
+                        isDisabled={loadingPost || isUploading}
                         className="w-full"
                         classNamePrefix="select"
                         styles={selectStyles}
                         menuPortalTarget={document.body}
                       />
                     </motion.div>
-                    
+
                     {/* Experience */}
                     <motion.div
                       className="relative"
@@ -511,14 +682,14 @@ const RegisterUser = () => {
                         onChange={setSelectedExperience}
                         placeholder="Select Experience"
                         isLoading={loadingList}
-                        isDisabled={loadingPost}
+                        isDisabled={loadingPost || isUploading}
                         className="w-full"
                         classNamePrefix="select"
                         styles={selectStyles}
                         menuPortalTarget={document.body}
                       />
                     </motion.div>
-                    
+
                     {/* Country */}
                     <motion.div
                       className="relative"
@@ -532,14 +703,14 @@ const RegisterUser = () => {
                         onChange={setSelectedCountry}
                         placeholder="Select Country"
                         isLoading={loadingRegion}
-                        isDisabled={loadingPost}
+                        isDisabled={loadingPost || isUploading}
                         className="w-full"
                         classNamePrefix="select"
                         styles={selectStyles}
                         menuPortalTarget={document.body}
                       />
                     </motion.div>
-                    
+
                     {/* City */}
                     <motion.div
                       className="relative"
@@ -553,14 +724,14 @@ const RegisterUser = () => {
                         onChange={setSelectedCity}
                         placeholder={selectedCountry ? "Select City" : "Select Country First"}
                         isLoading={loadingRegion}
-                        isDisabled={loadingPost || !selectedCountry}
+                        isDisabled={loadingPost || isUploading || !selectedCountry}
                         className="w-full"
                         classNamePrefix="select"
                         styles={selectStyles}
                         menuPortalTarget={document.body}
                       />
                     </motion.div>
-                    
+
                     <motion.div
                       whileHover={{ scale: 1.06 }}
                       whileTap={{ scale: 0.94 }}
@@ -569,13 +740,13 @@ const RegisterUser = () => {
                       <Button
                         type="submit"
                         className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
-                        disabled={loadingPost}
+                        disabled={loadingPost || isUploading}
                       >
-                        {loadingPost ? "Registering..." : "Register as Medical Professional"}
+                        {loadingPost || isUploading ? "Registering..." : "Register as Medical Professional"}
                       </Button>
                     </motion.div>
                   </form>
-                  
+
                   <p className="text-center text-gray-500 mt-6 text-sm">
                     Already have an account?{" "}
                     <Link
@@ -595,6 +766,7 @@ const RegisterUser = () => {
                   transition={{ duration: 0.4 }}
                   className="text-center py-2"
                 >
+                  {/* Employer content remains the same */}
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -603,7 +775,7 @@ const RegisterUser = () => {
                   >
                     <FaUsers className="text-white text-3xl" />
                   </motion.div>
-                  
+
                   <motion.h3
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -612,7 +784,7 @@ const RegisterUser = () => {
                   >
                     Looking to Hire Medical Professionals?
                   </motion.h3>
-                  
+
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -621,7 +793,7 @@ const RegisterUser = () => {
                   >
                     Post jobs, find qualified medical staff, and build your healthcare team with ease.
                   </motion.p>
-                  
+
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -637,17 +809,17 @@ const RegisterUser = () => {
                     >
                       <FaBriefcase className="mr-3 text-xl group-hover:rotate-12 transition-transform duration-300" />
                       Register as Employer
-                      <svg 
-                        className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
-                        fill="none" 
-                        stroke="currentColor" 
+                      <svg
+                        className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </a>
                   </motion.div>
-                  
+
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -669,7 +841,7 @@ const RegisterUser = () => {
           </CardContent>
         </Card>
       </motion.div>
-      
+
       {/* OTP Verification Modal */}
       <AnimatePresence>
         {isOtpModalOpen && (

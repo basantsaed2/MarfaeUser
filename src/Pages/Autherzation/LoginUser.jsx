@@ -54,19 +54,43 @@ const LoginUser = () => {
     postData(body);
   };
 
+  // useEffect(() => {
+  //   if (!loadingPost && response) {
+  //     if (response.data.message === "Employeer account is not active yet") {
+  //       setIsModalOpen(true);
+  //     } else if (response.status === 200 && response.data?.user?.role === "user") {
+  //       toast.success("Login successfully");
+  //       dispatch(setUser(response?.data));
+  //       localStorage.setItem("user", JSON.stringify(response?.data));
+  //       localStorage.setItem("token", response?.data.token);
+  //       const redirectTo = new URLSearchParams(location.search).get("redirect");
+  //       navigate(redirectTo || "/");
+  //     } else if (response.status === 200 && response.data?.user?.role !== "user") {
+  //       toast.error("You do not have user role");
+  //     }
+  //   }
+  // }, [response, loadingPost, navigate, dispatch]);
+
   useEffect(() => {
     if (!loadingPost && response) {
       if (response.data.message === "Employeer account is not active yet") {
         setIsModalOpen(true);
-      } else if (response.status === 200 && response.data?.user?.role === "user") {
-        toast.success("Login successfully");
-        dispatch(setUser(response?.data));
-        localStorage.setItem("user", JSON.stringify(response?.data));
-        localStorage.setItem("token", response?.data.token);
-        const redirectTo = new URLSearchParams(location.search).get("redirect");
-        navigate(redirectTo || "/");
-      } else if (response.status === 200 && response.data?.user?.role !== "user") {
-        toast.error("You do not have user role");
+      } else if (response.status === 200) {
+        // normalize role to array
+        let roles = response.data?.user?.roles_array
+          || response.data?.user?.role?.split(",")
+          || [];
+
+        if (roles.includes("user")) {
+          toast.success("Login successfully");
+          dispatch(setUser(response?.data));
+          localStorage.setItem("user", JSON.stringify(response?.data));
+          localStorage.setItem("token", response?.data.token);
+          const redirectTo = new URLSearchParams(location.search).get("redirect");
+          navigate(redirectTo || "/");
+        } else {
+          toast.error("You do not have user role");
+        }
       }
     }
   }, [response, loadingPost, navigate, dispatch]);
