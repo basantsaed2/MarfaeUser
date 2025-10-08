@@ -1471,7 +1471,6 @@ const Profile = () => {
   };
 
   const handleDeleteCv = (cv) => {
-    console.log("Deleting CV:", cv);
     setSelectedRow(cv);
     setIsDeleteOpen(true);
   };
@@ -1482,7 +1481,6 @@ const Profile = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    console.log("Deleting:", selectedRow);
     if (!selectedRow) return;
 
     if (isDeleteOpen) {

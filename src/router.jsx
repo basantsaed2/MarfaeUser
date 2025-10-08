@@ -15,6 +15,7 @@ import JobsTracked from "./Pages/User/Jobs/JobsTracked";
 import Home from "./Pages/User/Home/Home";
 import SavedJobs from "./Pages/User/Jobs/SavedJobs";
 import JobDetailPage from "./Pages/User/Home/JobDetailPage";
+import AboutUs from "./Pages/User/AboutUs/AboutUs";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: "contact_us",
         element: <ContactUs />
+      },
+      {
+        path: "about_us",
+        element: <AboutUs/>
       },
       {
         path: "*",

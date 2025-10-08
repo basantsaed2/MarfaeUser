@@ -6,6 +6,7 @@ import { LogOut, ChevronDown, X, Menu, Contact, BookOpen, Briefcase, Bookmark, L
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "../assets/Logo.jpeg";
+import { FcAbout } from 'react-icons/fc';
 
 export default function Navbar({ className }) {
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ export default function Navbar({ className }) {
   const navItems = [
     { to: "/contact_us", label: t("Contact Us"), icon: Contact },
     { to: "/jobs", label: t("Jobs"), icon: Briefcase },
+    { to: "/about_us", label: t("About Us"), icon: FcAbout },
   ];
 
   // Dropdown items for Lists
