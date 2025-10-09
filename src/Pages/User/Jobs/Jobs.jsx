@@ -905,7 +905,7 @@ const Jobs = () => {
                       <FiInfo className="mr-2 text-xl" /> Qualifications
                     </h4>
                     <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {selectedJobDetails.qualifications || 'No qualifications provided.'}
+                      {selectedJobDetails.job_qualification?.name || 'No qualifications provided.'}
                     </p>
                   </motion.div>
                   <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 1.1 }}>
@@ -1045,22 +1045,51 @@ const Jobs = () => {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message (Optional):</label>
-                <textarea
-                  id="message"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="4"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Add a message to the employer..."
-                ></textarea>
-              </div>
+              {/* Conditional Message Fields */}
+              {hasExperience === "1" && (
+                <div className="mb-6">
+                  <label htmlFor="experienceMessage" className="block text-gray-700 font-medium mb-2">
+                    Please describe your experience *
+                  </label>
+                  <textarea
+                    id="experienceMessage"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="4"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Describe your relevant experience, skills, and achievements in this field..."
+                    required
+                  ></textarea>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Please provide specific details about your experience that relates to this job role.
+                  </p>
+                </div>
+              )}
+
+              {hasExperience === "0" && (
+                <div className="mb-6">
+                  <label htmlFor="motivationMessage" className="block text-gray-700 font-medium mb-2">
+                    Why are you interested in this role? *
+                  </label>
+                  <textarea
+                    id="motivationMessage"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="4"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Tell us why you're interested in this position, what skills you can bring, and what motivates you to apply..."
+                    required
+                  ></textarea>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Share your motivation and enthusiasm for this opportunity.
+                  </p>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3">
                 <Button
                   onClick={handleApplyJob}
-                  disabled={loadingPostCv || !selectedCv || hasExperience === ''}
+                  disabled={loadingPostCv || !selectedCv || hasExperience === '' || !message.trim()}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingPostCv ? 'Applying...' : 'Submit Application'}

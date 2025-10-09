@@ -117,7 +117,7 @@ const Partners = () => {
               src={companyImage}
               alt="Medical facility"
               className="rounded-2xl shadow-lg w-full h-auto object-cover"
-              style={{ y: partnersImageY }}
+              // style={{ y: partnersImageY }}
               whileHover={{
                 scale: 1,
                 rotate: -1,
@@ -165,11 +165,11 @@ const Partners = () => {
                       key={company.id}
                       className="bg-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-4 min-w-[220px] hover:shadow-xl transition-shadow duration-300 border border-gray-100"
                     >
-                      {company.logo_link ? (
+                      {company.image_link ? (
                         <img
-                          src={company.logo_link}
+                          src={company.image_link}
                           alt={company.name}
-                          className="w-12 h-12 object-contain rounded-full border border-gray-200 p-1 bg-gray-50"
+                          className="w-12 h-12 object-cover rounded-full border border-gray-200 bg-gray-50"
                         />
                       ) : (
                         <div className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 text-blue-700 font-bold text-lg border border-gray-200">

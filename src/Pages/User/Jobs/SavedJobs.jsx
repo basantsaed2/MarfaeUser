@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FiFilter,FiCalendar , FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiFileText, FiAward } from "react-icons/fi";
+import { FiFilter, FiCalendar, FiBriefcase, FiMapPin, FiDollarSign, FiClock, FiSearch, FiFileText, FiAward } from "react-icons/fi";
 import { FaBookmark } from "react-icons/fa";
 import * as Dialog from '@radix-ui/react-dialog';
 import { toast } from "react-toastify";
@@ -386,7 +386,7 @@ const SavedJobs = () => {
                           Qualifications
                         </h3>
                         <p className="text-gray-700">
-                          {selectedJobDetails.qualifications || 'No specific qualifications listed.'}
+                          {selectedJobDetails.job_qualification?.name || 'No specific qualifications listed.'}
                         </p>
                       </div>
                     </div>
@@ -545,15 +545,42 @@ const SavedJobs = () => {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Write a message to the employer..."
-                  className="w-full h-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+              {/* Conditional Message Fields */}
+              {hasExperience === 'yes' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Please describe your experience *
+                  </label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Describe your relevant experience in this field..."
+                    className="w-full h-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Please provide details about your experience in this specific job role.
+                  </p>
+                </div>
+              )}
+
+              {hasExperience === 'no' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Why are you interested in this role? *
+                  </label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Tell us why you're interested in this position and what motivates you..."
+                    className="w-full h-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Let the employer know why you're excited about this opportunity.
+                  </p>
+                </div>
+              )}
 
               <div className="flex justify-end gap-2">
                 <Dialog.Close asChild>
@@ -561,7 +588,7 @@ const SavedJobs = () => {
                 </Dialog.Close>
                 <Button
                   onClick={handleApplyJob}
-                  disabled={loadingPostCv || !selectedCv || !hasExperience}
+                  disabled={loadingPostCv || !selectedCv || !hasExperience || !message.trim()}
                 >
                   {loadingPostCv ? 'Submitting...' : 'Submit Application'}
                 </Button>

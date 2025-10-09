@@ -1,31 +1,3 @@
-// "use client";
-// import React from "react";
-// import Hero from "./Hero";
-// import Features from "./Features";
-// import Partners from "./Partners";
-// import Contact from "./Contact";
-// import Reviews from "./Reviews";
-// import Footer from "./Footer";
-// import JobsSection from "./JobsSection";
-
-// const Home = () => {
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       <Hero />
-//       <JobsSection />
-//       <Features />
-//       <Partners />
-//       <Contact />
-//       <Reviews />
-//       <Footer />
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-
 "use client";
 import React, { useState, useEffect } from "react";
 import Hero from "./Hero";
@@ -69,7 +41,7 @@ const Home = () => {
       <JobsSection />
       <Features />
       <Partners />
-      <Contact />
+      {/* <Contact /> */}
       <Reviews />
       <Footer />
 

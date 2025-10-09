@@ -23,6 +23,7 @@ import {
   SiLinkedin,
   SiFacebook,
 } from "react-icons/si";
+import { FiLink, FiBriefcase, FiMapPin, FiDollarSign, FiCalendar, FiFileText, FiAward, FiInfo } from "react-icons/fi";
 
 const JobsSection = () => {
   const router = useNavigate();
@@ -45,6 +46,9 @@ const JobsSection = () => {
   // State for share dialog
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [jobToShare, setJobToShare] = useState(null);
+
+  const [selectedJobDetails, setSelectedJobDetails] = useState(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
 
   // Fetch CVs
   const { refetch: refetchCVS, loading: loadingCVS, data: cvsData } = useGet({
@@ -108,6 +112,12 @@ const JobsSection = () => {
   const handleShareJob = (job) => {
     setJobToShare(job);
     setIsShareDialogOpen(true);
+  };
+
+  // Function to open job details dialog
+  const openJobDetails = (job) => {
+    setSelectedJobDetails(job);
+    setIsDetailsDialogOpen(true);
   };
 
   const generateJobUrl = (jobId) => {
@@ -228,6 +238,31 @@ const JobsSection = () => {
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2, ease: 'easeIn' } },
   };
 
+  // Format experience and type labels
+  const getExperienceLabel = (exp) => {
+    switch (exp) {
+      case 'fresh': return 'Fresh Graduate';
+      case 'junior': return 'Junior';
+      case 'mid': return 'Mid-Level';
+      case 'senior': return 'Senior';
+      case '+1 year': return '1+ Years';
+      case '+2 years': return '2+ Years';
+      case '+3 years': '3+ Years';
+      default: return exp?.toUpperCase() || 'N/A';
+    }
+  };
+
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'full_time': return 'Full Time';
+      case 'part_time': return 'Part Time';
+      case 'freelance': return 'Freelance';
+      case 'internship': return 'Internship';
+      case 'hybrid': return 'Hybrid';
+      default: return type?.toUpperCase() || 'N/A';
+    }
+  };
+
   if (loadingJobs) return <div className="text-center py-10 text-xl text-gray-600">Loading....</div>;
 
   return (
@@ -289,7 +324,7 @@ const JobsSection = () => {
                     {job.city.name}, {job.city.country.name}
                   </span>
                 </div>
-                <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-y-3 mt-6">
+                <div className="flex flex-col justify-between gap-y-3 mt-6">
                   <span className="text-xl font-extrabold text-blue-600">{job.expected_salary}EGP</span>
                   <div className="flex gap-2">
                     <button
@@ -298,6 +333,13 @@ const JobsSection = () => {
                       aria-label="Share job"
                     >
                       <FaShareAlt className="w-4 h-4" />
+                    </button>
+                    <button
+                      variant="outline"
+                      onClick={() => openJobDetails(job)}
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300"
+                    >
+                      View Details
                     </button>
                     <button
                       onClick={() => {
@@ -327,6 +369,135 @@ const JobsSection = () => {
           </button>
         </div>
       </div>
+
+      {/* Job Details Dialog */}
+      <Dialog.Root open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50" style={{ overflow: 'visible' }} />
+          <motion.div
+            variants={dialogVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-3xl max-h-[95vh] overflow-y-auto shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-gray-50 DialogContent"
+            style={{ overflowY: 'auto' }}
+            aria-label="Job Details Dialog"
+            aria-describedby="job-details-description"
+          >
+            {selectedJobDetails && (
+              <>
+                <motion.div
+                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                >
+                  <Dialog.Title className="text-3xl font-bold text-gray-900 mb-2">
+                    {selectedJobDetails.job_titel?.name || 'Job Details'}
+                  </Dialog.Title>
+                  <div className="flex items-center text-gray-600 mb-6">
+                    <span className="font-semibold">{selectedJobDetails.company?.name}</span>
+                    <span className="mx-2">•</span>
+                    <span>{selectedJobDetails.city?.name}, {selectedJobDetails.city?.country?.name}</span>
+                  </div>
+                </motion.div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm mb-6">
+                  <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
+                    <FiAward className="text-blue-500 mr-2 text-lg" />
+                    <strong>Experience:</strong> {getExperienceLabel(selectedJobDetails.experience)}
+                  </motion.div>
+                  <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
+                    <FiBriefcase className="text-blue-500 mr-2 text-lg" />
+                    <strong>Type:</strong> {getTypeLabel(selectedJobDetails.type)}
+                  </motion.div>
+                  <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.5 }}>
+                    <FiCalendar className="text-blue-500 mr-2 text-lg" />
+                    <strong>Posted:</strong> {selectedJobDetails.created_at ? new Date(selectedJobDetails.created_at).toLocaleDateString() : 'Not specified'}
+                  </motion.div>
+                  {selectedJobDetails.expected_salary && (
+                    <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.6 }}>
+                      <FiDollarSign className="text-blue-500 mr-2 text-lg" />
+                      <strong>Salary:</strong> {selectedJobDetails.expected_salary} {selectedJobDetails.city?.country?.name === 'Egypt' ? 'EGP' : ''}
+                    </motion.div>
+                  )}
+                  <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.7 }}>
+                    <FiMapPin className="text-blue-500 mr-2 text-lg" />
+                    <strong>Zone:</strong> {selectedJobDetails.zone?.name || 'Not specified'}
+                  </motion.div>
+                  <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.8 }}>
+                    <FiCalendar className="text-blue-500 mr-2 text-lg" />
+                    <strong>Expiry Date:</strong> {selectedJobDetails.expire_date ? new Date(selectedJobDetails.expire_date).toLocaleDateString() : 'Not specified'}
+                  </motion.div>
+                </div>
+                <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.9 }}>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                    <FiFileText className="mr-2 text-xl" /> Job Description
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedJobDetails.description || 'No detailed description available.'}
+                  </p>
+                </motion.div>
+                <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 1.0 }}>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                    <FiInfo className="mr-2 text-xl" /> Qualifications
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedJobDetails.job_qualification?.name || 'No qualifications provided.'}
+                  </p>
+                </motion.div>
+                <motion.div className="mb-6" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 1.1 }}>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                    <FiLink className="mr-2 text-xl" /> Location Link
+                  </h4>
+                  <a
+                    href={selectedJobDetails.location_link || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {selectedJobDetails.location_link || 'No location link provided.'}
+                  </a>
+                </motion.div>
+                <motion.div
+                  className="flex justify-end gap-3"
+                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 1.2 }}
+                >
+                  {/* <Button
+                    onClick={() => toggleSavedJob(selectedJobDetails)}
+                    className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                    disabled={loadingPostSavedJob}
+                  >
+                    {selectedJobDetails.is_saved === 1 ? (
+                      <FaBookmark className="text-white text-lg" />
+                    ) : (
+                      <FaRegBookmark className="text-white text-lg" />
+                    )}
+                    {selectedJobDetails.is_saved === 1 ? 'Unsave Job' : 'Save Job'}
+                  </Button> */}
+                  <Button
+                    onClick={() => {
+                      setSelectedJobId(selectedJobDetails.id);
+                      setIsDetailsDialogOpen(false);
+                      setIsApplyDialogOpen(true);
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Apply Now
+                  </Button>
+                  <Dialog.Close asChild>
+                    <Button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg">
+                      Close
+                    </Button>
+                  </Dialog.Close>
+                </motion.div>
+              </>
+            )}
+          </motion.div>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       {/* Apply Job Dialog */}
       <Dialog.Root open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
@@ -416,22 +587,51 @@ const JobsSection = () => {
               </div>
             </div>
 
-            <div className="mb-6">
-              <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message (Optional):</label>
-              <textarea
-                id="message"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                rows="4"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Add a message to the employer..."
-              ></textarea>
-            </div>
+            {/* Conditional Message Fields */}
+            {hasExperience === '1' && (
+              <div className="mb-6">
+                <label htmlFor="experienceMessage" className="block text-gray-700 font-medium mb-2">
+                  Please describe your experience *
+                </label>
+                <textarea
+                  id="experienceMessage"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows="4"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Describe your relevant experience, skills, and achievements in this field..."
+                  required
+                ></textarea>
+                <p className="text-xs text-gray-500 mt-1">
+                  Please provide specific details about your experience that relates to this job role.
+                </p>
+              </div>
+            )}
+
+            {hasExperience === '0' && (
+              <div className="mb-6">
+                <label htmlFor="motivationMessage" className="block text-gray-700 font-medium mb-2">
+                  Why are you interested in this role? *
+                </label>
+                <textarea
+                  id="motivationMessage"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows="4"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Tell us why you're interested in this position, what skills you can bring, and what motivates you to apply..."
+                  required
+                ></textarea>
+                <p className="text-xs text-gray-500 mt-1">
+                  Share your motivation and enthusiasm for this opportunity.
+                </p>
+              </div>
+            )}
 
             <div className="flex justify-end gap-3">
               <Button
                 onClick={() => handleApplyJob(selectedJobId)}
-                disabled={loadingPostCv || !selectedCv || hasExperience === ''}
+                disabled={loadingPostCv || !selectedCv || hasExperience === '' || !message.trim()}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loadingPostCv ? 'Applying...' : 'Submit Application'}
