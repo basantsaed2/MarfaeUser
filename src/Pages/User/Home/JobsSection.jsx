@@ -17,13 +17,14 @@ import {
   FaMapMarkerAlt,
   FaCopy,
   FaBriefcase,
-  FaTimes
+  FaTimes, FaArrowRight, FaStar
 } from "react-icons/fa";
 import {
   SiLinkedin,
   SiFacebook,
 } from "react-icons/si";
 import { FiLink, FiBriefcase, FiMapPin, FiDollarSign, FiCalendar, FiFileText, FiAward, FiInfo } from "react-icons/fi";
+import { StarIcon } from "lucide-react";
 
 const JobsSection = () => {
   const router = useNavigate();
@@ -266,18 +267,18 @@ const JobsSection = () => {
   if (loadingJobs) return <div className="text-center py-10 text-xl text-gray-600">Loading....</div>;
 
   return (
-    <section className="py-10 bg-gradient-to-br from-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12">
+    <section className="bg-gradient-to-br from-white">
+      <div className="w-full px-4 md:px-6 lg:px-12 py-12 bg-gradient-to-b from-gray-50 to-white">
         <motion.h2
-          className="text-4xl font-extrabold mb-12 tracking-tight overflow-hidden"
+          className="text-2xl md:text-4xl font-extrabold mb-16 tracking-tight text-center text-gray-900 bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600"
           variants={headingVariants}
           initial="hidden"
           animate="visible"
         >
-          Discover Your Next Career Move
+          Discover Your Dream Career
         </motion.h2>
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -286,58 +287,60 @@ const JobsSection = () => {
             {Jobs.map((job) => (
               <motion.div
                 key={job.id}
-                className="bg-white rounded-2xl p-4 md:p-8 border border-indigo-200 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                className="relative bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-105 bg-opacity-90 backdrop-blur-sm"
                 variants={itemVariants}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
+
                 <div className="flex items-start mb-6">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden">
+                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center shadow-inner overflow-hidden ring-2 ring-indigo-200">
                     {job.image_link ? (
                       <img
                         src={job.image_link}
                         alt={job.company.name}
-                        className="rounded-full w-full h-full object-cover"
+                        className="rounded-full w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
                       />
                     ) : (
-                      <span className="text-2xl font-bold text-gray-700">
+                      <span className="text-3xl font-bold text-indigo-600">
                         {job.company?.name?.charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
 
-                  <div className="ml-4">
-                    <h3 className="text-xl font-bold text-gray-900">{job.company.name}</h3>
-                    <p className="text-md text-gray-500">{job.job_category.name}</p>
+                  <div className="ml-5">
+                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight">{job.company.name}</h3>
+                    <p className="text-md text-gray-500 italic">{job.job_category.name}</p>
                   </div>
                 </div>
 
-                <hr className="my-6 border-gray-200" />
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">{job.job_titel.name}</h4>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{job.description}</p>
-                <div className="flex items-center text-sm mb-4 flex-wrap gap-2">
-                  <span className="flex items-center bg-indigo-100 text-indigo-800 font-semibold px-3 py-1 rounded-full">
-                    <FaClock className="w-3 h-3 mr-2" />
+                <hr className="my-6 border-gray-200/50" />
+                <h4 className="text-2xl font-semibold text-gray-900 mb-3 tracking-tight">{job.job_titel.name}</h4>
+                <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed">{job.description}</p>
+                <div className="flex items-center text-sm mb-6 flex-wrap gap-3">
+                  <span className="flex items-center bg-indigo-50 text-indigo-700 font-medium px-4 py-2 rounded-full shadow-sm">
+                    <FaClock className="w-4 h-4 mr-2 text-indigo-500" />
                     {job.type === "full_time" ? "Full Time" : "Part Time"}
                   </span>
-                  <span className="flex items-center bg-purple-100 text-purple-800 font-semibold px-3 py-1 rounded-full">
-                    <FaMapMarkerAlt className="w-3 h-3 mr-2" />
+                  <span className="flex items-center bg-purple-50 text-purple-700 font-medium px-4 py-2 rounded-full shadow-sm">
+                    <FaMapMarkerAlt className="w-4 h-4 mr-2 text-purple-500" />
                     {job.city.name}, {job.city.country.name}
                   </span>
                 </div>
-                <div className="flex flex-col justify-between gap-y-3 mt-6">
-                  <span className="text-xl font-extrabold text-blue-600">{job.expected_salary}EGP</span>
-                  <div className="flex gap-2">
+                <div className="flex flex-col justify-between gap-y-4 mt-6">
+                  <span className="text-xl font-extrabold text-indigo-600">{job.expected_salary} EGP</span>
+                  <div className="flex gap-3 flex-wrap">
                     <button
                       onClick={() => handleShareJob(job)}
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full text-sm transition-all duration-300 shadow-md hover:shadow-lg"
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all duration-300 shadow-sm hover:shadow-md flex items-center"
                       aria-label="Share job"
                     >
-                      <FaShareAlt className="w-4 h-4" />
+                      <FaShareAlt className="w-4 h-4 mr-2" />
+                      Share
                     </button>
                     <button
-                      variant="outline"
                       onClick={() => openJobDetails(job)}
-                      className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300"
+                      className="border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
                     >
                       View Details
                     </button>
@@ -350,7 +353,7 @@ const JobsSection = () => {
                         setSelectedJobId(job.id);
                         setIsApplyDialogOpen(true);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full text-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full text-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                     >
                       Apply Now
                     </button>
@@ -360,12 +363,12 @@ const JobsSection = () => {
             ))}
           </AnimatePresence>
         </motion.div>
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
           <button
             onClick={handleBrowseMore}
-            className="bg-white text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            Browse More Jobs
+            Browse More Opportunities
           </button>
         </div>
       </div>
@@ -673,8 +676,18 @@ const JobsSection = () => {
               <div className="mb-6">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-blue-600 text-lg font-semibold">{jobToShare.company.name.charAt(0)}</span>
-                  </div>
+                    {jobToShare.image_link ? (
+                      <img
+                        src={jobToShare.image_link}
+                        alt={jobToShare.company.name}
+                        className="rounded-full w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <span className="text-3xl font-bold text-indigo-600">
+                        {jobToShare.company?.name?.charAt(0).toUpperCase()}
+                      </span>
+                    )}                  
+                    </div>
                   <div>
                     <h3 className="font-bold text-gray-900">{jobToShare.job_titel.name}</h3>
                     <p className="text-sm text-gray-600">{jobToShare.company.name}</p>

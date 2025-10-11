@@ -1650,7 +1650,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <ToastContainer />
-      <div className="w-full max-w-6xl mx-auto">
+      <div className="w-full p-4">
         
         {/* Profile Completion Indicator */}
         <ProfileCompletionIndicator completion={profileCompletion} />
