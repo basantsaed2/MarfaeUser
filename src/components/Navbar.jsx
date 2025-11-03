@@ -7,6 +7,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "../assets/Logo.jpeg";
 import { FcAbout } from 'react-icons/fc';
+import { FaUserDoctor } from "react-icons/fa6";
 
 export default function Navbar({ className }) {
   const { t } = useTranslation();
@@ -54,7 +55,9 @@ export default function Navbar({ className }) {
 
   // Dropdown items for Lists
   const listItems = [
+    { to: "/plans", label: t("Plans"), icon: BookOpen },
     { to: "/companies", label: t("Companies"), icon: Building },
+    { to: "/doctors", label: t("Doctors"), icon: FaUserDoctor },
     { to: "/drugs", label: t("Drugs"), icon: Pill },
     { to: "/saved_jobs", label: t("Saved Jobs"), icon: Bookmark },
     { to: "/tracking_jobs", label: t("Job Tracker"), icon: List },

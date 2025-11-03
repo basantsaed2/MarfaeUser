@@ -16,6 +16,8 @@ import Home from "./Pages/User/Home/Home";
 import SavedJobs from "./Pages/User/Jobs/SavedJobs";
 import JobDetailPage from "./Pages/User/Home/JobDetailPage";
 import AboutUs from "./Pages/User/AboutUs/AboutUs";
+import Doctors from "./Pages/User/Doctors/Doctors";
+import Plans from "./Pages/User/Plans/Plans";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -82,6 +84,10 @@ const router = createBrowserRouter([
         element: <Jobs />
       },
       {
+        path: "doctors",
+        element: <Doctors />,
+      },
+      {
         path: "saved_jobs",
         element: <SavedJobs />
       },
@@ -92,6 +98,10 @@ const router = createBrowserRouter([
       {
         path: "drugs",
         element: <Drugs />
+      },
+      {
+        path: "plans",
+        element: <Plans />
       },
       {
         path: "contact_us",
