@@ -190,7 +190,7 @@ const Doctors = () => {
         }
     }, [searchResponse]);
 
-    // Handle filter changes with dependency logic
+    // Handle filter changes with dependency logic - FIXED: Added null checks
     const handleFilterChange = (name, value) => {
         setFilters(prev => {
             const newFilters = { ...prev, [name]: value };
@@ -200,9 +200,9 @@ const Doctors = () => {
                 newFilters.city_id = null;
                 newFilters.zone_id = null;
 
-                if (value) {
+                if (value && value.value !== null) {
                     const filteredCities = allCities.filter(city =>
-                        city.country_id.toString() === value.value.toString()
+                        city.country_id?.toString() === value.value?.toString()
                     );
                     setFilteredCities(filteredCities);
                 } else {
@@ -213,9 +213,9 @@ const Doctors = () => {
             else if (name === 'city_id') {
                 newFilters.zone_id = null;
 
-                if (value) {
+                if (value && value.value !== null) {
                     const filteredZones = allZones.filter(zone =>
-                        zone.city_id.toString() === value.value.toString()
+                        zone.city_id?.toString() === value.value?.toString()
                     );
                     setFilteredZones(filteredZones);
                 } else {
