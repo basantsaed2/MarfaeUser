@@ -31,7 +31,7 @@ const Plans = () => {
         loading: loadingPaymentMethod, 
         data: dataPaymentMethod 
     } = useGet({
-        url: `${apiUrl}/user/getPaymentMethods`,
+        url: `${apiUrl}/user/get-payment-methods`,
     });
     
     const { 
@@ -39,7 +39,7 @@ const Plans = () => {
         loading: loadingPost, 
         response 
     } = usePost({
-        url: `${apiUrl}/user/makePlanPyament`,
+        url: `${apiUrl}/user/make-plan-payment`,
     });
 
     const [plans, setPlans] = useState([]);
@@ -83,8 +83,8 @@ const Plans = () => {
     }, [dataPlans]);
 
     useEffect(() => {
-        if (dataPaymentMethod?.active_payment_method) {
-            const formattedMethods = dataPaymentMethod.active_payment_method.map((method) => ({
+        if (dataPaymentMethod?.payment_methods) {
+            const formattedMethods = dataPaymentMethod.payment_methods.map((method) => ({
                 id: method.id,
                 name: method.name,
                 account: method.account,
@@ -264,7 +264,7 @@ const Plans = () => {
         );
     };
 
-    if (loadingPlans) {
+    if (loadingPlans || loadingPaymentMethod) {
         return <FullPageLoader />;
     }
 
