@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import companyImage from "@/assets/company.png";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useGet } from "@/Hooks/UseGet";
@@ -16,7 +16,12 @@ const Partners = () => {
     url: `${apiUrl}/guest/getCompanies`,
   });
 
-  const [Companies, setCompanies] = useState([]);
+  const [allCompanies, setAllCompanies] = useState([]);
+  const [displayedCompanies, setDisplayedCompanies] = useState([]);
+  const [currentBatch, setCurrentBatch] = useState(0);
+  const companiesPerBatch = 20; // Show 20 companies at a time
+  const animationDuration = 30; // seconds for one loop
+
   const partnersRef = useRef(null);
   const isPartnersInView = useInView(partnersRef, {
     threshold: 0.3,
@@ -24,16 +29,14 @@ const Partners = () => {
   });
 
   const { scrollY } = useScroll();
-
-  // ✅ Limit animation movement on small screens
-  const isMobile =
-    typeof window !== "undefined" && window.innerWidth < 1024;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
   const partnersImageY = useTransform(
     scrollY,
     [1200, 1800],
     [0, isMobile ? 20 : 80]
   );
 
+  // Animation variants (keep your existing variants)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -98,9 +101,32 @@ const Partners = () => {
 
   useEffect(() => {
     if (CompaniesData && CompaniesData.companies) {
-      setCompanies(CompaniesData.companies);
+      setAllCompanies(CompaniesData.companies);
+      // Show first batch initially
+      setDisplayedCompanies(CompaniesData.companies.slice(0, companiesPerBatch));
     }
   }, [CompaniesData]);
+
+  // Function to rotate batches
+  const rotateBatch = useCallback(() => {
+    if (allCompanies.length <= companiesPerBatch) return;
+
+    setCurrentBatch(prev => {
+      const nextBatch = (prev + 1) % Math.ceil(allCompanies.length / companiesPerBatch);
+      const startIndex = nextBatch * companiesPerBatch;
+      const endIndex = startIndex + companiesPerBatch;
+      setDisplayedCompanies(allCompanies.slice(startIndex, endIndex));
+      return nextBatch;
+    });
+  }, [allCompanies, companiesPerBatch]);
+
+  // Set up batch rotation interval
+  useEffect(() => {
+    if (allCompanies.length > companiesPerBatch) {
+      const interval = setInterval(rotateBatch, animationDuration * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [allCompanies, companiesPerBatch, rotateBatch, animationDuration]);
 
   return (
     <section ref={partnersRef} className="py-10 bg-gray-100">
@@ -117,7 +143,6 @@ const Partners = () => {
               src={companyImage}
               alt="Medical facility"
               className="rounded-2xl shadow-lg w-full h-auto object-cover"
-              // style={{ y: partnersImageY }}
               whileHover={{
                 scale: 1,
                 rotate: -1,
@@ -143,24 +168,24 @@ const Partners = () => {
               className="text-lg text-gray-600 mb-8"
               variants={itemVariants}
             >
-              We've established partnerships with over 500 hospitals, clinics,
+              We've established partnerships with over {allCompanies.length} hospitals, clinics,
               and research centers across the globe to bring you exclusive
               career opportunities.
             </motion.p>
 
             {/* Companies Slider */}
-            {Companies.length > 0 && (
+            {displayedCompanies.length > 0 && (
               <div className="overflow-hidden">
                 <motion.div
                   className="flex gap-6"
                   animate={{ x: ["100%", "-100%"] }}
                   transition={{
                     repeat: Infinity,
-                    duration: Companies.length * 6,
+                    duration: animationDuration,
                     ease: "linear",
                   }}
                 >
-                  {Companies.map((company) => (
+                  {displayedCompanies.map((company) => (
                     <div
                       key={company.id}
                       className="bg-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-4 min-w-[220px] hover:shadow-xl transition-shadow duration-300 border border-gray-100"
@@ -182,6 +207,30 @@ const Partners = () => {
                     </div>
                   ))}
                 </motion.div>
+                
+                {/* Batch indicator */}
+                {allCompanies.length > companiesPerBatch && (
+                  <div className="flex justify-center mt-4">
+                    <div className="flex gap-2">
+                      {Array.from({ 
+                        length: Math.ceil(allCompanies.length / companiesPerBatch) 
+                      }).map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            index === currentBatch ? 'bg-blue-600' : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {loadingCompanies && (
+              <div className="text-center text-gray-500">
+                Loading companies...
               </div>
             )}
           </motion.div>
