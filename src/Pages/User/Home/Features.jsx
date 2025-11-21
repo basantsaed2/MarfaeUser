@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import meeting from "@/assets/group.jpg";
-import group from "@/assets/doctor.png"; // Replace with the second image source
+import group from "@/assets/doctor.png";
 import { motion, useInView } from "framer-motion";
 
 const Features = () => {
@@ -73,7 +73,7 @@ const Features = () => {
   };
 
   const CheckIcon = () => (
-    <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="h-6 w-6 text-bg-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
     </svg>
   );
@@ -123,14 +123,14 @@ const Features = () => {
               variants={itemVariants}
             >
               Your gateway to top healthcare jobs and trusted medical institutions.
-              Whether you’re a skilled professional seeking your next role or a hospital
+              Whether you're a skilled professional seeking your next role or a hospital
               looking to hire the best talent, we provide the bridge to make it happen.
             </motion.p>
             <div className="space-y-6">
               {/* Feature 1 */}
               <motion.div className="flex gap-4 items-start" variants={itemVariants}>
                 <div className="flex-shrink-0 mt-1">
-                  <span className="flex items-center justify-center h-8 w-8 bg-blue-100 rounded-full text-blue-500">
+                  <span className="flex items-center justify-center h-8 w-8 bg-bg-primary/10 rounded-full text-bg-primary">
                     <CheckIcon />
                   </span>
                 </div>
@@ -148,7 +148,7 @@ const Features = () => {
               {/* Feature 2 */}
               <motion.div className="flex gap-4 items-start" variants={itemVariants}>
                 <div className="flex-shrink-0 mt-1">
-                  <span className="flex items-center justify-center h-8 w-8 bg-blue-100 rounded-full text-blue-500">
+                  <span className="flex items-center justify-center h-8 w-8 bg-bg-primary/10 rounded-full text-bg-primary">
                     <CheckIcon />
                   </span>
                 </div>
@@ -165,7 +165,7 @@ const Features = () => {
               </motion.div>
             </div>
             <motion.button
-              className="mt-8 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+              className="mt-8 bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
@@ -173,7 +173,6 @@ const Features = () => {
               Learn More About Us
             </motion.button>
           </motion.div>
-
         </div>
       </div>
     </section>

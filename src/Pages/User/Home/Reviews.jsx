@@ -21,57 +21,49 @@ const Reviews = () => {
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardsPerSlide, setCardsPerSlide] = useState(1); // Default to 1 card for small screens
+  const [cardsPerSlide, setCardsPerSlide] = useState(1);
   const containerRef = useRef(null);
 
-  // Fetch reviews when user changes
   useEffect(() => {
     if (user) {
       refetch();
     }
   }, [refetch, user]);
 
-  // Map API data to the reviews state
   useEffect(() => {
     if (data && data.reviews) {
       const mappedReviews = data.reviews.map((review) => ({
         quote: review.comment || "No comment provided",
         rating: review.rate || 0,
         author: review.user?.full_name || "Anonymous",
-        // title: "Professional", // Default title since API doesn't provide one
-        image: review.user?.image_link || "", // Use empty string if no image
+        image: review.user?.image_link || "",
       }));
       setReviews(mappedReviews);
     }
   }, [data]);
 
-  // Logic to determine cards per slide based on screen width
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1280) {
-        // xl breakpoint
         setCardsPerSlide(3);
       } else if (window.innerWidth >= 768) {
-        // md breakpoint
         setCardsPerSlide(2);
       } else {
-        setCardsPerSlide(1); // Default to 1 for smaller screens
+        setCardsPerSlide(1);
       }
     };
 
-    handleResize(); // Set initial value
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Group Reviews dynamically based on cardsPerSlide
   const slides = [];
   for (let i = 0; i < reviews.length; i += cardsPerSlide) {
     slides.push(reviews.slice(i, i + cardsPerSlide));
   }
 
-  // Auto-scroll logic
   useEffect(() => {
     if (isReviewsInView && slides.length > 0) {
       const interval = setInterval(() => {
@@ -130,18 +122,18 @@ const Reviews = () => {
 
   const dotVariants = {
     inactive: { scale: 0.8, opacity: 0.5, backgroundColor: "#D1D5DB" },
-    active: { scale: 1.2, opacity: 1, backgroundColor: "#2563EB" },
+    active: { scale: 1.2, opacity: 1, backgroundColor: "var(--color-bg-primary, #1E90FF)" },
     transition: { duration: 0.3, ease: "easeInOut" },
   };
 
   return (
     <section
       ref={ReviewsRef}
-      className="relative py-8 bg-gradient-to-b from-white to-blue-50 overflow-hidden"
+      className="relative py-8 bg-gradient-to-b from-white to-bg-primary/5 overflow-hidden"
     >
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000 transform -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-bg-primary/20 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-bg-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000 transform -translate-x-1/2 -translate-y-1/2"></div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <motion.div
@@ -154,15 +146,15 @@ const Reviews = () => {
             className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 relative leading-tight"
             variants={titleVariants}
           >
-            <span className="inline-block mr-3 text-blue-600">★</span> What Our{" "}
-            <span className="text-blue-600">Clients</span> Say
+            <span className="inline-block mr-3 text-bg-primary">★</span> What Our{" "}
+            <span className="text-bg-primary">Clients</span> Say
           </motion.h2>
           <motion.p
             className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light"
             variants={itemVariants}
           >
             Hear directly from the professionals who have experienced the{" "}
-            <strong className="text-blue-700">Rekrutalen difference</strong>.
+            <strong className="text-bg-primary">Rekrutalen difference</strong>.
             Their success stories are our greatest pride.
           </motion.p>
         </motion.div>
@@ -193,13 +185,13 @@ const Reviews = () => {
                     {slide.map((testimonial, index) => (
                       <motion.div
                         key={index}
-                        className="flex-1 p-4 bg-white rounded-3xl shadow-xl border border-blue-100/50 hover:border-blue-300 transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group"
+                        className="flex-1 p-4 bg-white rounded-3xl shadow-xl border border-bg-primary/20 hover:border-bg-primary/50 transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group"
                         variants={itemVariants}
                         initial="hidden"
                         animate={isReviewsInView ? "visible" : "hidden"}
                         whileHover="hover"
                       >
-                        <span className="absolute top-4 left-4 text-blue-200 text-6xl opacity-30 transform -rotate-12 transition-all duration-300 group-hover:opacity-50 group-hover:scale-110">
+                        <span className="absolute top-4 left-4 text-bg-primary/20 text-6xl opacity-30 transform -rotate-12 transition-all duration-300 group-hover:opacity-50 group-hover:scale-110">
                           &ldquo;
                         </span>
                         <div className="mb-6 z-10">
@@ -207,10 +199,10 @@ const Reviews = () => {
                             <img
                               src={testimonial.image}
                               alt={`${testimonial.author} profile`}
-                              className="w-20 h-20 rounded-full object-cover border-4 border-blue-300 ring-4 ring-blue-100 transition-all duration-300 group-hover:border-blue-500 group-hover:ring-blue-200"
+                              className="w-20 h-20 rounded-full object-cover border-4 border-bg-primary/50 ring-4 ring-bg-primary/10 transition-all duration-300 group-hover:border-bg-primary group-hover:ring-bg-primary/20"
                             />
                           ) : (
-                            <div className="w-20 h-20 rounded-full bg-blue-300 border-4 border-blue-300 ring-4 ring-blue-100 flex items-center justify-center text-white text-2xl font-bold transition-all duration-300 group-hover:border-blue-500 group-hover:ring-blue-200">
+                            <div className="w-20 h-20 rounded-full bg-bg-primary/50 border-4 border-bg-primary/50 ring-4 ring-bg-primary/10 flex items-center justify-center text-white text-2xl font-bold transition-all duration-300 group-hover:border-bg-primary group-hover:ring-bg-primary/20">
                               {testimonial.author.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -232,12 +224,9 @@ const Reviews = () => {
                         <p className="text-gray-800 text-lg mb-6 italic leading-relaxed font-serif relative z-10">
                           &quot;{testimonial.quote}&quot;
                         </p>
-                        <h4 className="text-xl font-bold text-blue-800 mb-1 z-10">
+                        <h4 className="text-xl font-bold text-bg-primary mb-1 z-10">
                           {testimonial.author}
                         </h4>
-                        <p className="text-gray-600 text-lg z-10">
-                          {testimonial.title}
-                        </p>
                       </motion.div>
                     ))}
                   </div>

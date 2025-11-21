@@ -114,8 +114,9 @@ const Hero = () => {
         initial="hidden"
         animate={isHeroInView ? "visible" : "hidden"}
       />
+      {/* Updated gradient to use CSS primary color */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-blue-500/50 to-transparent flex items-center"
+        className="absolute inset-0 bg-gradient-to-r from-bg-primary/40 to-transparent flex items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, ease: [0.6, 0.05, 0.01, 0.9] }}
@@ -139,9 +140,10 @@ const Hero = () => {
             >
               Connecting healthcare professionals with top institutions worldwide
             </motion.p>
+            {/* Updated button to use CSS primary colors */}
             <motion.button
               onClick={handleBrowseJobs}
-              className="bg-white text-blue-600 hover:bg-blue-100 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg"
+              className="bg-white text-bg-primary hover:bg-bg-primary/10 font-semibold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg border-2 border-transparent hover:border-bg-primary"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"

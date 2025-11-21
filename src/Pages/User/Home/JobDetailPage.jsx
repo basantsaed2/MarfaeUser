@@ -24,23 +24,19 @@ const JobDetailPage = () => {
   const user = useSelector((state) => state.auth.user);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // Use getAllJobs API instead of getJob
   const { refetch: refetchJobs, loading: loadingJobs, data: JobsData } = useGet({
     url: `${apiUrl}/guest/getAllJobs`,
   });
 
-  // State for apply dialog
   const [selectedCv, setSelectedCv] = useState(null);
   const [hasExperience, setHasExperience] = useState('');
   const [message, setMessage] = useState('');
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
 
-  // Fetch CVs
   const { refetch: refetchCVS, loading: loadingCVS, data: cvsData } = useGet({
     url: `${apiUrl}/user/get-usercv`,
   });
 
-  // Post application
   const { postData: postCv, loading: loadingPostCv } = usePost({
     url: `${apiUrl}/user/apply-job`,
   });
@@ -58,13 +54,11 @@ const JobDetailPage = () => {
 
   useEffect(() => {
     if (JobsData && JobsData.jobs && id) {
-      // Find the specific job from all jobs
       const foundJob = JobsData.jobs.find(job => job.id === parseInt(id));
       setJob(foundJob);
     }
   }, [JobsData, id]);
 
-  // Handle apply job submission
   const handleApplyJob = async (jobId) => {
     if (!jobId || !selectedCv) {
       alert('Please select a CV to apply with');
@@ -119,7 +113,7 @@ const JobDetailPage = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Job Not Found</h2>
           <button 
             onClick={() => navigate('/jobs')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-bg-primary text-white px-6 py-2 rounded-lg hover:bg-bg-secondary transition-colors"
           >
             Browse Jobs
           </button>
@@ -133,7 +127,7 @@ const JobDetailPage = () => {
       <div className="w-full px-6">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+          className="flex items-center text-bg-primary hover:text-bg-secondary mb-6 transition-colors"
         >
           <FaArrowLeft className="mr-2" /> Back
         </button>
@@ -151,23 +145,23 @@ const JobDetailPage = () => {
                 <h2 className="text-xl text-gray-700 mb-4">{job.company.name}</h2>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="flex items-center bg-blue-100 text-blue-800 font-semibold px-3 py-1 rounded-full text-sm">
+                  <span className="flex items-center bg-bg-primary/10 text-bg-primary font-semibold px-3 py-1 rounded-full text-sm">
                     <FaMapMarkerAlt className="mr-2" />
                     {job.city.name}, {job.city.country.name}
                   </span>
-                  <span className="flex items-center bg-green-100 text-green-800 font-semibold px-3 py-1 rounded-full text-sm">
+                  <span className="flex items-center bg-bg-secondary/10 text-bg-secondary font-semibold px-3 py-1 rounded-full text-sm">
                     <FaMoneyBillWave className="mr-2" />
                     {job.expected_salary} EGP
                   </span>
-                  <span className="flex items-center bg-purple-100 text-purple-800 font-semibold px-3 py-1 rounded-full text-sm">
+                  <span className="flex items-center bg-bg-primary/10 text-bg-primary font-semibold px-3 py-1 rounded-full text-sm">
                     <FaClock className="mr-2" />
                     {job.type === "full_time" ? "Full Time" : "Part Time"}
                   </span>
                 </div>
               </div>
               
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center shadow-md mb-4 md:mb-0">
-                <span className="text-blue-600 text-2xl font-semibold">{job.company.name.charAt(0)}</span>
+              <div className="w-16 h-16 bg-bg-primary/10 rounded-full flex items-center justify-center shadow-md mb-4 md:mb-0">
+                <span className="text-bg-primary text-2xl font-semibold">{job.company.name.charAt(0)}</span>
               </div>
             </div>
 
@@ -179,7 +173,7 @@ const JobDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                  <FaBriefcase className="mr-2 text-blue-600" />
+                  <FaBriefcase className="mr-2 text-bg-primary" />
                   Job Category
                 </h4>
                 <p className="text-gray-700">{job.job_category.name}</p>
@@ -187,7 +181,7 @@ const JobDetailPage = () => {
               
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                  <FaClock className="mr-2 text-blue-600" />
+                  <FaClock className="mr-2 text-bg-primary" />
                   Employment Type
                 </h4>
                 <p className="text-gray-700 capitalize">{job.type.replace('_', ' ')}</p>
@@ -197,7 +191,7 @@ const JobDetailPage = () => {
             {user ? (
               <button
                 onClick={() => setIsApplyDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                className="bg-bg-primary hover:bg-bg-secondary text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 Apply Now
               </button>
@@ -206,7 +200,7 @@ const JobDetailPage = () => {
                 <p className="text-yellow-800 mb-3">You need to be logged in to apply for this job</p>
                 <button
                   onClick={() => navigate('/login')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                  className="bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                 >
                   Login to Apply
                 </button>
@@ -276,7 +270,7 @@ const JobDetailPage = () => {
                 <p>No CVs found. Please upload a CV in your profile to apply.</p>
                 <button
                   onClick={() => navigate('/profile')}
-                  className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full"
+                  className="mt-2 bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-4 rounded-full"
                 >
                   Upload CV
                 </button>
@@ -289,7 +283,7 @@ const JobDetailPage = () => {
                 <label className="inline-flex items-center">
                   <input
                     type="radio"
-                    className="form-radio text-blue-600"
+                    className="form-radio text-bg-primary"
                     name="hasExperience"
                     value="1"
                     checked={hasExperience === '1'}
@@ -300,7 +294,7 @@ const JobDetailPage = () => {
                 <label className="inline-flex items-center">
                   <input
                     type="radio"
-                    className="form-radio text-blue-600"
+                    className="form-radio text-bg-primary"
                     name="hasExperience"
                     value="0"
                     checked={hasExperience === '0'}
@@ -315,7 +309,7 @@ const JobDetailPage = () => {
               <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message (Optional):</label>
               <textarea
                 id="message"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                 rows="4"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -327,7 +321,7 @@ const JobDetailPage = () => {
               <Button
                 onClick={() => handleApplyJob(job.id)}
                 disabled={loadingPostCv || !selectedCv || hasExperience === ''}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loadingPostCv ? 'Applying...' : 'Submit Application'}
               </Button>

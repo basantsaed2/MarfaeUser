@@ -105,7 +105,7 @@ const DoctorsSection = () => {
     <section className="bg-gradient-to-br from-white">
       <div className="w-full px-4 md:px-6 lg:px-12 py-12 bg-gradient-to-b from-gray-50 to-white">
         <motion.h2
-          className="text-2xl md:text-4xl font-extrabold mb-16 tracking-tight text-center text-gray-900 bg-clip-text bg-gradient-to-r from-green-600 to-blue-600"
+          className="text-2xl md:text-4xl font-extrabold mb-16 tracking-tight text-center bg-clip-text text-bg-primary"
           variants={headingVariants}
           initial="hidden"
           animate="visible"
@@ -128,7 +128,7 @@ const DoctorsSection = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="flex items-start mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center shadow-inner overflow-hidden ring-2 ring-green-200">
+                  <div className="w-20 h-20 bg-gradient-to-br from-bg-primary/10 to-bg-primary/20 rounded-full flex items-center justify-center shadow-inner overflow-hidden ring-2 ring-bg-primary/30">
                     {doctor.doctor_image_url ? (
                       <img
                         src={doctor.doctor_image_url}
@@ -136,7 +136,7 @@ const DoctorsSection = () => {
                         className="rounded-full w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
                       />
                     ) : (
-                      <span className="text-3xl font-bold text-green-600">
+                      <span className="text-3xl font-bold text-bg-primary">
                         {doctor.doctor_name?.charAt(0).toUpperCase()}
                       </span>
                     )}
@@ -185,22 +185,10 @@ const DoctorsSection = () => {
                   <div className="flex gap-3 flex-wrap">
                     <button
                       onClick={() => openDoctorDetails(doctor)}
-                      className="border-2 border-green-500 text-green-500 hover:bg-green-50 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex-1"
+                      className="border-2 border-bg-primary text-bg-primary hover:bg-bg-primary/10 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex-1"
                     >
                       View Details
                     </button>
-                    {/* <button
-                      onClick={() => {
-                        if (!user) {
-                          router('/login');
-                          return;
-                        }
-                        openDoctorDetails(doctor);
-                      }}
-                      className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-2 px-6 rounded-full text-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 flex-1"
-                    >
-                      Book Appointment
-                    </button> */}
                   </div>
                 </div>
               </motion.div>
@@ -220,7 +208,7 @@ const DoctorsSection = () => {
         <div className="text-center mt-16">
           <button
             onClick={handleBrowseMore}
-            className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="bg-bg-primary hover:bg-bg-secondary text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Browse All Doctors
           </button>
@@ -264,20 +252,20 @@ const DoctorsSection = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm mb-6">
                   <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
-                    <FiAward className="text-green-500 mr-2 text-lg" />
+                    <FiAward className="text-bg-primary mr-2 text-lg" />
                     <strong>Specialization:</strong> {selectedDoctorDetails.specialization?.name || 'Not specified'}
                   </motion.div>
                   <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
-                    <FaStethoscope className="text-green-500 mr-2 text-lg" />
+                    <FaStethoscope className="text-bg-primary mr-2 text-lg" />
                     <strong>Clinic:</strong> {selectedDoctorDetails.clinic_name || 'Not specified'}
                   </motion.div>
                   <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.5 }}>
-                    <FiMapPin className="text-green-500 mr-2 text-lg" />
+                    <FiMapPin className="text-bg-primary mr-2 text-lg" />
                     <strong>Location:</strong> {selectedDoctorDetails.zone?.name && `${selectedDoctorDetails.zone.name}, `}
                     {selectedDoctorDetails.city?.name}, {selectedDoctorDetails.country?.name}
                   </motion.div>
                   <motion.div className="flex items-center" variants={itemVariants} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.6 }}>
-                    <FiClock className="text-green-500 mr-2 text-lg" />
+                    <FiClock className="text-bg-primary mr-2 text-lg" />
                     <strong>Availability:</strong> {formatTime(selectedDoctorDetails.available_start_time)} - {formatTime(selectedDoctorDetails.available_end_time)}
                   </motion.div>
                 </div>
@@ -298,19 +286,6 @@ const DoctorsSection = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.8 }}
                 >
-                  {/* <Button
-                    onClick={() => {
-                      if (!user) {
-                        router('/login');
-                        return;
-                      }
-                      // Add booking logic here
-                      toast.success("Booking functionality coming soon!");
-                    }}
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
-                  >
-                    Book Appointment
-                  </Button> */}
                   <Dialog.Close asChild>
                     <Button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg">
                       Close

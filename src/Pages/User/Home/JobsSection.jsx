@@ -103,7 +103,7 @@ const JobsSection = () => {
     <section className="bg-gradient-to-br from-white">
       <div className="w-full px-4 md:px-6 lg:px-12 py-12 bg-gradient-to-b from-gray-50 to-white">
         <motion.h2
-          className="text-2xl md:text-4xl font-extrabold mb-16 tracking-tight text-center text-gray-900 bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600"
+          className="text-2xl md:text-4xl font-extrabold mb-16 tracking-tight text-center bg-clip-text text-bg-primary"
           variants={headingVariants}
           initial="hidden"
           animate="visible"
@@ -127,7 +127,7 @@ const JobsSection = () => {
               >
 
                 <div className="flex items-start mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center shadow-inner overflow-hidden ring-2 ring-indigo-200">
+                  <div className="w-20 h-20 bg-gradient-to-br from-bg-primary/10 to-bg-primary/20 rounded-full flex items-center justify-center shadow-inner overflow-hidden ring-2 ring-bg-primary/30">
                     {job.image_link ? (
                       <img
                         src={job.image_link}
@@ -135,7 +135,7 @@ const JobsSection = () => {
                         className="rounded-full w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
                       />
                     ) : (
-                      <span className="text-3xl font-bold text-indigo-600">
+                      <span className="text-3xl font-bold text-bg-primary">
                         {job.company?.name?.charAt(0).toUpperCase()}
                       </span>
                     )}
@@ -151,17 +151,17 @@ const JobsSection = () => {
                 <h4 className="text-2xl font-semibold text-gray-900 mb-3 tracking-tight">{job.job_titel.name}</h4>
                 <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed">{job.description}</p>
                 <div className="flex items-center text-sm mb-6 flex-wrap gap-3">
-                  <span className="flex items-center bg-indigo-50 text-indigo-700 font-medium px-4 py-2 rounded-full shadow-sm">
-                    <FaClock className="w-4 h-4 mr-2 text-indigo-500" />
+                  <span className="flex items-center bg-bg-primary/10 text-bg-primary font-medium px-4 py-2 rounded-full shadow-sm">
+                    <FaClock className="w-4 h-4 mr-2 text-bg-primary" />
                     {job.type === "full_time" ? "Full Time" : "Part Time"}
                   </span>
-                  <span className="flex items-center bg-purple-50 text-purple-700 font-medium px-4 py-2 rounded-full shadow-sm">
-                    <FaMapMarkerAlt className="w-4 h-4 mr-2 text-purple-500" />
+                  <span className="flex items-center bg-bg-secondary/10 text-bg-secondary font-medium px-4 py-2 rounded-full shadow-sm">
+                    <FaMapMarkerAlt className="w-4 h-4 mr-2 text-bg-secondary" />
                     {job.city.name}, {job.city.country.name}
                   </span>
                 </div>
                 <div className="flex flex-col justify-between gap-y-4 mt-6">
-                  <span className="text-xl font-extrabold text-indigo-600">{job.expected_salary} EGP</span>
+                  <span className="text-xl font-extrabold text-bg-primary">{job.expected_salary} EGP</span>
                   <div className="flex gap-3 flex-wrap">
                     <button
                       onClick={() => handleShareJob(job)}
@@ -173,13 +173,13 @@ const JobsSection = () => {
                     </button>
                     <button
                       onClick={() => handleViewDetails(job)}
-                      className="border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
+                      className="border-2 border-bg-primary text-bg-primary hover:bg-bg-primary/10 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
                     >
                       View Details
                     </button>
                     <button
                       onClick={() => handleApplyJob(job.id, job.job_titel?.name)}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full text-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                      className="bg-bg-primary hover:bg-bg-secondary text-white font-bold py-2 px-6 rounded-full text-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                     >
                       Apply Now
                     </button>
@@ -192,7 +192,7 @@ const JobsSection = () => {
         <div className="text-center mt-16">
           <button
             onClick={handleBrowseMore}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="bg-bg-primary hover:bg-bg-secondary text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Browse More Opportunities
           </button>

@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, ChevronDown, X,MessageSquareWarning , Menu, Contact, BookOpen, Briefcase, Bookmark, List, Building, Pill } from "lucide-react";
+import { LogOut, ChevronDown, X, MessageSquareWarning, Menu, Contact, BookOpen, Briefcase, Bookmark, List, Building, Pill } from "lucide-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "../assets/Logo.jpeg";
-import { FcAbout } from 'react-icons/fc';
 import { FaUserDoctor } from "react-icons/fa6";
 
 export default function Navbar({ className }) {
@@ -14,15 +13,21 @@ export default function Navbar({ className }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [region, setRegion] = useState("Egypt");
+  
+  // Get region from localStorage or default to "Egypt"
+  const [region, setRegion] = useState(() => {
+    return localStorage.getItem("userRegion") || "Egypt";
+  });
 
-  // Apply theme class based on region
+  // Apply theme class based on region and save to localStorage
   useEffect(() => {
     if (region === "Gulf") {
       document.body.classList.add('gulf-theme');
     } else {
       document.body.classList.remove('gulf-theme');
     }
+    // Save to localStorage
+    localStorage.setItem("userRegion", region);
   }, [region]);
 
   const userName = userData?.user?.first_name + " " + userData?.user?.last_name || userData?.user?.full_name || "";
@@ -33,6 +38,7 @@ export default function Navbar({ className }) {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("userRegion"); // Optional: remove region on logout
     navigate("/login");
     setDropdownOpen(false);
   };

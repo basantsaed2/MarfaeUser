@@ -19,8 +19,8 @@ const Partners = () => {
   const [allCompanies, setAllCompanies] = useState([]);
   const [displayedCompanies, setDisplayedCompanies] = useState([]);
   const [currentBatch, setCurrentBatch] = useState(0);
-  const companiesPerBatch = 20; // Show 20 companies at a time
-  const animationDuration = 30; // seconds for one loop
+  const companiesPerBatch = 20;
+  const animationDuration = 30;
 
   const partnersRef = useRef(null);
   const isPartnersInView = useInView(partnersRef, {
@@ -36,7 +36,6 @@ const Partners = () => {
     [0, isMobile ? 20 : 80]
   );
 
-  // Animation variants (keep your existing variants)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -102,12 +101,10 @@ const Partners = () => {
   useEffect(() => {
     if (CompaniesData && CompaniesData.companies) {
       setAllCompanies(CompaniesData.companies);
-      // Show first batch initially
       setDisplayedCompanies(CompaniesData.companies.slice(0, companiesPerBatch));
     }
   }, [CompaniesData]);
 
-  // Function to rotate batches
   const rotateBatch = useCallback(() => {
     if (allCompanies.length <= companiesPerBatch) return;
 
@@ -120,7 +117,6 @@ const Partners = () => {
     });
   }, [allCompanies, companiesPerBatch]);
 
-  // Set up batch rotation interval
   useEffect(() => {
     if (allCompanies.length > companiesPerBatch) {
       const interval = setInterval(rotateBatch, animationDuration * 1000);
@@ -197,7 +193,7 @@ const Partners = () => {
                           className="w-12 h-12 object-cover rounded-full border border-gray-200 bg-gray-50"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 text-blue-700 font-bold text-lg border border-gray-200">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-bg-primary/10 text-bg-primary font-bold text-lg border border-gray-200">
                           {company.name?.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -218,7 +214,7 @@ const Partners = () => {
                         <div
                           key={index}
                           className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentBatch ? 'bg-blue-600' : 'bg-gray-300'
+                            index === currentBatch ? 'bg-bg-primary' : 'bg-gray-300'
                           }`}
                         />
                       ))}

@@ -140,11 +140,11 @@ const Footer = () => {
   return (
     <section
       ref={FooterRef}
-      className="py-6 bg-gradient-to-b from-[var(--color-bg-primary)] via-[#2a3a51] to-[var(--color-bg-secondary)] text-[var(--color-white)]"
+      className="py-6 bg-gradient-to-b from-bg-primary via-bg-primary/90 to-bg-secondary text-white"
     >
       <div className="container mx-auto px-4 text-center max-w-3xl">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold mb-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-white)] to-[var(--color-bgBabyBlue)]"
+          className="text-2xl md:text-3xl font-bold mb-2 tracking-tight bg-clip-text text-white"
           variants={titleVariants}
           initial="hidden"
           animate={isFooterInView ? "visible" : "hidden"}
@@ -153,7 +153,7 @@ const Footer = () => {
         </motion.h2>
 
         <motion.p
-          className="text-sm mb-3 max-w-md mx-auto leading-relaxed text-[var(--color-bgGray)]"
+          className="text-sm mb-3 max-w-md mx-auto leading-relaxed text-bgGray"
           variants={itemVariants}
           initial="hidden"
           animate={isFooterInView ? "visible" : "hidden"}
@@ -171,7 +171,7 @@ const Footer = () => {
             <>
               <motion.button
                 onClick={handleRegister}
-                className="text-white bg-[var(--color-bgBabyBlue)] hover:text-[var(--color-bgBabyBlue)] hover:bg-[var(--color-white)] font-medium py-1 px-4 rounded-full text-sm transition-all duration-200 shadow-sm focus-visible:ring-2 focus-visible:ring-[var(--color-bgBabyBlue)] focus-visible:ring-offset-2"
+                className="text-white bg-bgBabyBlue hover:text-bgBabyBlue hover:bg-white font-medium py-1 px-4 rounded-full text-sm transition-all duration-200 shadow-sm focus-visible:ring-2 focus-visible:ring-bgBabyBlue focus-visible:ring-offset-2"
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -180,7 +180,7 @@ const Footer = () => {
               </motion.button>
               <motion.button
                 onClick={handleLogin}
-                className="bg-transparent border border-[var(--color-bgBabyBlue)] hover:bg-[var(--color-bgBabyBlue)]/20 hover:text-[var(--color-bgBabyBlue)] font-medium py-1 px-4 rounded-full text-sm transition-all duration-200 shadow-sm focus-visible:ring-2 focus-visible:ring-[var(--color-bgBabyBlue)] focus-visible:ring-offset-2"
+                className="bg-transparent border border-bgBabyBlue hover:bg-bgBabyBlue/20 hover:text-bgBabyBlue font-medium py-1 px-4 rounded-full text-sm transition-all duration-200 shadow-sm focus-visible:ring-2 focus-visible:ring-bgBabyBlue focus-visible:ring-offset-2"
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -193,7 +193,7 @@ const Footer = () => {
 
         {/* Review Form */}
         <motion.div
-          className="mt-4 bg-[var(--color-bg-secondary)]/20 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-[var(--color-bgGray)]/30"
+          className="mt-4 bg-bg-secondary/20 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-bgGray/30"
           variants={itemVariants}
           initial="hidden"
           animate={isFooterInView ? "visible" : "hidden"}
@@ -268,13 +268,13 @@ const Footer = () => {
                 value={comment}
                 onChange={handleCommentChange}
                 placeholder="Your feedback..."
-                className="w-full p-2 rounded-md bg-[var(--color-bg-primary)]/30 text-[var(--color-white)] border border-[var(--color-bgGray)]/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-bgBabyBlue)] placeholder-[var(--color-bgGray)] text-xs transition-all duration-200"
+                className="w-full p-2 rounded-md bg-bg-primary/30 text-white border border-bgGray/50 focus:outline-none focus:ring-1 focus:ring-bgBabyBlue placeholder-bgGray text-xs transition-all duration-200"
                 rows="2"
                 maxLength="500"
                 disabled={loadingPost}
                 aria-label="Review comment"
               />
-              <span className="absolute bottom-1 right-2 text-[10px] text-[var(--color-bgGray)]">
+              <span className="absolute bottom-1 right-2 text-[10px] text-bgGray">
                 {comment.length}/500
               </span>
             </div>
@@ -283,7 +283,7 @@ const Footer = () => {
             <div className="flex justify-end">
               <motion.button
                 type="submit"
-                className="bg-[var(--color-bgBabyBlue)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-white)] font-medium py-1 px-5 rounded-full text-xs transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[var(--color-bgBabyBlue)] focus-visible:ring-offset-2"
+                className="bg-bgBabyBlue hover:bg-bg-secondary text-white font-medium py-1 px-5 rounded-full text-xs transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-bgBabyBlue focus-visible:ring-offset-2"
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -326,13 +326,13 @@ const Footer = () => {
           animate={isFooterInView ? "visible" : "hidden"}
           className="mt-4"
         >
-          <p className="text-xs text-[var(--color-bgGray)]">
+          <p className="text-xs text-bgGray">
             Powered by{" "}
             <a
               href="https://connecttocode.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-[var(--color-bgBabyBlue)] transition-colors"
+              className="underline hover:text-bgBabyBlue transition-colors"
             >
               ConnectToCode
             </a>
