@@ -29,6 +29,11 @@ const RegisterUser = () => {
   const { refetch: refetchRegion, loading: loadingRegion, data: regionData } = useGet({
     url: `${apiUrl}/city-country`,
   });
+  // New API call for job titles and subtitles
+  const { refetch: refetchJobTitles, loading: loadingJobTitles, data: jobTitlesData } = useGet({
+    url: `${apiUrl}/get-job-titles`,
+  });
+
   const { postData, loadingPost: loadingPost, response } = usePost({ url: `${apiUrl}/registerUser` });
   const { postData: postOTP, loadingPost: loadingOTP, response: responseOTP } = usePost({
     url: `${apiUrl}/verifyOtp`,
@@ -37,15 +42,23 @@ const RegisterUser = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState("user");
 
-  const [specializationOptions, setSpecializationOptions] = useState([]);
+  // const [specializationOptions, setSpecializationOptions] = useState([]);
   const [experienceOptions, setExperienceOptions] = useState([]);
   const [cities, setCities] = useState([]);
   const [countries, setCountries] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
-  const [selectedSpecializations, setSelectedSpecializations] = useState([]);
+  // const [selectedSpecializations, setSelectedSpecializations] = useState([]);
   const [selectedExperience, setSelectedExperience] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
+  
+  // New states for job titles and subtitles
+  const [jobTitles, setJobTitles] = useState([]);
+  const [jobSubTitles, setJobSubTitles] = useState([]);
+  const [filteredJobSubTitles, setFilteredJobSubTitles] = useState([]);
+  const [selectedJobTitle, setSelectedJobTitle] = useState(null);
+  const [selectedJobSubTitle, setSelectedJobSubTitle] = useState(null);
+
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -70,15 +83,16 @@ const RegisterUser = () => {
   useEffect(() => {
     refetchList();
     refetchRegion();
-  }, [refetchList, refetchRegion]);
+    refetchJobTitles();
+  }, [refetchList, refetchRegion, refetchJobTitles]);
 
   useEffect(() => {
     if (listData?.data) {
-      const formattedSpecialization =
-        listData.data.specializations?.map((u) => ({
-          label: u.name || "—",
-          value: u.id.toString(),
-        })) || [];
+      // const formattedSpecialization =
+      //   listData.data.specializations?.map((u) => ({
+      //     label: u.name || "—",
+      //     value: u.id.toString(),
+      //   })) || [];
       const formattedExperience = [
         { label: "No Experience", value: null },
         ...(listData.data.experince?.map((u) => ({
@@ -86,7 +100,7 @@ const RegisterUser = () => {
           value: u,
         })) || []),
       ];
-      setSpecializationOptions(formattedSpecialization);
+      // setSpecializationOptions(formattedSpecialization);
       setExperienceOptions(formattedExperience);
     }
   }, [listData]);
@@ -106,6 +120,45 @@ const RegisterUser = () => {
       setCities(formattedCities);
     }
   }, [regionData]);
+
+  // Load job titles and subtitles
+  useEffect(() => {
+    if (jobTitlesData) {
+      // Assuming the API returns { job_titles: [], job_sub_titles: [] }
+      if (jobTitlesData.job_titles) {
+        const formattedJobTitles = jobTitlesData.job_titles.map(title => ({
+          value: title.id.toString(),
+          label: title.name,
+        }));
+        setJobTitles(jobTitlesData.job_titles);
+        setJobTitles(formattedJobTitles);
+      }
+
+      if (jobTitlesData.job_sub_titles) {
+        const formattedSubTitles = jobTitlesData.job_sub_titles.map(subTitle => ({
+          value: subTitle.id.toString(),
+          label: subTitle.sub_title_name || subTitle.name,
+          job_title_id: subTitle.job_title_id.toString(),
+        }));
+        setJobSubTitles(formattedSubTitles);
+      }
+    }
+  }, [jobTitlesData]);
+
+  // Filter job subtitles when job title changes
+  useEffect(() => {
+    if (selectedJobTitle && jobSubTitles.length > 0) {
+      const filtered = jobSubTitles.filter(
+        (subTitle) => subTitle.job_title_id === selectedJobTitle.value
+      );
+      setFilteredJobSubTitles(filtered);
+      // Clear selected subtitle when title changes
+      setSelectedJobSubTitle(null);
+    } else {
+      setFilteredJobSubTitles([]);
+      setSelectedJobSubTitle(null);
+    }
+  }, [selectedJobTitle, jobSubTitles]);
 
   // Filter cities when country selection changes
   useEffect(() => {
@@ -161,13 +214,6 @@ const RegisterUser = () => {
       return;
     }
 
-    // // Validate file size (max 5MB)
-    // const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    // if (file.size > maxSize) {
-    //   toast.error("Image size should be less than 5MB");
-    //   return;
-    // }
-
     setProfileImage(file);
 
     // Create preview
@@ -186,69 +232,6 @@ const RegisterUser = () => {
     }
   };
 
-  // const convertImageToBase64 = (file) => {
-  //   return new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       // Remove the data:image/...;base64, prefix if you only want the base64 string
-  //       const base64String = reader.result.split(',')[1];
-  //       resolve(base64String);
-  //     };
-  //     reader.onerror = error => reject(error);
-  //   });
-  // };
-
-  // const handleRegister = async (e) => {
-  //   e.preventDefault();
-  //   if (!emailOrUsername || !password || !firstName || !lastName || !phone) {
-  //     toast.error("All fields are required");
-  //     return;
-  //   }
-  //   if (selectedSpecializations.length === 0) {
-  //     toast.error("Please select at least one specialization");
-  //     return;
-  //   }
-  //   if (!selectedExperience) {
-  //     toast.error("Please select an experience level");
-  //     return;
-  //   }
-
-  //   setIsUploading(true);
-
-  //   try {
-  //     const body = new FormData();
-  //     body.append("first_name", firstName);
-  //     body.append("last_name", lastName);
-  //     body.append("email", emailOrUsername);
-  //     body.append("phone", phone);
-  //     body.append("password", password);
-  //     selectedSpecializations.forEach((spec, index) => {
-  //       body.append(`specialization[${index}]`, spec.value);
-  //     });
-  //     body.append("experience", selectedExperience.value);
-  //     if (selectedCountry) {
-  //       body.append("country_id", selectedCountry.value);
-  //     }
-  //     if (selectedCity) {
-  //       body.append("city_id", selectedCity.value);
-  //     }
-
-  //     // Add profile image as base64 if exists
-  //     if (profileImage) {
-  //       const base64Image = await convertImageToBase64(profileImage);
-  //       body.append("image", base64Image);
-  //     }
-
-  //     await postData(body, "Please check your email for OTP");
-  //   } catch (error) {
-  //     toast.error("Error processing image. Please try again.");
-  //     console.error("Image conversion error:", error);
-  //   } finally {
-  //     setIsUploading(false);
-  //   }
-  // };
-
   const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -265,12 +248,16 @@ const RegisterUser = () => {
       toast.error("All fields are required");
       return;
     }
-    if (selectedSpecializations.length === 0) {
-      toast.error("Please select at least one specialization");
-      return;
-    }
+    // if (selectedSpecializations.length === 0) {
+    //   toast.error("Please select at least one specialization");
+    //   return;
+    // }
     if (!selectedExperience) {
       toast.error("Please select an experience level");
+      return;
+    }
+    if (!selectedJobTitle) {
+      toast.error("Please select a job title");
       return;
     }
 
@@ -288,10 +275,12 @@ const RegisterUser = () => {
         email: emailOrUsername,
         phone: phone,
         password: password,
-        specialization: selectedSpecializations.map(spec => spec.value),
+        // specialization: selectedSpecializations.map(spec => spec.value),
         experience: selectedExperience.value,
         country_id: selectedCountry?.value,
         city_id: selectedCity?.value,
+        job_title_id: selectedJobTitle.value,
+        ...(selectedJobSubTitle && { job_sub_title_id: selectedJobSubTitle.value }),
         image: base64Image, // includes data:image/...;base64,...
       };
 
@@ -647,8 +636,53 @@ const RegisterUser = () => {
                       </span>
                     </motion.div>
 
-                    {/* Specializations */}
+                    {/* Job Title */}
                     <motion.div
+                      className="relative"
+                      style={{ zIndex: 60 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={jobTitles}
+                        value={selectedJobTitle}
+                        onChange={setSelectedJobTitle}
+                        placeholder="Select Job Title"
+                        isLoading={loadingJobTitles}
+                        isDisabled={loadingPost || isUploading}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+
+                    {/* Job Sub Title - Only show when a job title is selected */}
+                    {selectedJobTitle && (
+                      <motion.div
+                        className="relative"
+                        style={{ zIndex: 55 }}
+                        whileHover={{ scale: 1.03 }}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Select
+                          options={filteredJobSubTitles}
+                          value={selectedJobSubTitle}
+                          onChange={setSelectedJobSubTitle}
+                          placeholder="Select Job Sub Title (Optional)"
+                          isDisabled={loadingPost || isUploading || filteredJobSubTitles.length === 0}
+                          className="w-full"
+                          classNamePrefix="select"
+                          styles={selectStyles}
+                          menuPortalTarget={document.body}
+                        />
+                      </motion.div>
+                    )}
+
+                    {/* Specializations */}
+                    {/* <motion.div
                       className="relative"
                       style={{ zIndex: 50 }}
                       whileHover={{ scale: 1.03 }}
@@ -667,7 +701,7 @@ const RegisterUser = () => {
                         styles={selectStyles}
                         menuPortalTarget={document.body}
                       />
-                    </motion.div>
+                    </motion.div> */}
 
                     {/* Experience */}
                     <motion.div

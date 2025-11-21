@@ -7,8 +7,8 @@ body {
 }
 
 @theme {
-  /* Accent */
-  --color-bg-primary: #1E90FF; /* Updated to match logo blue */
+  /* Default Blue Colors (Egypt) */
+  --color-bg-primary: #1E90FF; /* Default blue */
   --color-bg-secondary: #2563EB;
   --color-bg-tertiary: #E5E7EB;
   --color-white: #FFFFFF;
@@ -16,6 +16,13 @@ body {
   --color-bgsidebar: #F1F5F9;
   --color-bgGray: #D9D9D9;
   --color-bgBabyBlue: #00B2FF;
+}
+
+/* Green Theme for Gulf Region */
+.gulf-theme {
+  --color-bg-primary: #10B981; /* Green for Gulf */
+  --color-bg-secondary: #059669;
+  --color-bgBabyBlue: #34D399;
 }
 
 @layer base {
@@ -40,16 +47,25 @@ body {
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Gulf theme sidebar colors */
+  .gulf-theme {
+    --sidebar-primary: 142.1 76.2% 36.3%;
+    --sidebar-ring: 142.1 76.2% 36.3%;
+  }
+
+  .gulf-theme.dark {
+    --sidebar-primary: 142.1 70.6% 45.3%;
+    --sidebar-ring: 142.1 76.2% 36.3%;
+  }
 }
 
-/* In your main CSS file (App.css or index.css) */
+/* Rest of your CSS remains the same */
 .toast-container {
   position: fixed;
   z-index: 999999 !important;
-  /* Important to override any other styles */
 }
 
-/* Ensure no parent elements can clip the toasts */
 .Toastify__toast-container {
   position: fixed !important;
 }
@@ -59,25 +75,19 @@ body {
   z-index: 999999 !important;
 }
 
-/* Fix for modal backdrops */
 .ReactModal__Overlay {
   z-index: 1000 !important;
-  /* Lower than toast */
 }
 
-/* Fix for dialog backdrops */
 [role="dialog"] {
   z-index: 1000 !important;
-  /* Lower than toast */
 }
 
-  /* In your main CSS file (App.css or index.css) */
 .toast-container {
   position: fixed;
-  z-index: 999999 !important; /* Important to override any other styles */
+  z-index: 999999 !important;
 }
 
-/* Ensure no parent elements can clip the toasts */
 .Toastify__toast-container {
   position: fixed !important;
 }

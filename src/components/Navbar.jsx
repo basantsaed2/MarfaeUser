@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { LanguageContext } from "./../context/LanguageContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, ChevronDown, X, Menu, Contact, BookOpen, Briefcase, Bookmark, List, Building, Pill } from "lucide-react";
+import { LogOut, ChevronDown, X,MessageSquareWarning , Menu, Contact, BookOpen, Briefcase, Bookmark, List, Building, Pill } from "lucide-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "../assets/Logo.jpeg";
@@ -11,12 +10,20 @@ import { FaUserDoctor } from "react-icons/fa6";
 
 export default function Navbar({ className }) {
   const { t } = useTranslation();
-  const { language, changeLanguage } = useContext(LanguageContext);
   const userData = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [region, setRegion] = useState("Egypt"); // State for region selection
+  const [region, setRegion] = useState("Egypt");
+
+  // Apply theme class based on region
+  useEffect(() => {
+    if (region === "Gulf") {
+      document.body.classList.add('gulf-theme');
+    } else {
+      document.body.classList.remove('gulf-theme');
+    }
+  }, [region]);
 
   const userName = userData?.user?.first_name + " " + userData?.user?.last_name || userData?.user?.full_name || "";
   const userInitials = userName
@@ -43,14 +50,14 @@ export default function Navbar({ className }) {
 
   const handleRegionChange = (newRegion) => {
     setRegion(newRegion);
-    setDropdownOpen(false); // Close dropdown on mobile after selection
+    setDropdownOpen(false);
   };
 
   // Navigation items
   const navItems = [
     { to: "/contact_us", label: t("Contact Us"), icon: Contact },
     { to: "/jobs", label: t("Jobs"), icon: Briefcase },
-    { to: "/about_us", label: t("About Us"), icon: FcAbout },
+    { to: "/about_us", label: t("About Us"), icon: MessageSquareWarning },
   ];
 
   // Dropdown items for Lists

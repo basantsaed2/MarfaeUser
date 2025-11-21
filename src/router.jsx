@@ -18,7 +18,6 @@ import JobDetailPage from "./Pages/User/Home/JobDetailPage";
 import AboutUs from "./Pages/User/AboutUs/AboutUs";
 import Doctors from "./Pages/User/Doctors/Doctors";
 import Plans from "./Pages/User/Plans/Plans";
-import ComingSoon from "./Pages/ComingSoon";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -41,10 +40,6 @@ const router = createBrowserRouter([
           </ProtAuth>
         ),
       },
-      {
-        path: "/",
-        element:  <ComingSoon/>
-      },
     ],
   },
 
@@ -54,14 +49,14 @@ const router = createBrowserRouter([
       <AdminLayout />
     ),
     children: [
-      // {
-      //   path: "/",
-      //   element: (
-      //     // <ProtectedRoute>
-      //       <Home />
-      //     // </ProtectedRoute>
-      //   ),
-      // },
+      {
+        path: "/",
+        element: (
+          // <ProtectedRoute>
+            <Home />
+          // </ProtectedRoute>
+        ),
+      },
       {
         path: "jobs/:id",
         element: <JobDetailPage />
