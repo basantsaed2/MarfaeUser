@@ -111,12 +111,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
   const [jobTitleOptions, setJobTitleOptions] = useState([]);
   const [jobSubTitleOptions, setJobSubTitleOptions] = useState([]);
 
-  // Check if user is doctor or nurse
-  // const isMedicalProfessional = () => {
-  //   const jobTitle = profile?.job_title?.name?.toLowerCase();
-  //   return jobTitle === 'doctor' || jobTitle === 'nurse';
-  // };
-
   useEffect(() => {
     if (open) {
       refetchSpecialization();
@@ -484,13 +478,12 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
   };
 
   const isMedical = isMedicalProfessional;
-  console.log("isMedicalProfessional" , isMedicalProfessional)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Edit Profile</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-bg-primary">Edit Profile</DialogTitle>
           <DialogDescription className="text-gray-600">
             Update your personal and professional information
           </DialogDescription>
@@ -539,7 +532,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 />
                 <label
                   htmlFor="image-upload"
-                  className="cursor-pointer bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg inline-flex items-center"
+                  className="cursor-pointer bg-bg-primary/10 text-bg-primary hover:bg-bg-primary/20 px-4 py-2 rounded-lg inline-flex items-center"
                 >
                   <FiCamera className="mr-2" />
                   {formData.image_link ? 'Change Image' : 'Upload Image'}
@@ -563,7 +556,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleInputChange}
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.first_name && (
                 <p className="text-sm text-red-600">{formErrors.first_name}</p>
@@ -576,7 +569,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleInputChange}
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.last_name && (
                 <p className="text-sm text-red-600">{formErrors.last_name}</p>
@@ -594,7 +587,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 value={formData.email}
                 onChange={handleInputChange}
                 autoComplete="off"
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
             </div>
@@ -605,7 +598,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.phone && <p className="text-sm text-red-600">{formErrors.phone}</p>}
             </div>
@@ -622,7 +615,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 onChange={handleInputChange}
                 autoComplete="new-password"
                 placeholder="Enter new password"
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.password && (
                 <p className="text-sm text-red-600">{formErrors.password}</p>
@@ -638,7 +631,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 onChange={handleInputChange}
                 autoComplete="new-password"
                 placeholder="Confirm new password"
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.password_confirmation && (
                 <p className="text-sm text-red-600">{formErrors.password_confirmation}</p>
@@ -657,7 +650,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 value={formData.age}
                 onChange={handleInputChange}
                 required
-                className="w-full"
+                className="w-full focus:ring-bg-primary focus:border-bg-primary"
               />
               {formErrors.age && <p className="text-sm text-red-600">{formErrors.age}</p>}
             </div>
@@ -672,7 +665,18 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 classNamePrefix="react-select"
                 isClearable
                 styles={{
-                  menuPortal: base => ({ ...base, zIndex: 9999 })
+                  menuPortal: base => ({ ...base, zIndex: 9999 }),
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                    '&:focus-within': {
+                      borderColor: 'var(--color-bg-primary)',
+                      boxShadow: '0 0 0 2px var(--color-bg-primary)/20',
+                    },
+                  }),
                 }}
               />
               {formErrors.experience && (
@@ -694,6 +698,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 className="react-select-container"
                 classNamePrefix="react-select"
                 isClearable
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                  }),
+                }}
               />
               {formErrors.job_title_id && (
                 <p className="text-sm text-red-600">{formErrors.job_title_id}</p>
@@ -710,6 +723,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 className="react-select-container"
                 classNamePrefix="react-select"
                 isClearable
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                  }),
+                }}
               />
               {formErrors.job_sub_title_id && (
                 <p className="text-sm text-red-600">{formErrors.job_sub_title_id}</p>
@@ -732,7 +754,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                     value={formData.hospital_clinic_name}
                     onChange={handleInputChange}
                     placeholder="e.g., Cairo Medical Center"
-                    className="w-full"
+                    className="w-full focus:ring-bg-primary focus:border-bg-primary"
                   />
                   {formErrors.hospital_clinic_name && (
                     <p className="text-sm text-red-600">{formErrors.hospital_clinic_name}</p>
@@ -749,6 +771,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                     className="react-select-container"
                     classNamePrefix="react-select"
                     isClearable
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        borderColor: '#d1d5db',
+                        '&:hover': {
+                          borderColor: 'var(--color-bg-primary)',
+                        },
+                      }),
+                    }}
                   />
                   {formErrors.company_id && (
                     <p className="text-sm text-red-600">{formErrors.company_id}</p>
@@ -764,7 +795,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                   value={formData.qualification}
                   onChange={handleInputChange}
                   placeholder="e.g., Bachelor of Pharmacy"
-                  className="w-full"
+                  className="w-full focus:ring-bg-primary focus:border-bg-primary"
                 />
                 {formErrors.qualification && (
                   <p className="text-sm text-red-600">{formErrors.qualification}</p>
@@ -781,7 +812,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                   type="date"
                   value={formData.start_date}
                   onChange={handleInputChange}
-                  className="w-full"
+                  className="w-full focus:ring-bg-primary focus:border-bg-primary"
                 />
                 {formErrors.start_date && (
                   <p className="text-sm text-red-600">{formErrors.start_date}</p>
@@ -795,7 +826,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                   type="date"
                   value={formData.end_date}
                   onChange={handleInputChange}
-                  className="w-full"
+                  className="w-full focus:ring-bg-primary focus:border-bg-primary"
                 />
                 {formErrors.end_date && (
                   <p className="text-sm text-red-600">{formErrors.end_date}</p>
@@ -813,7 +844,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
               value={formData.expected_salary}
               onChange={handleInputChange}
               placeholder="e.g., 10000"
-              className="w-full"
+              className="w-full focus:ring-bg-primary focus:border-bg-primary"
             />
             {formErrors.expected_salary && (
               <p className="text-sm text-red-600">{formErrors.expected_salary}</p>
@@ -832,6 +863,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 className="react-select-container"
                 classNamePrefix="react-select"
                 isClearable
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                  }),
+                }}
               />
               {formErrors.country_id && (
                 <p className="text-sm text-red-600">{formErrors.country_id}</p>
@@ -848,6 +888,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 className="react-select-container"
                 classNamePrefix="react-select"
                 isClearable
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                  }),
+                }}
               />
               {formErrors.city_id && <p className="text-sm text-red-600">{formErrors.city_id}</p>}
             </div>
@@ -866,6 +915,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
               components={animatedComponents}
               className="react-select-container"
               classNamePrefix="react-select"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  borderColor: '#d1d5db',
+                  '&:hover': {
+                    borderColor: 'var(--color-bg-primary)',
+                  },
+                }),
+              }}
             />
             {formErrors.specialization && (
               <p className="text-sm text-red-600">{formErrors.specialization}</p>
@@ -886,6 +944,15 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                 components={animatedComponents}
                 className="react-select-container"
                 classNamePrefix="react-select"
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                  }),
+                }}
               />
               {formErrors.drug && (
                 <p className="text-sm text-red-600">{formErrors.drug}</p>
@@ -901,7 +968,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
               value={formData.user_address}
               onChange={handleInputChange}
               placeholder="Enter your full address"
-              className="w-full"
+              className="w-full focus:ring-bg-primary focus:border-bg-primary"
             />
             {formErrors.user_address && (
               <p className="text-sm text-red-600">{formErrors.user_address}</p>
@@ -913,7 +980,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto border-bg-primary text-bg-primary hover:bg-bg-primary/10"
               disabled={loadingChange}
             >
               Cancel
@@ -921,7 +988,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
             <Button
               type="submit"
               disabled={loadingChange}
-              className="w-full text-white sm:w-auto bg-blue-600 hover:bg-blue-700"
+              className="w-full text-white sm:w-auto bg-bg-primary hover:bg-bg-primary/90"
             >
               {loadingChange ? "Updating..." : "Update Profile"}
             </Button>

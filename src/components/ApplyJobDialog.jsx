@@ -144,7 +144,7 @@ const ApplyJobDialog = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-lg shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-gray-50 max-h-[90vh] overflow-y-auto"
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-lg shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-bg-primary/5 max-h-[90vh] overflow-y-auto"
           aria-label="Apply for Job Dialog"
         >
           {showPrometricMessage ? (
@@ -162,11 +162,11 @@ const ApplyJobDialog = ({
                   </p>
                 </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-blue-800 text-sm mb-3">
+                <div className="bg-bg-primary/10 border border-bg-primary/20 rounded-lg p-4">
+                  <p className="text-bg-primary text-sm mb-3">
                     <strong>Need help with prometric?</strong>
                   </p>
-                  <p className="text-blue-700 text-xs mb-4">
+                  <p className="text-bg-primary/80 text-xs mb-4">
                     Contact us if you want to train or pass the prometric exam
                   </p>
                   <button
@@ -175,14 +175,14 @@ const ApplyJobDialog = ({
                   >
                     <span>Contact on WhatsApp</span>
                   </button>
-                  <p className="text-blue-600 text-xs mt-2">01277337807</p>
+                  <p className="text-bg-primary text-xs mt-2">01277337807</p>
                 </div>
               </div>
 
               <div className="flex justify-center gap-3">
                 <Button
                   onClick={handleClose}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   Close
                 </Button>
@@ -197,7 +197,7 @@ const ApplyJobDialog = ({
               <Dialog.Description className="text-gray-600 mb-6">
                 Please provide your CV and details to apply for this position.
                 {isMedicalJob() && (
-                  <span className="block mt-2 text-blue-600 font-medium">
+                  <span className="block mt-2 text-bg-primary font-medium">
                     ⚕️ Medical position - Prometric certification required
                   </span>
                 )}
@@ -241,7 +241,7 @@ const ApplyJobDialog = ({
 
               {/* Prometric Section for Medical Jobs */}
               {isMedicalJob() && (
-                <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="mb-4 p-4 bg-bg-primary/10 rounded-lg border border-bg-primary/20">
                   <label className="block text-gray-700 font-medium mb-2">
                     Do you have prometric certification? *
                   </label>
@@ -249,7 +249,7 @@ const ApplyJobDialog = ({
                     <label className="inline-flex items-center">
                       <input
                         type="radio"
-                        className="form-radio text-blue-600"
+                        className="form-radio text-bg-primary"
                         name="hasPrometric"
                         value="1"
                         checked={hasPrometric === "1"}
@@ -260,7 +260,7 @@ const ApplyJobDialog = ({
                     <label className="inline-flex items-center">
                       <input
                         type="radio"
-                        className="form-radio text-blue-600"
+                        className="form-radio text-bg-primary"
                         name="hasPrometric"
                         value="0"
                         checked={hasPrometric === "0"}
@@ -269,7 +269,7 @@ const ApplyJobDialog = ({
                       <span className="ml-2 text-gray-700">No</span>
                     </label>
                   </div>
-                  <p className="text-xs text-blue-600 mt-2">
+                  <p className="text-xs text-bg-primary mt-2">
                     Prometric certification is required for this medical position.
                   </p>
                 </div>
@@ -283,7 +283,7 @@ const ApplyJobDialog = ({
                   <label className="inline-flex items-center">
                     <input
                       type="radio"
-                      className="form-radio text-blue-600"
+                      className="form-radio text-bg-primary"
                       name="hasExperience"
                       value="1"
                       checked={hasExperience === "1"}
@@ -294,7 +294,7 @@ const ApplyJobDialog = ({
                   <label className="inline-flex items-center">
                     <input
                       type="radio"
-                      className="form-radio text-blue-600"
+                      className="form-radio text-bg-primary"
                       name="hasExperience"
                       value="0"
                       checked={hasExperience === "0"}
@@ -313,7 +313,7 @@ const ApplyJobDialog = ({
                   </label>
                   <textarea
                     id="experienceMessage"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                     rows="4"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -333,7 +333,7 @@ const ApplyJobDialog = ({
                   </label>
                   <textarea
                     id="motivationMessage"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                     rows="4"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -356,7 +356,7 @@ const ApplyJobDialog = ({
                     !message.trim() ||
                     (isMedicalJob() && hasPrometric === '')
                   }
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingPostCv ? 'Applying...' : 'Submit Application'}
                 </Button>

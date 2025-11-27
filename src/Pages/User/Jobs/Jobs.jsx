@@ -25,6 +25,7 @@ const customSelectStyles = {
     overflowY: 'auto',
     zIndex: 9999,
   }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   menuList: (provided) => ({
     ...provided,
     maxHeight: '220px',
@@ -68,7 +69,7 @@ const Jobs = () => {
   const [experiences, setExperiences] = useState([]);
   const [isFiltered, setIsFiltered] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
-  const [selectedJobTitle, setSelectedJobTitle] = useState(''); // Add this state
+  const [selectedJobTitle, setSelectedJobTitle] = useState('');
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
   const [selectedJobDetails, setSelectedJobDetails] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
@@ -302,7 +303,7 @@ const Jobs = () => {
   // Handle apply job
   const handleApplyJob = (jobId, jobTitle) => {
     setSelectedJobId(jobId);
-    setSelectedJobTitle(jobTitle || ''); // Use empty string as fallback
+    setSelectedJobTitle(jobTitle || '');
     setIsApplyDialogOpen(true);
   };
 
@@ -375,7 +376,7 @@ const Jobs = () => {
               <input
                 type="text"
                 placeholder="Search by job title, company, or keywords"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
               />
               <FiSearch className="absolute left-3 top-3 text-gray-400" />
             </motion.div>
@@ -386,7 +387,7 @@ const Jobs = () => {
             >
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold py-2 px-6 rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 <motion.span
                   animate={{ rotate: showFilters ? 90 : 0 }}
@@ -431,6 +432,8 @@ const Jobs = () => {
                       placeholder={select.placeholder}
                       isClearable
                       styles={customSelectStyles}
+                      menuPortalTarget={document.body}
+                      closeMenuOnScroll={true}
                     />
                   </motion.div>
                 ))}
@@ -444,7 +447,7 @@ const Jobs = () => {
                   <Button
                     onClick={applyFilters}
                     disabled={loadingPost}
-                    className="relative bg-gradient-to-r from-blue-600 to-teal-600 text-white font-semibold py-2 px-6 rounded-full hover:from-blue-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed group"
+                    className="relative bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed group"
                   >
                     <motion.span
                       className="flex items-center gap-2"
@@ -457,7 +460,7 @@ const Jobs = () => {
                   </Button>
                   <Button
                     onClick={resetFilters}
-                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold py-2 px-6 rounded-full hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg hover:animate-shake"
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:animate-shake"
                   >
                     <FiXCircle className="inline mr-2" />
                     Reset Filters
@@ -533,7 +536,7 @@ const Jobs = () => {
               {Object.values(filters).some(f => f !== null) && (
                 <Button
                   onClick={resetFilters}
-                  className="mt-4 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-full hover:from-red-600 hover:to-pink-600 transition-all duration-300 hover:animate-shake"
+                  className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 hover:animate-shake"
                 >
                   <FiXCircle className="inline mr-2" />
                   Reset all filters
@@ -555,7 +558,7 @@ const Jobs = () => {
             <Button
               onClick={goToPreviousPage}
               disabled={!prevPageUrl && currentPage === 1}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-full hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <motion.span
                 animate={{ x: isFetchingPage ? 0 : -5 }}
@@ -568,7 +571,7 @@ const Jobs = () => {
             <Button
               onClick={goToNextPage}
               disabled={!nextPageUrl}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-6 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
               <motion.span

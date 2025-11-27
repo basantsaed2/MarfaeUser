@@ -17,7 +17,7 @@ export default function DeleteDialog({ open, onOpenChange, onConfirm, name }) {
           <Button
             onClick={() => onOpenChange(false)}
             variant="outline"
-            className="border-bg-primary text-bg-primary hover:bg-teal-50 rounded-[10px] !p-3"
+            className="border-bg-primary text-bg-primary hover:bg-bg-primary/10 rounded-[10px] !p-3"
           >
             Cancel
           </Button>

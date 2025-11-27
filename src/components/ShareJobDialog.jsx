@@ -1,4 +1,3 @@
-// components/ShareJobDialog.jsx
 "use client";
 import React from "react";
 import * as Dialog from '@radix-ui/react-dialog';
@@ -121,7 +120,7 @@ const ShareJobDialog = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-md shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-gray-50"
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-md shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-bg-primary/5"
           aria-label="Share Job Dialog"
         >
           <div className="flex justify-between items-center mb-4">
@@ -137,8 +136,8 @@ const ShareJobDialog = ({
 
           <div className="mb-6">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                <span className="text-blue-600 text-lg font-semibold">
+              <div className="w-12 h-12 bg-bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                <span className="text-bg-primary text-lg font-semibold">
                   {job.company?.name?.charAt(0)}
                 </span>
               </div>
@@ -157,8 +156,8 @@ const ShareJobDialog = ({
               </p>
             </div>
 
-            <div className="bg-blue-50 p-3 rounded-lg mb-4">
-              <p className="text-xs text-blue-700 break-all">
+            <div className="bg-bg-primary/10 p-3 rounded-lg mb-4">
+              <p className="text-xs text-bg-primary break-all">
                 Share URL: {generateJobUrl(job.id)}
               </p>
             </div>
@@ -189,7 +188,7 @@ const ShareJobDialog = ({
 
             <button
               onClick={shareViaEmail}
-              className="flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+              className="flex flex-col items-center justify-center bg-bg-primary/10 hover:bg-bg-primary/20 text-bg-primary font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
               title="Share via Email"
             >
               <FaEnvelope className="w-5 h-5 mb-2" />
@@ -213,14 +212,14 @@ const ShareJobDialog = ({
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => shareViaSocial('facebook')}
-                className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-3 rounded-full transition-all duration-300"
+                className="bg-bg-primary/10 hover:bg-bg-primary/20 text-bg-primary p-3 rounded-full transition-all duration-300"
                 title="Share on Facebook"
               >
                 <SiFacebook className="w-5 h-5" />
               </button>
               <button
                 onClick={() => shareViaSocial('linkedin')}
-                className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-3 rounded-full transition-all duration-300"
+                className="bg-bg-primary/10 hover:bg-bg-primary/20 text-bg-primary p-3 rounded-full transition-all duration-300"
                 title="Share on LinkedIn"
               >
                 <SiLinkedin className="w-5 h-5" />

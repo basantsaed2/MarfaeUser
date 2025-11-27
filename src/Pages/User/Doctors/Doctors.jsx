@@ -40,7 +40,7 @@ const customMultiSelectStyles = {
     ...customSelectStyles,
     multiValue: (provided) => ({
         ...provided,
-        backgroundColor: '#3b82f6',
+        backgroundColor: 'var(--color-bg-primary)',
         color: 'white',
     }),
     multiValueLabel: (provided) => ({
@@ -64,21 +64,14 @@ const Doctors = () => {
     const [allDoctors, setAllDoctors] = useState([]);
     const [displayedDoctors, setDisplayedDoctors] = useState([]);
     const [filters, setFilters] = useState({
-        country_id: null,
-        city_id: null,
-        zone_id: null,
+        address: "",
         specialization_id: null,
         doctor_name: "",
         available_start_time: "",
         available_end_time: "",
-        availability_days: [], // Changed from null to array for multi-select
+        availability_days: [],
     });
     const [showFilters, setShowFilters] = useState(false);
-    const [countries, setCountries] = useState([]);
-    const [allCities, setAllCities] = useState([]);
-    const [filteredCities, setFilteredCities] = useState([]);
-    const [allZones, setAllZones] = useState([]);
-    const [filteredZones, setFilteredZones] = useState([]);
     const [specializations, setSpecializations] = useState([]);
     const [selectedDoctorDetails, setSelectedDoctorDetails] = useState(null);
     const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -94,13 +87,31 @@ const Doctors = () => {
         { value: 'sunday', label: 'Sunday' }
     ];
 
-    // API hooks - Using the two APIs you specified
+    // Format time for input (keep as HH:MM)
+    const formatTime = (timeString) => {
+        if (!timeString) return "—";
+        return timeString.split(':').slice(0, 2).join(':');
+    };
+
+    // Format time for display with AM/PM
+    const formatTimeWithAMPM = (timeString) => {
+        if (!timeString) return "—";
+        
+        // Extract hours and minutes
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours, 10);
+        const minute = minutes || '00';
+        
+        // Convert to 12-hour format
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const twelveHour = hour % 12 || 12;
+        
+        return `${twelveHour}:${minute} ${period}`;
+    };
+
+    // API hooks
     const { refetch: refetchDoctors, loading: loadingDoctors, data: doctorsData } = useGet({
         url: `${apiUrl}/user/doctors`,
-    });
-
-    const { refetch: refetchLocationData, loading: loadingLocationData, data: locationData } = useGet({
-        url: `${apiUrl}/user/city-country`,
     });
 
     const { refetch: refetchSpecializations, loading: loadingSpecializations, data: specializationsData } = useGet({
@@ -114,9 +125,8 @@ const Doctors = () => {
     // Fetch initial data
     useEffect(() => {
         refetchDoctors();
-        refetchLocationData();
         refetchSpecializations();
-    }, [refetchDoctors, refetchLocationData, refetchSpecializations]);
+    }, [refetchDoctors, refetchSpecializations]);
 
     // Process doctors data
     useEffect(() => {
@@ -131,38 +141,6 @@ const Doctors = () => {
         }
     }, [doctorsData]);
 
-    // Process location data from city-country API
-    useEffect(() => {
-        if (locationData) {
-            // Set countries
-            if (locationData.countries) {
-                setCountries(locationData.countries.map(c => ({ value: c.id, label: c.name })));
-            }
-
-            // Set cities with country_id
-            if (locationData.cities) {
-                const citiesWithCountry = locationData.cities.map(c => ({
-                    value: c.id,
-                    label: c.name,
-                    country_id: c.country_id
-                }));
-                setAllCities(citiesWithCountry);
-                setFilteredCities(citiesWithCountry);
-            }
-
-            // Set zones with city_id
-            if (locationData.zones) {
-                const zonesWithCity = locationData.zones.map(z => ({
-                    value: z.id,
-                    label: z.name,
-                    city_id: z.city_id
-                }));
-                setAllZones(zonesWithCity);
-                setFilteredZones(zonesWithCity);
-            }
-        }
-    }, [locationData]);
-
     // Process specializations data
     useEffect(() => {
         if (specializationsData?.specializations) {
@@ -170,61 +148,25 @@ const Doctors = () => {
         }
     }, [specializationsData]);
 
-    // Process search response - UPDATED: Handle the correct response structure
+    // Process search response
     useEffect(() => {
         if (searchResponse?.success && searchResponse?.data?.data) {
-            // Handle the nested structure: searchResponse.data.data
             const doctorsArray = Array.isArray(searchResponse.data.data) ? searchResponse.data.data : [];
             setDisplayedDoctors(doctorsArray);
         } else if (searchResponse?.doctors) {
-            // Fallback for different structure
             const doctorsArray = Array.isArray(searchResponse.doctors) ? searchResponse.doctors : [];
             setDisplayedDoctors(doctorsArray);
         } else if (searchResponse?.data?.data?.data) {
-            // Another possible nested structure
             const doctorsArray = Array.isArray(searchResponse.data.data.data) ? searchResponse.data.data.data : [];
             setDisplayedDoctors(doctorsArray);
         } else {
-            // If no search results, show empty state
             setDisplayedDoctors([]);
         }
     }, [searchResponse]);
 
-    // Handle filter changes with dependency logic - FIXED: Added null checks
+    // Handle filter changes
     const handleFilterChange = (name, value) => {
-        setFilters(prev => {
-            const newFilters = { ...prev, [name]: value };
-
-            // Handle dependencies
-            if (name === 'country_id') {
-                newFilters.city_id = null;
-                newFilters.zone_id = null;
-
-                if (value && value.value !== null) {
-                    const filteredCities = allCities.filter(city =>
-                        city.country_id?.toString() === value.value?.toString()
-                    );
-                    setFilteredCities(filteredCities);
-                } else {
-                    setFilteredCities(allCities);
-                }
-                setFilteredZones(allZones);
-            }
-            else if (name === 'city_id') {
-                newFilters.zone_id = null;
-
-                if (value && value.value !== null) {
-                    const filteredZones = allZones.filter(zone =>
-                        zone.city_id?.toString() === value.value?.toString()
-                    );
-                    setFilteredZones(filteredZones);
-                } else {
-                    setFilteredZones(allZones);
-                }
-            }
-
-            return newFilters;
-        });
+        setFilters(prev => ({ ...prev, [name]: value }));
     };
 
     // Handle multi-select changes for availability days
@@ -245,14 +187,12 @@ const Doctors = () => {
     // Apply filters and search
     const applyFilters = async () => {
         const payload = {
-            country_id: filters.country_id?.value || null,
-            city_id: filters.city_id?.value || null,
-            zone_id: filters.zone_id?.value || null,
+            address: filters.address || null,
             specialization_id: filters.specialization_id?.value || null,
             doctor_name: filters.doctor_name || null,
             available_start_time: filters.available_start_time || null,
             available_end_time: filters.available_end_time || null,
-            availability_days: filters.availability_days?.map(day => day.value) || null, // Extract values from multi-select
+            availability_days: filters.availability_days?.map(day => day.value) || null,
         };
 
         // Remove null values
@@ -276,24 +216,14 @@ const Doctors = () => {
     // Reset filters
     const resetFilters = () => {
         setFilters({
-            country_id: null,
-            city_id: null,
-            zone_id: null,
+            address: "",
             specialization_id: null,
             doctor_name: "",
             available_start_time: "",
             available_end_time: "",
-            availability_days: [], // Reset to empty array
+            availability_days: [],
         });
-        setFilteredCities(allCities);
-        setFilteredZones(allZones);
         setDisplayedDoctors(allDoctors);
-    };
-
-    // Format time for display
-    const formatTime = (timeString) => {
-        if (!timeString) return "—";
-        return timeString.split(':').slice(0, 2).join(':');
     };
 
     // Format availability days
@@ -309,12 +239,12 @@ const Doctors = () => {
     };
 
     // Loading state
-    if (loadingDoctors || loadingLocationData || loadingSpecializations) {
+    if (loadingDoctors || loadingSpecializations) {
         return <FullPageLoader />;
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-bg-primary/5">
             {loadingSearch && <FullPageLoader />}
 
             {/* Header Section */}
@@ -350,13 +280,13 @@ const Doctors = () => {
                                 placeholder="Search by doctor name..."
                                 value={filters.doctor_name}
                                 onChange={(e) => handleTextChange('doctor_name', e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                             />
                             <FiSearch className="absolute left-3 top-3 text-gray-400" />
                         </div>
                         <Button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition-all duration-300"
+                            className="flex items-center gap-2 bg-bg-primary text-white font-semibold py-2 px-6 rounded-full hover:bg-bg-primary/90 transition-all duration-300"
                         >
                             <FiFilter />
                             {showFilters ? 'Hide Filters' : 'Show Filters'}
@@ -372,51 +302,22 @@ const Doctors = () => {
                                 exit={{ height: 0, opacity: 0 }}
                                 className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                             >
-                                {/* Country Filter */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                                    <Select
-                                        options={[{ value: null, label: 'All Countries' }, ...countries]}
-                                        value={filters.country_id}
-                                        onChange={(selected) => handleFilterChange('country_id', selected)}
-                                        placeholder="Select Country"
-                                        isClearable
-                                        styles={customSelectStyles}
-                                    />
-                                </div>
-
-                                {/* City Filter */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                    <Select
-                                        options={[{ value: null, label: 'All Cities' }, ...filteredCities]}
-                                        value={filters.city_id}
-                                        onChange={(selected) => handleFilterChange('city_id', selected)}
-                                        placeholder={filters.country_id ? "Select City" : "Select Country First"}
-                                        isClearable
-                                        isDisabled={!filters.country_id && filteredCities.length > 0}
-                                        styles={customSelectStyles}
-                                    />
-                                    {!filters.country_id && (
-                                        <p className="text-xs text-gray-500 mt-1">Please select a country first</p>
-                                    )}
-                                </div>
-
-                                {/* Zone Filter */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Zone</label>
-                                    <Select
-                                        options={[{ value: null, label: 'All Zones' }, ...filteredZones]}
-                                        value={filters.zone_id}
-                                        onChange={(selected) => handleFilterChange('zone_id', selected)}
-                                        placeholder={filters.city_id ? "Select Zone" : "Select City First"}
-                                        isClearable
-                                        isDisabled={!filters.city_id && filteredZones.length > 0}
-                                        styles={customSelectStyles}
-                                    />
-                                    {!filters.city_id && (
-                                        <p className="text-xs text-gray-500 mt-1">Please select a city first</p>
-                                    )}
+                                {/* Address Filter */}
+                                <div className="sm:col-span-2 lg:col-span-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search by address, street, area, or landmark..."
+                                            value={filters.address}
+                                            onChange={(e) => handleTextChange('address', e.target.value)}
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
+                                        />
+                                        <FiMapPin className="absolute left-3 top-3 text-gray-400" />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Enter street name, area, landmark, or full address
+                                    </p>
                                 </div>
 
                                 {/* Specialization Filter */}
@@ -440,7 +341,7 @@ const Doctors = () => {
                                             type="time"
                                             value={filters.available_start_time}
                                             onChange={(e) => handleTimeChange('available_start_time', e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                                         />
                                         <FiClock className="absolute left-3 top-3 text-gray-400" />
                                     </div>
@@ -454,13 +355,13 @@ const Doctors = () => {
                                             type="time"
                                             value={filters.available_end_time}
                                             onChange={(e) => handleTimeChange('available_end_time', e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bg-primary focus:border-bg-primary"
                                         />
                                         <FiClock className="absolute left-3 top-3 text-gray-400" />
                                     </div>
                                 </div>
 
-                                {/* Availability Day Filter - NOW MULTI-SELECT */}
+                                {/* Availability Day Filter */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Available Days</label>
                                     <Select
@@ -480,7 +381,7 @@ const Doctors = () => {
                                     <Button
                                         onClick={applyFilters}
                                         disabled={loadingSearch}
-                                        className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition-all duration-300 disabled:opacity-50"
+                                        className="bg-bg-primary text-white font-semibold py-2 px-6 rounded-full hover:bg-bg-primary/90 transition-all duration-300 disabled:opacity-50"
                                     >
                                         {loadingSearch ? 'Searching...' : 'Apply Filters'}
                                     </Button>
@@ -530,19 +431,17 @@ const Doctors = () => {
                                 </div>
 
                                 <div className="space-y-2 mb-4">
-                                    <div className="flex items-center text-gray-600">
-                                        <FiMapPin className="mr-2" />
-                                        <span>{doctor.city?.name || 'N/A'}, {doctor.country?.name || 'N/A'}</span>
-                                    </div>
-                                    {doctor.zone?.name && (
+                                    {/* Display address from doctor data */}
+                                    {doctor.address && (
                                         <div className="flex items-center text-gray-600">
-                                            <FiMapPin className="mr-2" />
-                                            <span>{doctor.zone.name}</span>
+                                            <FiMapPin className="mr-2 flex-shrink-0" />
+                                            <span className="break-words">{doctor.address}</span>
                                         </div>
                                     )}
+                                    {/* UPDATED: Using AM/PM format for display */}
                                     <div className="flex items-center text-gray-600">
                                         <FiClock className="mr-2" />
-                                        <span>{formatTime(doctor.available_start_time)} - {formatTime(doctor.available_end_time)}</span>
+                                        <span>{formatTimeWithAMPM(doctor.available_start_time)} - {formatTimeWithAMPM(doctor.available_end_time)}</span>
                                     </div>
                                     <div className="flex items-center text-gray-600">
                                         <FiCalendar className="mr-2" />
@@ -559,7 +458,7 @@ const Doctors = () => {
                                 <div className="flex gap-2">
                                     <Button
                                         onClick={() => openDoctorDetails(doctor)}
-                                        className="border-2 border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex-1"
+                                        className="border-2 border-bg-primary text-bg-primary hover:bg-bg-primary/10 font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex-1"
                                     >
                                         View Details
                                     </Button>
@@ -577,7 +476,7 @@ const Doctors = () => {
                             {Object.values(filters).some(f => f !== null && f !== "" && (!Array.isArray(f) || f.length > 0)) && (
                                 <Button
                                     onClick={resetFilters}
-                                    className="mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 transition-all duration-300"
+                                    className="mt-4 bg-bg-primary text-white font-semibold py-2 px-4 rounded-full hover:bg-bg-primary/90 transition-all duration-300"
                                 >
                                     Reset all filters
                                 </Button>
@@ -601,7 +500,7 @@ const Doctors = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                                            <FiAward className="mr-2" />
+                                            <FiAward className="mr-2 text-bg-primary" />
                                             Specialization
                                         </h4>
                                         <p className="text-gray-700">{selectedDoctorDetails.specialization?.name || 'Not specified'}</p>
@@ -609,30 +508,31 @@ const Doctors = () => {
 
                                     <div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                                            <FaStethoscope className="mr-2" />
+                                            <FaStethoscope className="mr-2 text-bg-primary" />
                                             Clinic
                                         </h4>
                                         <p className="text-gray-700">{selectedDoctorDetails.clinic_name || 'Not specified'}</p>
                                     </div>
 
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                                            <FiMapPin className="mr-2" />
-                                            Location
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            {selectedDoctorDetails.zone?.name && `${selectedDoctorDetails.zone.name}, `}
-                                            {selectedDoctorDetails.city?.name}, {selectedDoctorDetails.country?.name}
-                                        </p>
-                                    </div>
+                                    {/* Display address in details dialog */}
+                                    {selectedDoctorDetails.address && (
+                                        <div className="md:col-span-2">
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                                                <FiMapPin className="mr-2 text-bg-primary" />
+                                                Address
+                                            </h4>
+                                            <p className="text-gray-700">{selectedDoctorDetails.address}</p>
+                                        </div>
+                                    )}
 
                                     <div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                                            <FiClock className="mr-2" />
+                                            <FiClock className="mr-2 text-bg-primary" />
                                             Availability
                                         </h4>
+                                        {/* UPDATED: Using AM/PM format in details dialog */}
                                         <p className="text-gray-700">
-                                            {formatTime(selectedDoctorDetails.available_start_time)} - {formatTime(selectedDoctorDetails.available_end_time)}
+                                            {formatTimeWithAMPM(selectedDoctorDetails.available_start_time)} - {formatTimeWithAMPM(selectedDoctorDetails.available_end_time)}
                                         </p>
                                         <p className="text-gray-600 text-sm mt-1">
                                             {formatAvailabilityDays(selectedDoctorDetails.availability_days)}
@@ -642,7 +542,7 @@ const Doctors = () => {
 
                                 <div className="flex justify-end gap-3">
                                     <Dialog.Close asChild>
-                                        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300">
+                                        <Button className="bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300">
                                             Close
                                         </Button>
                                     </Dialog.Close>

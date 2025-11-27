@@ -76,7 +76,7 @@ const ContactUs = () => {
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
       >
         {/* Left Section: Contact Information & Branding */}
-        <div className="md:w-1/3 bg-gradient-to-br from-purple-600 to-indigo-700 p-6 text-white flex flex-col justify-between">
+        <div className="md:w-1/3 bg-gradient-to-br from-bg-primary to-bg-secondary p-6 text-white flex flex-col justify-between">
           <div>
             <motion.h2
               className="text-3xl font-extrabold mb-4 leading-tight"
@@ -87,7 +87,7 @@ const ContactUs = () => {
               Get in Touch
             </motion.h2>
             <motion.p
-              className="text-purple-100 text-lg mb-8"
+              className="text-lg mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -102,10 +102,10 @@ const ContactUs = () => {
                 transition={{ duration: 0.4, delay: 0.5 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <FiMail className="text-purple-200 text-xl" />
+                <FiMail className="text-xl" />
                 <a
                   href="mailto:Marfae@gmail.com"
-                  className="text-purple-100 hover:text-white transition-colors truncate max-w-[200px]"
+                  className="text-white transition-colors truncate max-w-[200px]"
                 >
                   Marfae@gmail.com
                 </a>
@@ -117,19 +117,19 @@ const ContactUs = () => {
                 transition={{ duration: 0.4, delay: 0.6 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <FiPhone className="text-purple-200 text-xl" />
+                <FiPhone className="text-xl" />
                 <div className="flex items-center gap-2">
                   <a
                     href="https://wa.me/12345678900"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-100 hover:text-white transition-colors truncate max-w-[150px]"
+                    className="text-white transition-colors truncate max-w-[150px]"
                   >
                     +1 (234) 567-8900
                   </a>
                   <button
                     onClick={() => handleCopyPhone("+12345678900")}
-                    className="p-1 text-purple-200 hover:text-white focus:outline-none"
+                    className="p-1 text-white focus:outline-none"
                     title="Copy phone number"
                   >
                     <Copy className="w-5 h-5" />
@@ -138,7 +138,7 @@ const ContactUs = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute left-0 top-8 bg-indigo-600 text-white text-xs px-2 py-1 rounded shadow"
+                        className="absolute left-0 top-8 bg-bg-secondary text-white text-xs px-2 py-1 rounded shadow"
                       >
                         Copied!
                       </motion.span>
@@ -153,12 +153,12 @@ const ContactUs = () => {
                 transition={{ duration: 0.4, delay: 0.7 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <FiMapPin className="text-purple-200 text-xl mt-1" />
+                <FiMapPin className="text-xl mt-1" />
                 <a
                   href="https://maps.google.com/?q=123+Innovation+Drive"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-100 hover:text-white transition-colors"
+                  className="text-white transition-colors"
                 >
                   123 Innovation Drive
                 </a>
@@ -171,7 +171,7 @@ const ContactUs = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.8 }}
           >
-            <p className="text-sm text-purple-200">© 2025 Your Company. All rights reserved.</p>
+            <p className="text-sm">© 2025 Your Company. All rights reserved.</p>
           </motion.div>
         </div>
 
@@ -187,31 +187,31 @@ const ContactUs = () => {
           </motion.h2>
           <form onSubmit={handleSubmit} className="space-y-4 px-8">
             {[
-              { idちな: true,
-              id: "full_name",
-              label: "Full Name",
-              type: "text",
-              placeholder: "Enter Full Name",
-            },
-            {
-              id: "email",
-              label: "Email Address",
-              type: "email",
-              placeholder: "email@example.com",
-            },
-            {
-              id: "subject",
-              label: "Subject",
-              type: "text",
-              placeholder: "Regarding a project inquiry...",
-            },
-            {
-              id: "message",
-              label: "Your Message",
-              type: "textarea",
-              placeholder: "Type your message here...",
-              rows: 3,
-            },
+              {
+                id: "full_name",
+                label: "Full Name",
+                type: "text",
+                placeholder: "Enter Full Name",
+              },
+              {
+                id: "email",
+                label: "Email Address",
+                type: "email",
+                placeholder: "email@example.com",
+              },
+              {
+                id: "subject",
+                label: "Subject",
+                type: "text",
+                placeholder: "Regarding a project inquiry...",
+              },
+              {
+                id: "message",
+                label: "Your Message",
+                type: "textarea",
+                placeholder: "Type your message here...",
+                rows: 3,
+              },
             ].map((field, index) => (
               <motion.div
                 key={field.id}
@@ -233,7 +233,7 @@ const ContactUs = () => {
                     value={formData[field.id]}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out resize-y"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-bg-primary focus:border-bg-primary transition duration-150 ease-in-out resize-y"
                     placeholder={field.placeholder}
                   />
                 ) : (
@@ -244,7 +244,7 @@ const ContactUs = () => {
                     value={formData[field.id]}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-bg-primary focus:border-bg-primary transition duration-150 ease-in-out"
                     placeholder={field.placeholder}
                   />
                 )}
@@ -254,7 +254,7 @@ const ContactUs = () => {
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out"
+              className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-md text-white bg-bg-primary hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bg-primary transition duration-300 ease-in-out"
               disabled={loadingPost}
             >
               {loadingPost ? (

@@ -16,7 +16,7 @@ const JobsTracked = () => {
     });
     const [TrackJobs, setTrackJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
-    const [showFilters, setShowFilters] = useState(true); // State for toggling filters
+    const [showFilters, setShowFilters] = useState(true);
 
     // Filter states
     const [statusFilter, setStatusFilter] = useState(null);
@@ -32,11 +32,11 @@ const JobsTracked = () => {
     useEffect(() => {
         if (TrackJobData && TrackJobData.applications) {
             setTrackJobs(TrackJobData.applications);
-            setFilteredJobs(TrackJobData.applications); // Initialize filtered jobs
+            setFilteredJobs(TrackJobData.applications);
         }
     }, [TrackJobData]);
 
-    // Options for Select components (memoized for performance)
+    // Options for Select components
     const statusOptions = useMemo(() => {
         const statuses = new Set(TrackJobs.map(job => job.status));
         return [{ value: null, label: "All Statuses" }, ...Array.from(statuses).map(status => ({ value: status, label: status.charAt(0).toUpperCase() + status.slice(1) }))];
@@ -101,7 +101,7 @@ const JobsTracked = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-bg-primary/5 to-bg-secondary/5 py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-4xl font-extrabold text-gray-900 text-center drop-shadow-sm">
@@ -109,7 +109,7 @@ const JobsTracked = () => {
                     </h1>
                     <Button
                         onClick={toggleFilters}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md flex items-center"
+                        className="bg-bg-primary hover:bg-bg-secondary text-white shadow-md flex items-center"
                     >
                         <FaFilter className="h-5 w-5 mr-2" />
                         {showFilters ? "Hide Filters" : "Show Filters"}
@@ -120,7 +120,7 @@ const JobsTracked = () => {
                 {showFilters && (
                     <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
                         <h2 className="text-2xl font-semibold text-gray-800 mb-5 flex items-center">
-                            <FaFilter className="h-7 w-7 text-indigo-500 mr-3" />
+                            <FaFilter className="h-7 w-7 text-bg-primary mr-3" />
                             Filter Applications
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
@@ -179,7 +179,7 @@ const JobsTracked = () => {
                                     type="date"
                                     value={dateFilter ? format(new Date(dateFilter), 'yyyy-MM-dd') : ''}
                                     onChange={(e) => setDateFilter(e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bg-primary focus:ring-bg-primary sm:text-sm p-2"
                                 />
                             </div>
                         </div>
@@ -217,11 +217,11 @@ const JobsTracked = () => {
                                         </span>
                                     </div>
                                     <p className="text-gray-600 mb-2 flex items-center">
-                                        <FaBuilding className="h-5 w-5 text-indigo-400 mr-2" />
+                                        <FaBuilding className="h-5 w-5 text-bg-primary mr-2" />
                                         <span className="font-medium text-gray-800">{application.job_offer.company.name}</span>
                                     </p>
                                     <p className="text-gray-600 mb-2 flex items-center">
-                                        <FaTag className="h-5 w-5 text-purple-400 mr-2" />
+                                        <FaTag className="h-5 w-5 text-bg-secondary mr-2" />
                                         {application.job_offer.job_category.name}
                                     </p>
                                     <p className="text-sm text-gray-500 flex items-center">
@@ -242,7 +242,7 @@ const JobsTracked = () => {
                                                 href={application.cv_file}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200"
+                                                className="inline-flex items-center text-bg-primary hover:text-bg-secondary font-medium transition-colors duration-200"
                                             >
                                                 View Submitted CV
                                                 <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -263,7 +263,7 @@ const JobsTracked = () => {
                             It looks like you haven't applied for any jobs yet, or your current filters are too restrictive.
                         </p>
                         <div className="mt-6">
-                            <Button onClick={clearFilters} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">
+                            <Button onClick={clearFilters} className="bg-bg-primary hover:bg-bg-secondary text-white shadow-md">
                                 Reset Filters
                             </Button>
                         </div>

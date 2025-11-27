@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FlaskConical, Building2, CalendarDays, Info } from 'lucide-react';
+import { FlaskConical, Building2, CalendarDays, Tag, DollarSign, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Drugs = () => {
@@ -20,6 +20,10 @@ const Drugs = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedCompany, setSelectedCompany] = useState(null);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
 
     useEffect(() => {
         refetchDrugs();
@@ -54,6 +58,7 @@ const Drugs = () => {
     const categoryOptions = drugCategories.map(cat => ({ value: cat.id, label: cat.name }));
     const companyOptions = companies.map(comp => ({ value: comp.id, label: comp.name }));
 
+    // Filter drugs
     const filteredDrugs = drugs.filter((drug) => {
         const matchesSearch =
             drug.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,12 +72,45 @@ const Drugs = () => {
         return matchesSearch && matchesCategory && matchesCompany;
     });
 
+    // Pagination calculations
+    const totalItems = filteredDrugs.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentDrugs = filteredDrugs.slice(startIndex, endIndex);
+
+    // Pagination handlers
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    // Format price
+    const formatPrice = (price) => {
+        if (!price) return "—";
+        return `${parseFloat(price)}`;
+    };
+
     if (loadingDrugs) {
         return <FullPageLoader />;
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-bg-primary/5">
             <div className="w-full">
                 {/* Header Image */}
                 <motion.div
@@ -92,13 +130,13 @@ const Drugs = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
                     >
-                        <h1 className="text-4xl font-bold text-white drop-shadow-lg">Drugs List</h1>
+                        <h1 className="text-4xl font-bold text-white drop-shadow-lg">Pharmaceutical Products</h1>
                     </motion.div>
                 </motion.div>
 
                 {/* Search and Filter Section */}
                 <motion.div
-                    className="flex flex-col md:flex-row items-center gap-4 bg-white rounded-lg shadow-md py-4 px-4 md:px-6 m-5"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-4 bg-white rounded-2xl shadow-lg py-6 px-6 m-5 border border-gray-100"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: "easeOut", delay: 0.4 }}
@@ -107,56 +145,71 @@ const Drugs = () => {
                         type="text"
                         placeholder="Search by drug name or description..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="w-full p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-bg-primary focus:border-bg-primary transition-all duration-200"
                         whileHover={{ scale: 1.01 }}
                         whileFocus={{ scale: 1.01 }}
                     />
                     <Select
                         options={categoryOptions}
                         value={selectedCategory}
-                        onChange={setSelectedCategory}
+                        onChange={(value) => {
+                            setSelectedCategory(value);
+                            setCurrentPage(1);
+                        }}
                         placeholder="Filter by Category"
-                        className="w-full md:w-64"
+                        className="w-full"
                         isClearable
                         classNamePrefix="react-select"
                         styles={{
                             control: (provided) => ({
                                 ...provided,
                                 borderColor: '#d1d5db',
+                                borderRadius: '12px',
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    borderColor: '#a78bfa',
+                                    borderColor: 'var(--color-bg-primary)',
                                 },
                             }),
                             option: (provided, state) => ({
                                 ...provided,
-                                backgroundColor: state.isSelected ? '#c4b5fd' : state.isFocused ? '#ede9fe' : null,
-                                color: '#1f2937',
+                                backgroundColor: state.isSelected ? 'var(--color-bg-primary)' : state.isFocused ? 'var(--color-bg-primary)/10' : null,
+                                color: state.isSelected ? 'white' : '#1f2937',
+                                borderRadius: '8px',
+                                margin: '2px 8px',
                             }),
                         }}
                     />
                     <Select
                         options={companyOptions}
                         value={selectedCompany}
-                        onChange={setSelectedCompany}
+                        onChange={(value) => {
+                            setSelectedCompany(value);
+                            setCurrentPage(1);
+                        }}
                         placeholder="Filter by Company"
-                        className="w-full md:w-64"
+                        className="w-full"
                         isClearable
                         classNamePrefix="react-select"
                         styles={{
                             control: (provided) => ({
                                 ...provided,
                                 borderColor: '#d1d5db',
+                                borderRadius: '12px',
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    borderColor: '#a78bfa',
+                                    borderColor: 'var(--color-bg-primary)',
                                 },
                             }),
                             option: (provided, state) => ({
                                 ...provided,
-                                backgroundColor: state.isSelected ? '#c4b5fd' : state.isFocused ? '#ede9fe' : null,
-                                color: '#1f2937',
+                                backgroundColor: state.isSelected ? 'var(--color-bg-primary)' : state.isFocused ? 'var(--color-bg-primary)/10' : null,
+                                color: state.isSelected ? 'white' : '#1f2937',
+                                borderRadius: '8px',
+                                margin: '2px 8px',
                             }),
                         }}
                     />
@@ -169,34 +222,109 @@ const Drugs = () => {
                                 setSearchTerm("");
                                 setSelectedCategory(null);
                                 setSelectedCompany(null);
+                                setCurrentPage(1);
                             }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors duration-200"
+                            className="bg-bg-primary hover:bg-bg-primary/90 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg"
                         >
                             Clear Filters
                         </Button>
                     </motion.div>
                 </motion.div>
 
+                {/* Results and Pagination Info */}
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 mb-6">
+                    <motion.div 
+                        className="text-gray-600 font-medium"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} products
+                    </motion.div>
+                    
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <motion.div 
+                            className="flex items-center gap-2"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Button
+                                variant="outline"
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-primary/10 transition-colors"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                Previous
+                            </Button>
+
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage <= 3) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage >= totalPages - 2) {
+                                        pageNum = totalPages - 4 + i;
+                                    } else {
+                                        pageNum = currentPage - 2 + i;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => handlePageChange(pageNum)}
+                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
+                                                currentPage === pageNum
+                                                    ? 'bg-bg-primary text-white shadow-md'
+                                                    : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
+                                            }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-primary/10 transition-colors"
+                            >
+                                Next
+                                <ArrowRight className="w-4 h-4" />
+                            </Button>
+                        </motion.div>
+                    )}
+                </div>
+
                 {/* Drugs Grid */}
                 <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-3 px-4 md:px-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-3 px-4 md:px-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
                 >
-                    {filteredDrugs.length > 0 ? (
-                        filteredDrugs.map((drug, index) => (
+                    {currentDrugs.length > 0 ? (
+                        currentDrugs.map((drug, index) => (
                             <motion.div
                                 key={drug.id}
-                                className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 flex flex-col hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                whileHover={{ scale: 1.05, y: -4 }}
+                                whileHover={{ scale: 1.02, y: -5 }}
                             >
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-white opacity-50 rounded-xl -z-10"></div>
+                                {/* Background Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-bg-primary/5 to-white opacity-50 rounded-2xl -z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
+                                
+                                {/* Product Image */}
                                 <motion.div
-                                    className="h-40 w-full rounded-lg overflow-hidden mb-4 border border-gray-200 flex items-center justify-center bg-gray-50"
+                                    className="h-48 w-full rounded-xl overflow-hidden mb-4 border border-gray-200 flex items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300"
                                     initial={{ scale: 1.1, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
@@ -205,53 +333,165 @@ const Drugs = () => {
                                         <img
                                             src={drug.image_link}
                                             alt={drug.name}
-                                            className="object-contain h-full w-full p-2"
+                                            className="object-contain h-full w-full p-2 group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
                                         <div className="text-gray-400 text-center p-4">
-                                            <FlaskConical className="w-12 h-12 mx-auto mb-2 opacity-70" />
-                                            <span className="text-sm">No Product Image</span>
+                                            <FlaskConical className="w-16 h-16 mx-auto mb-3 opacity-60" />
+                                            <span className="text-sm font-medium">No Product Image</span>
                                         </div>
                                     )}
                                 </motion.div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+
+                                {/* Product Name */}
+                                <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight line-clamp-2 group-hover:text-bg-primary transition-colors duration-200">
                                     {drug.name}
                                 </h2>
-                                <p className="text-gray-700 text-base mb-4 flex-grow line-clamp-3">
-                                    {drug.description || "No description available."}
+
+                                {/* Product Description */}
+                                <p className="text-gray-600 text-sm mb-4 flex-grow line-clamp-3 leading-relaxed">
+                                    {drug.description || "No description available for this product."}
                                 </p>
-                                <div className="space-y-2 text-sm text-gray-700 mt-auto pt-4 border-t border-gray-100">
+
+                                {/* Product Details */}
+                                <div className="space-y-3 text-sm mt-auto pt-4 border-t border-gray-100">
+                                    {/* Price */}
+                                    {drug.price && (
+                                        <div className="flex items-center justify-between bg-gradient-to-r from-bg-primary/10 to-bg-primary/5 p-3 rounded-lg border border-bg-primary/20">
+                                            <div className="flex items-center gap-2 text-bg-primary font-semibold">
+                                                <DollarSign className="w-4 h-4" />
+                                                <span>Price</span>
+                                            </div>
+                                            <span className="font-bold text-bg-primary text-lg">
+                                                {formatPrice(drug.price)}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Category */}
                                     {drug.drug_category?.name && (
-                                        <p className="flex items-center gap-2 text-purple-700 font-medium">
-                                            <FlaskConical className="w-4 h-4 text-purple-500" />
-                                            <span>{drug.drug_category.name}</span>
-                                        </p>
+                                        <div className="flex items-center gap-3 text-gray-700">
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <Tag className="w-4 h-4 text-bg-primary" />
+                                                <span className="font-medium">Category:</span>
+                                            </div>
+                                            <span className="bg-bg-primary/10 text-bg-primary px-3 py-1 rounded-full text-xs font-medium">
+                                                {drug.drug_category.name}
+                                            </span>
+                                        </div>
                                     )}
+
+                                    {/* Company */}
                                     {drug.company?.name && (
-                                        <p className="flex items-center gap-2 text-indigo-700">
-                                            <Building2 className="w-4 h-4 text-indigo-500" />
-                                            <span>{drug.company.name}</span>
-                                        </p>
+                                        <div className="flex items-center gap-3 text-gray-700">
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <Building2 className="w-4 h-4 text-bg-primary" />
+                                                <span className="font-medium">Manufacturer:</span>
+                                            </div>
+                                            <span className="text-gray-600 text-right text-sm truncate max-w-[120px]">
+                                                {drug.company.name}
+                                            </span>
+                                        </div>
                                     )}
-                                    <p className="flex items-center gap-2 text-gray-500">
-                                        <CalendarDays className="w-4 h-4 text-gray-400" />
-                                        <span>Added: {new Date(drug.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                                    </p>
+
                                 </div>
                             </motion.div>
                         ))
                     ) : (
                         <motion.div
-                            className="col-span-full text-center py-10 text-gray-500 text-lg rounded-lg bg-white shadow-md"
+                            className="col-span-full text-center py-16 rounded-2xl bg-white shadow-lg"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.6 }}
                         >
-                            <p>No drugs found matching your criteria.</p>
-                            <p className="mt-2">Try adjusting your search or filters.</p>
+                            <FlaskConical className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Products Found</h3>
+                            <p className="text-gray-500 max-w-md mx-auto">
+                                {Object.values({searchTerm, selectedCategory, selectedCompany}).some(val => val) 
+                                    ? "Try adjusting your search criteria or filters to see more results."
+                                    : "There are currently no pharmaceutical products available in our database."}
+                            </p>
+                            {Object.values({searchTerm, selectedCategory, selectedCompany}).some(val => val) && (
+                                <Button
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setSelectedCategory(null);
+                                        setSelectedCompany(null);
+                                        setCurrentPage(1);
+                                    }}
+                                    className="mt-4 bg-bg-primary hover:bg-bg-primary/90 text-white"
+                                >
+                                    Clear All Filters
+                                </Button>
+                            )}
                         </motion.div>
                     )}
                 </motion.div>
+
+                {/* Bottom Pagination */}
+                {totalPages > 1 && (
+                    <motion.div 
+                        className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-6 bg-white rounded-2xl shadow-lg mx-6 mt-6 border border-gray-100"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <div className="text-sm text-gray-600">
+                            Page {currentPage} of {totalPages} • {totalItems} total products
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-primary/10 transition-colors"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                Previous
+                            </Button>
+
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage <= 3) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage >= totalPages - 2) {
+                                        pageNum = totalPages - 4 + i;
+                                    } else {
+                                        pageNum = currentPage - 2 + i;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => handlePageChange(pageNum)}
+                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
+                                                currentPage === pageNum
+                                                    ? 'bg-bg-primary text-white shadow-md'
+                                                    : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
+                                            }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-primary/10 transition-colors"
+                            >
+                                Next
+                                <ArrowRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
             </div>
         </div>
     );

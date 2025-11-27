@@ -1,4 +1,3 @@
-// components/JobCard.jsx
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
@@ -101,7 +100,7 @@ const JobCard = ({
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-bg-primary/10 text-bg-primary">
             <FiBriefcase className="mr-1" />
             {getTypeLabel(job.type)}
           </span>
@@ -132,7 +131,7 @@ const JobCard = ({
           {isLongDescription && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors duration-200"
+              className="mt-2 text-bg-primary hover:text-bg-primary/80 text-sm font-semibold transition-colors duration-200"
             >
               {isExpanded ? 'Read Less' : 'Read More'}
             </button>
@@ -151,7 +150,7 @@ const JobCard = ({
         
         <Button
           onClick={handleApplyClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+          className="bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
         >
           Apply Now
         </Button>
@@ -159,7 +158,7 @@ const JobCard = ({
         <Button
           variant="outline"
           onClick={() => onViewDetails && onViewDetails(job)}
-          className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-full transition-all duration-300"
+          className="border-bg-primary text-bg-primary hover:bg-bg-primary/10 font-semibold py-2 px-4 rounded-full transition-all duration-300"
         >
           View Details
         </Button>

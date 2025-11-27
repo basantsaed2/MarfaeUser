@@ -599,7 +599,7 @@ const AboutUs = () => {
             </motion.a>
           </motion.div>
           
-          <motion.div 
+          {/* <motion.div 
             variants={slideInUp}
             className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 max-w-4xl mx-auto"
           >
@@ -618,7 +618,7 @@ const AboutUs = () => {
             </motion.p>
             <p className="text-xl text-blue-200">Innovation link with medical society</p>
             <p className="text-lg text-blue-300 mt-2">The only and perfect way you can select</p>
-          </motion.div>
+          </motion.div> */}
         </div>
       </motion.section>
 

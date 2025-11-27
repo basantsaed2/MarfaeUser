@@ -1,4 +1,3 @@
-// components/JobDetailsDialog.jsx
 "use client";
 import React from "react";
 import * as Dialog from '@radix-ui/react-dialog';
@@ -72,7 +71,7 @@ const JobDetailsDialog = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-3xl max-h-[95vh] overflow-y-auto shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-gray-50"
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 w-full max-w-3xl max-h-[95vh] overflow-y-auto shadow-xl border border-gray-200/50 bg-gradient-to-br from-white to-bg-primary/5"
           aria-label="Job Details Dialog"
         >
           {job && (
@@ -90,36 +89,36 @@ const JobDetailsDialog = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm mb-6">
                 <motion.div className="flex items-center" variants={itemVariants}>
-                  <FiAward className="text-blue-500 mr-2 text-lg" />
+                  <FiAward className="text-bg-primary mr-2 text-lg" />
                   <strong>Experience:</strong> {getExperienceLabel(job.experience)}
                 </motion.div>
                 <motion.div className="flex items-center" variants={itemVariants}>
-                  <FiBriefcase className="text-blue-500 mr-2 text-lg" />
+                  <FiBriefcase className="text-bg-primary mr-2 text-lg" />
                   <strong>Type:</strong> {getTypeLabel(job.type)}
                 </motion.div>
                 <motion.div className="flex items-center" variants={itemVariants}>
-                  <FiCalendar className="text-blue-500 mr-2 text-lg" />
+                  <FiCalendar className="text-bg-primary mr-2 text-lg" />
                   <strong>Posted:</strong> {job.created_at ? new Date(job.created_at).toLocaleDateString() : 'Not specified'}
                 </motion.div>
                 {job.expected_salary && (
                   <motion.div className="flex items-center" variants={itemVariants}>
-                    <FiDollarSign className="text-blue-500 mr-2 text-lg" />
+                    <FiDollarSign className="text-bg-primary mr-2 text-lg" />
                     <strong>Salary:</strong> {job.expected_salary} {job.city?.country?.name === 'Egypt' ? 'EGP' : ''}
                   </motion.div>
                 )}
                 <motion.div className="flex items-center" variants={itemVariants}>
-                  <FiMapPin className="text-blue-500 mr-2 text-lg" />
+                  <FiMapPin className="text-bg-primary mr-2 text-lg" />
                   <strong>Zone:</strong> {job.zone?.name || 'Not specified'}
                 </motion.div>
                 <motion.div className="flex items-center" variants={itemVariants}>
-                  <FiCalendar className="text-blue-500 mr-2 text-lg" />
+                  <FiCalendar className="text-bg-primary mr-2 text-lg" />
                   <strong>Expiry Date:</strong> {job.expire_date ? new Date(job.expire_date).toLocaleDateString() : 'Not specified'}
                 </motion.div>
               </div>
 
               <motion.div className="mb-6" variants={itemVariants}>
                 <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                  <FiFileText className="mr-2 text-xl" /> Job Description
+                  <FiFileText className="mr-2 text-xl text-bg-primary" /> Job Description
                 </h4>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                   {job.description || 'No detailed description available.'}
@@ -128,7 +127,7 @@ const JobDetailsDialog = ({
 
               <motion.div className="mb-6" variants={itemVariants}>
                 <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                  <FiInfo className="mr-2 text-xl" /> Qualifications
+                  <FiInfo className="mr-2 text-xl text-bg-primary" /> Qualifications
                 </h4>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                   {job.job_qualification?.name || 'No qualifications provided.'}
@@ -138,13 +137,13 @@ const JobDetailsDialog = ({
               {job.location_link && (
                 <motion.div className="mb-6" variants={itemVariants}>
                   <h4 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                    <FiLink className="mr-2 text-xl" /> Location Link
+                    <FiLink className="mr-2 text-xl text-bg-primary" /> Location Link
                   </h4>
                   <a
                     href={job.location_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-bg-primary hover:underline"
                   >
                     {job.location_link}
                   </a>
@@ -176,7 +175,7 @@ const JobDetailsDialog = ({
                       onOpenChange(false);
                       onApply(job.id);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                    className="bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
                   >
                     Apply Now
                   </Button>

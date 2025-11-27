@@ -238,14 +238,14 @@ const Profile = () => {
       <Card className="overflow-hidden border-none shadow-xl">
         <CardContent className="p-3 flex items-center justify-between border-none">
           <div className="flex items-center">
-            <FiFileText className="text-blue-500 mr-2" />
+            <FiFileText className="text-bg-primary mr-2" />
             <span className="text-gray-700 truncate max-w-xs">CV {index + 1 || "CV"}</span>
           </div>
           <div className="flex items-center">
             <a
               href={cv.cv_file_url}
               download={cv.file_name || "user_cv.pdf"}
-              className="text-blue-500 hover:text-blue-700 flex items-center ml-4"
+              className="text-bg-primary hover:text-bg-primary/80 flex items-center ml-4"
             >
               <FiDownload className="mr-1" /> Download
             </a>
@@ -265,7 +265,7 @@ const Profile = () => {
   const ProfileCompletionIndicator = ({ completion }) => {
     const getCompletionColor = (percent) => {
       if (percent >= 80) return 'from-green-500 to-emerald-600';
-      if (percent >= 60) return 'from-blue-500 to-cyan-600';
+      if (percent >= 60) return 'from-bg-primary to-cyan-600';
       if (percent >= 40) return 'from-yellow-500 to-amber-600';
       return 'from-red-500 to-orange-600';
     };
@@ -286,7 +286,7 @@ const Profile = () => {
     };
 
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-blue-500">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-bg-primary">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             {getCompletionIcon(completion)}
@@ -314,8 +314,8 @@ const Profile = () => {
         </div>
 
         {completion < 100 && (
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-700">
+          <div className="mt-4 p-3 bg-bg-primary/10 rounded-lg">
+            <p className="text-sm text-bg-primary">
               <strong>Tip:</strong> {completion < 50 ? 'Add your experience, company, and drugs to increase visibility' :
                 completion < 80 ? 'Upload a profile photo and add qualifications to stand out' :
                   'You\'re almost there! Complete all sections for best results'}
@@ -328,7 +328,7 @@ const Profile = () => {
 
   // Enhanced Profile Header
   const EnhancedProfileHeader = () => (
-    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white relative">
+    <div className="bg-gradient-to-r from-bg-primary to-bg-primary/80 p-6 text-white relative">
       <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
         <div className="relative group">
           <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/30">
@@ -362,7 +362,7 @@ const Profile = () => {
         <div className="flex space-x-3">
           <Button
             onClick={() => setIsEditOpen(true)}
-            className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center"
+            className="bg-white text-bg-primary hover:text-white hover:bg-bg-primary/10 px-4 py-2 rounded-lg flex items-center"
           >
             <FiEdit className="mr-2" /> Edit Profile
           </Button>
@@ -384,7 +384,7 @@ const Profile = () => {
   const isMedical = isMedicalProfessional();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-bg-primary/5 py-8 px-4 sm:px-6 lg:px-8">
       <ToastContainer />
       <div className="w-full p-4">
 
@@ -400,7 +400,7 @@ const Profile = () => {
             {/* Personal Information */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 flex items-center">
-                <FiUser className="mr-2 text-blue-500" /> Personal Information
+                <FiUser className="mr-2 text-bg-primary" /> Personal Information
               </h2>
               <div className="space-y-3">
                 <div>
@@ -442,7 +442,7 @@ const Profile = () => {
             {/* Professional Information */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 flex items-center">
-                <FiBriefcase className="mr-2 text-blue-500" /> Professional Information
+                <FiBriefcase className="mr-2 text-bg-primary" /> Professional Information
               </h2>
               <div className="space-y-3">
                 <div>
@@ -452,7 +452,7 @@ const Profile = () => {
                       profile.specializations.map((spec) => (
                         <span
                           key={spec.id}
-                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                          className="bg-bg-primary/10 text-bg-primary text-xs px-2 py-1 rounded"
                         >
                           {spec.name}
                         </span>
@@ -541,7 +541,7 @@ const Profile = () => {
             {/* CV Section - Full Width */}
             <div className="md:col-span-2 space-y-4">
               <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 flex items-center">
-                <FiFileText className="mr-2 text-blue-500" /> CV Documents
+                <FiFileText className="mr-2 text-bg-primary" /> CV Documents
               </h2>
               {profile.usercvs?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -567,7 +567,7 @@ const Profile = () => {
                           className="flex items-center justify-between bg-gray-50 p-3 rounded-lg"
                         >
                           <div className="flex items-center truncate">
-                            <FiFileText className="text-blue-500 mr-2 flex-shrink-0" />
+                            <FiFileText className="text-bg-primary mr-2 flex-shrink-0" />
                             <span className="truncate">{cv.name}</span>
                             <span className="text-xs text-gray-500 ml-2">
                               ({(cv.size / 1024).toFixed(1)} KB)
@@ -585,7 +585,7 @@ const Profile = () => {
                     <Button
                       onClick={handleUploadCv}
                       disabled={loadingPost || cvFiles.length === 0}
-                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full"
+                      className="mt-4 bg-bg-primary hover:bg-bg-primary/90 text-white font-semibold py-2 px-6 rounded-full"
                     >
                       {loadingPost ? "Uploading..." : `Upload ${cvFiles.length} CV(s)`}
                     </Button>
@@ -604,7 +604,7 @@ const Profile = () => {
                   />
                   <label
                     htmlFor="cv-upload-direct"
-                    className="cursor-pointer bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg flex items-center"
+                    className="cursor-pointer bg-bg-primary/10 text-bg-primary hover:bg-bg-primary/20 px-4 py-2 rounded-lg flex items-center"
                   >
                     <FiPlus className="mr-2" /> Select CV Files
                   </label>

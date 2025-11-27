@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../../Store/authSlice";
 import { toast } from "react-toastify";
 import DoctorsSection from "./DoctorsSection";
+import Plans from "../Plans/Plans";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -162,6 +163,8 @@ const Home = () => {
             {activeTab === "doctors" && <DoctorsSection />}
           </div>
       </div>
+
+      <Plans/>
 
       <Features />
       <Partners />
