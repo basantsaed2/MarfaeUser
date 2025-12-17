@@ -167,7 +167,7 @@
 //               className="text-center mb-5"
 //             >
 //               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
-//                 Mrfae
+//                 Medilinky
 //               </h2>
 
 //               <AnimatePresence mode="wait">
@@ -263,13 +263,13 @@
 //                         className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
 //                         disabled={loadingPost}
 //                       >
-//                         {loadingPost ? "Logging in..." : "Login Mrfae"}
+//                         {loadingPost ? "Logging in..." : "Login Medilinky"}
 //                       </Button>
 //                     </motion.div>
 //                   </form>
 
 //                   <p className="text-center text-gray-500 mt-6 text-sm">
-//                     New to Mrfae?{" "}
+//                     New to Medilinky?{" "}
 //                     <Link
 //                       to="/register"
 //                       className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
@@ -322,7 +322,7 @@
 //                     whileTap={{ scale: 0.95 }}
 //                   >
 //                     <a
-//                       href="https://employer.mrfae.com/login"
+//                       href="https://employer.medilinky.com/login"
 //                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
 //                       target="_blank"
 //                       rel="noopener noreferrer"
@@ -428,7 +428,7 @@ const LoginUser = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const authTransferKey = urlParams.get('authTransfer');
-    
+
     if (authTransferKey) {
       processAuthTransfer(authTransferKey);
     }
@@ -438,17 +438,17 @@ const LoginUser = () => {
   const processAuthTransfer = (transferKey) => {
     try {
       const authData = localStorage.getItem(transferKey);
-      
+
       if (!authData) {
         console.error('No auth data found for key:', transferKey);
         return;
       }
 
       const parsedData = JSON.parse(authData);
-      
+
       // Verify the data is recent (within 10 minutes)
       const isRecent = Date.now() - parsedData.timestamp < 10 * 60 * 1000;
-      
+
       if (!isRecent) {
         console.error('Auth data expired');
         localStorage.removeItem(transferKey);
@@ -458,20 +458,20 @@ const LoginUser = () => {
       // Store in permanent localStorage
       localStorage.setItem("token", parsedData.token);
       localStorage.setItem("user", JSON.stringify(parsedData.user));
-      
+
       // Clean up
       localStorage.removeItem(transferKey);
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
-      
+
       console.log("Cross-domain authentication successful!");
       toast.success("Automatically logged in from employer account!");
-      
+
       // Redirect to dashboard
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
-      
+
     } catch (error) {
       console.error('Error processing auth transfer:', error);
       localStorage.removeItem(transferKey);
@@ -587,7 +587,7 @@ const LoginUser = () => {
               className="text-center mb-5"
             >
               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
-                Mrfae
+                Medilinky
               </h2>
 
               <AnimatePresence mode="wait">
@@ -682,13 +682,13 @@ const LoginUser = () => {
                         className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
                         disabled={loadingPost}
                       >
-                        {loadingPost ? "Logging in..." : "Login Mrfae"}
+                        {loadingPost ? "Logging in..." : "Login Medilinky"}
                       </Button>
                     </motion.div>
                   </form>
 
                   <p className="text-center text-gray-500 mt-6 text-sm">
-                    New to Mrfae?{" "}
+                    New to Medilinky?{" "}
                     <Link
                       to="/register"
                       className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
@@ -741,7 +741,7 @@ const LoginUser = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://employer.mrfae.com/login"
+                      href="https://employer.medilinky.com/login"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -776,7 +776,7 @@ const LoginUser = () => {
                 </DialogTitle>
                 <DialogDescription className="text-gray-600">
                   Your account is not active yet. Please contact our support team or await admin approval.
-              </DialogDescription>
+                </DialogDescription>
               </DialogHeader>
               <DialogFooter>
                 <Button

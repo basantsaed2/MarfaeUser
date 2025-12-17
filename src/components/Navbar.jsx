@@ -13,7 +13,7 @@ export default function Navbar({ className }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  
+
   // Get region from localStorage or default to "Egypt"
   const [region, setRegion] = useState(() => {
     return localStorage.getItem("userRegion") || "Egypt";
@@ -36,9 +36,7 @@ export default function Navbar({ className }) {
     : "AD";
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userRegion"); // Optional: remove region on logout
+    localStorage.clear();
     navigate("/login");
     setDropdownOpen(false);
   };
@@ -74,19 +72,29 @@ export default function Navbar({ className }) {
     { to: "/drugs", label: t("Drugs"), icon: Pill },
     { to: "/saved_jobs", label: t("Saved Jobs"), icon: Bookmark },
     { to: "/tracking_jobs", label: t("Job Tracker"), icon: List },
+    { to: "/articles", label: t("Articles"), icon: List },
   ];
 
   return (
     <header
       className={`w-full bg-white h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
     >
-      <div className="flex items-center">
+      {/* <div className="flex items-center">
         <Link to="/">
           <img
             src={Logo}
             alt="Logo"
             className="h-14 w-auto object-contain transition-transform hover:scale-105 cursor-pointer"
           />
+          <h1 className="text-2xl font-bold text-bg-primary cursor-pointer">Medilinky</h1>
+        </Link>
+      </div> */}
+      <div className="flex items-center">
+        <Link to="/" className="group">
+          <h1 className="text-3xl font-bold text-bg-primary group-hover:text-blue-700 transition-colors duration-300">
+            Medilinky
+          </h1>
+          <span className="block h-0.5 bg-bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
         </Link>
       </div>
 
@@ -97,9 +105,8 @@ export default function Navbar({ className }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`flex items-center gap-2 text-bg-primary text-lg font-semibold tracking-tight transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:bg-bg-primary after:transition-all after:duration-200 ${
-                isActive(item.to) ? "after:w-full text-bg-primary font-bold" : "hover:after:w-full hover:text-bg-primary"
-              }`}
+              className={`flex items-center gap-2 text-bg-primary text-lg font-semibold tracking-tight transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:bg-bg-primary after:transition-all after:duration-200 ${isActive(item.to) ? "after:w-full text-bg-primary font-bold" : "hover:after:w-full hover:text-bg-primary"
+                }`}
             >
               <item.icon className="h-5 w-5" />
               {item.label}
@@ -121,9 +128,8 @@ export default function Navbar({ className }) {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${
-                      isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
+                      }`}
                     onClick={() => setDropdownOpen(false)}
                   >
                     <item.icon className="h-5 w-5" />
@@ -137,17 +143,15 @@ export default function Navbar({ className }) {
           <div className="flex items-center bg-white rounded-full p-1 border border-gray-200">
             <button
               onClick={() => handleRegionChange("Egypt")}
-              className={`px-4 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
-                region === "Egypt" ? "bg-bg-primary text-white" : "text-bg-primary hover:bg-gray-100"
-              }`}
+              className={`px-4 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${region === "Egypt" ? "bg-bg-primary text-white" : "text-bg-primary hover:bg-gray-100"
+                }`}
             >
               {t("مصر")}
             </button>
             <button
               onClick={() => handleRegionChange("Gulf")}
-              className={`px-4 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
-                region === "Gulf" ? "bg-bg-primary text-white" : "text-bg-primary hover:bg-gray-100"
-              }`}
+              className={`px-4 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${region === "Gulf" ? "bg-bg-primary text-white" : "text-bg-primary hover:bg-gray-100"
+                }`}
             >
               {t("الخليج العربي")}
             </button>
@@ -225,9 +229,8 @@ export default function Navbar({ className }) {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${
-                  isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
+                  }`}
                 onClick={() => setDropdownOpen(false)}
               >
                 <item.icon className="h-5 w-5" />
@@ -239,9 +242,8 @@ export default function Navbar({ className }) {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${
-                  isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-gray-800 text-base font-medium tracking-tight hover:bg-indigo-50 hover:text-bg-primary transition-colors duration-150 ${isActive(item.to) ? "bg-indigo-50 text-bg-primary" : ""
+                  }`}
                 onClick={() => setDropdownOpen(false)}
               >
                 <item.icon className="h-5 w-5" />
@@ -255,17 +257,15 @@ export default function Navbar({ className }) {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleRegionChange("Egypt")}
-                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    region === "Egypt" ? "bg-bg-primary text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${region === "Egypt" ? "bg-bg-primary text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    }`}
                 >
                   {t("مصر")}
                 </button>
                 <button
                   onClick={() => handleRegionChange("Gulf")}
-                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    region === "Gulf" ? "bg-bg-primary text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${region === "Gulf" ? "bg-bg-primary text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    }`}
                 >
                   {t("الخليج العربي")}
                 </button>

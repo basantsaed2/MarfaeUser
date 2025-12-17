@@ -18,6 +18,7 @@ import JobDetailPage from "./Pages/User/Home/JobDetailPage";
 import AboutUs from "./Pages/User/AboutUs/AboutUs";
 import Doctors from "./Pages/User/Doctors/Doctors";
 import Plans from "./Pages/User/Plans/Plans";
+import Articles from "./Pages/User/Articles/Articles";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -53,7 +54,7 @@ const router = createBrowserRouter([
         path: "/",
         element: (
           // <ProtectedRoute>
-            <Home />
+          <Home />
           // </ProtectedRoute>
         ),
       },
@@ -109,7 +110,11 @@ const router = createBrowserRouter([
       },
       {
         path: "about_us",
-        element: <AboutUs/>
+        element: <AboutUs />
+      },
+      {
+        path: "articles",
+        element: <Articles />
       },
       {
         path: "*",

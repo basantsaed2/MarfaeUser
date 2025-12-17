@@ -51,7 +51,7 @@ const RegisterUser = () => {
   const [selectedExperience, setSelectedExperience] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
-  
+
   // New states for job titles and subtitles
   const [jobTitles, setJobTitles] = useState([]);
   const [jobSubTitles, setJobSubTitles] = useState([]);
@@ -425,8 +425,8 @@ const RegisterUser = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab("user")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === "user"
-                    ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
-                    : "text-bg-primary hover:bg-white/70"
+                  ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
+                  : "text-bg-primary hover:bg-white/70"
                   }`}
               >
                 <FaUserMd className="text-md md:text-lg" />
@@ -437,8 +437,8 @@ const RegisterUser = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab("employer")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === "employer"
-                    ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
-                    : "text-bg-primary hover:bg-white/70"
+                  ? "bg-gradient-to-r from-bg-primary to-blue-600 text-white shadow-lg"
+                  : "text-bg-primary hover:bg-white/70"
                   }`}
               >
                 <FaBriefcase className="text-md md:text-lg" />
@@ -455,7 +455,7 @@ const RegisterUser = () => {
               className="text-center mb-5"
             >
               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text bg-gradient-to-r from-bg-primary to-blue-300">
-                Mrfae
+                Medilinky
               </h2>
               <AnimatePresence mode="wait">
                 {activeTab === "user" ? (
@@ -836,7 +836,7 @@ const RegisterUser = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://employer.mrfae.com/register"
+                      href="https://employer.medilinky.com/register"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"

@@ -55,31 +55,31 @@ const AboutUs = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
 
       {/* Hero Section with Parallax Effect */}
-      <motion.section 
+      <motion.section
         key="hero-section"
         initial="initial"
         animate="animate"
         className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
       >
-        <motion.div 
+        <motion.div
           className="absolute inset-0"
           initial={{ scale: 1.2 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
-          <img 
-            src={Logo} 
-            alt="Medical Professionals" 
+          <img
+            src={Logo}
+            alt="Medical Professionals"
             className="w-full h-full object-contain transform scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-purple-900/60"></div>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           variants={staggerContainer}
           className="relative container mx-auto px-6 text-center text-white"
         >
-          <motion.div 
+          <motion.div
             variants={bounceIn}
             className="inline-block mb-6"
           >
@@ -87,29 +87,29 @@ const AboutUs = () => {
               Since 2009
             </span>
           </motion.div>
-          <motion.h1 
+          <motion.h1
             variants={fadeInUp}
             className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
           >
-            Connecting <motion.span 
+            Connecting <motion.span
               className="text-blue-300"
-              animate={{ 
+              animate={{
                 color: ["#93c5fd", "#c7d2fe", "#93c5fd"]
               }}
-              transition={{ 
-                duration: 3, 
+              transition={{
+                duration: 3,
                 repeat: Infinity,
                 repeatType: "reverse"
               }}
             >Medical Talent</motion.span> with Opportunity
           </motion.h1>
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
             className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed"
           >
             Building Egypt's largest medical professional community, one connection at a time
           </motion.p>
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
@@ -131,9 +131,9 @@ const AboutUs = () => {
             </motion.a>
           </motion.div>
         </motion.div>
-        
+
         {/* Scroll Indicator */}
-        <motion.div 
+        <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -145,7 +145,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* Story Section - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         key="story-section"
         initial="initial"
         whileInView="animate"
@@ -154,23 +154,23 @@ const AboutUs = () => {
       >
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
+            <motion.div
               variants={fadeInLeft}
               className="relative"
             >
-              <motion.div 
+              <motion.div
                 className="absolute -inset-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-3xl transform -rotate-3"
                 whileHover={{ rotate: -1 }}
                 transition={{ type: "spring", stiffness: 300 }}
               ></motion.div>
               <div className="relative bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                <motion.h2 
+                <motion.h2
                   variants={fadeInUp}
                   className="text-4xl font-bold text-gray-800 mb-6"
                 >
                   Our Story
                 </motion.h2>
-                <motion.div 
+                <motion.div
                   variants={staggerContainer}
                   className="space-y-6 text-gray-700 leading-relaxed"
                 >
@@ -186,8 +186,8 @@ const AboutUs = () => {
                 </motion.div>
               </div>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               variants={fadeInRight}
               className="grid grid-cols-2 gap-4"
             >
@@ -203,7 +203,7 @@ const AboutUs = () => {
                   whileHover={{ scale: 1.05, y: -5 }}
                   className={`bg-${stat.color}-50 rounded-2xl p-6 border border-${stat.color}-100 cursor-pointer`}
                 >
-                  <motion.div 
+                  <motion.div
                     className={`text-3xl font-bold text-${stat.color}-600 mb-2`}
                     initial={{ scale: 0 }}
                     whileInView={{ scale: 1 }}
@@ -221,7 +221,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* Vision & Mission - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         key="vision-mission-section"
         initial="initial"
         whileInView="animate"
@@ -231,16 +231,16 @@ const AboutUs = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12">
             {/* Vision Card */}
-            <motion.div 
+            <motion.div
               variants={fadeInLeft}
               className="group relative"
             >
-              <motion.div 
+              <motion.div
                 className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000"
                 whileHover={{ scale: 1.02 }}
               ></motion.div>
               <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-                <motion.div 
+                <motion.div
                   className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-6"
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
@@ -248,7 +248,7 @@ const AboutUs = () => {
                   <span className="text-2xl">👁️</span>
                 </motion.div>
                 <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-                <motion.p 
+                <motion.p
                   className="text-blue-100 text-xl italic mb-4 leading-relaxed"
                   whileHover={{ scale: 1.02 }}
                 >
@@ -261,16 +261,16 @@ const AboutUs = () => {
             </motion.div>
 
             {/* Mission Card */}
-            <motion.div 
+            <motion.div
               variants={fadeInRight}
               className="group relative"
             >
-              <motion.div 
+              <motion.div
                 className="absolute -inset-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000"
                 whileHover={{ scale: 1.02 }}
               ></motion.div>
               <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-                <motion.div 
+                <motion.div
                   className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-6"
                   whileHover={{ scale: 1.2 }}
                   transition={{ type: "spring", stiffness: 300 }}
@@ -278,7 +278,7 @@ const AboutUs = () => {
                   <span className="text-2xl">🎯</span>
                 </motion.div>
                 <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-                <motion.div 
+                <motion.div
                   className="space-y-4 text-blue-200"
                   variants={staggerContainer}
                 >
@@ -296,7 +296,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* For Job Seekers - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         id="for-job-seekers"
         key="job-seekers-section"
         initial="initial"
@@ -307,7 +307,7 @@ const AboutUs = () => {
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div variants={fadeInLeft}>
-              <motion.div 
+              <motion.div
                 className="inline-block mb-6"
                 variants={bounceIn}
               >
@@ -315,14 +315,14 @@ const AboutUs = () => {
                   Career Opportunities
                 </span>
               </motion.div>
-              <motion.h2 
+              <motion.h2
                 variants={fadeInUp}
                 className="text-4xl font-bold text-gray-800 mb-8"
               >
                 Find Your Perfect Medical Career
               </motion.h2>
-              
-              <motion.div 
+
+              <motion.div
                 variants={fadeInUp}
                 className="mb-8"
               >
@@ -334,14 +334,14 @@ const AboutUs = () => {
                     "Supervisor", "District Manager", "Area Manager", "BUM",
                     "GM", "Product Manager", "HR", "Sales Reps"
                   ].map((role, index) => (
-                    <motion.div 
-                      key={index} 
+                    <motion.div
+                      key={index}
                       className="flex items-center group"
                       variants={fadeInUp}
                       whileHover={{ x: 5 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <motion.div 
+                      <motion.div
                         className="w-2 h-2 bg-blue-500 rounded-full mr-3 group-hover:scale-150 transition-transform duration-300"
                         whileHover={{ scale: 1.5 }}
                       ></motion.div>
@@ -351,7 +351,7 @@ const AboutUs = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 variants={scaleIn}
                 className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100"
                 whileHover={{ y: -5 }}
@@ -363,8 +363,8 @@ const AboutUs = () => {
                     "Veterinary Companies", "Veterinary Clinics", "Hospitals",
                     "Private Clinics", "Medical Sales"
                   ].map((sector, index) => (
-                    <motion.span 
-                      key={index} 
+                    <motion.span
+                      key={index}
                       className="bg-white text-blue-700 px-3 py-1 rounded-full text-sm font-medium border border-blue-200 shadow-sm"
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
@@ -379,18 +379,18 @@ const AboutUs = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={fadeInRight}
               className="relative"
             >
-              <motion.div 
+              <motion.div
                 className="absolute -inset-4 bg-gradient-to-r from-blue-200 to-purple-200 rounded-3xl transform rotate-3"
                 whileHover={{ rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               ></motion.div>
-              <motion.img 
-                src={image_one} 
-                alt="Medical Career Opportunities" 
+              <motion.img
+                src={image_one}
+                alt="Medical Career Opportunities"
                 className="relative rounded-2xl shadow-2xl w-full h-96 object-cover"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
@@ -401,7 +401,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* For Employers - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         id="for-employers"
         key="employers-section"
         initial="initial"
@@ -411,29 +411,29 @@ const AboutUs = () => {
       >
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
+            <motion.div
               variants={fadeInLeft}
               className="relative order-2 lg:order-1"
             >
-              <motion.div 
+              <motion.div
                 className="absolute -inset-4 bg-gradient-to-r from-green-200 to-blue-200 rounded-3xl transform -rotate-3"
                 whileHover={{ rotate: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               ></motion.div>
-              <motion.img 
-                src={image_three} 
-                alt="Employer Solutions" 
+              <motion.img
+                src={image_three}
+                alt="Employer Solutions"
                 className="relative rounded-2xl shadow-2xl w-full h-96 object-cover"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               />
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={fadeInRight}
               className="order-1 lg:order-2"
             >
-              <motion.div 
+              <motion.div
                 className="inline-block mb-6"
                 variants={bounceIn}
               >
@@ -441,30 +441,30 @@ const AboutUs = () => {
                   Hiring Solutions
                 </span>
               </motion.div>
-              <motion.h2 
+              <motion.h2
                 variants={fadeInUp}
                 className="text-4xl font-bold text-gray-800 mb-8"
               >
                 Find Qualified Medical Professionals
               </motion.h2>
-              
-              <motion.div 
+
+              <motion.div
                 variants={staggerContainer}
                 className="space-y-6 mb-8"
               >
                 {[
                   "Your company operates in the medical field",
-                  "You need qualified professionals for your organization", 
+                  "You need qualified professionals for your organization",
                   "Access thousands of CVs from qualified medical specialists",
                   "Connect with 200,000+ professional members in our network"
                 ].map((benefit, index) => (
-                  <motion.div 
-                    key={index} 
+                  <motion.div
+                    key={index}
                     className="flex items-start group"
                     variants={fadeInUp}
                     whileHover={{ x: 10 }}
                   >
-                    <motion.div 
+                    <motion.div
                       className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1 group-hover:scale-110 transition-transform duration-300"
                       whileHover={{ scale: 1.2, rotate: 360 }}
                       transition={{ duration: 0.5 }}
@@ -478,14 +478,14 @@ const AboutUs = () => {
                 ))}
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 variants={scaleIn}
                 className="bg-white rounded-2xl p-6 border border-green-200 shadow-lg"
                 whileHover={{ y: -5 }}
               >
-                <h4 className="text-xl font-bold text-gray-800 mb-3">Why Choose MRFAE?</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-3">Why Choose Medilinky?</h4>
                 <p className="text-gray-600">
-                  We provide the perfect bridge between qualified medical professionals and leading healthcare organizations. 
+                  We provide the perfect bridge between qualified medical professionals and leading healthcare organizations.
                   Our platform ensures you find the right talent for your specific needs.
                 </p>
               </motion.div>
@@ -495,7 +495,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* Values Section - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         key="values-section"
         initial="initial"
         whileInView="animate"
@@ -503,7 +503,7 @@ const AboutUs = () => {
         className="py-20 bg-white"
       >
         <div className="container mx-auto px-6">
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="text-center mb-16"
           >
@@ -512,8 +512,8 @@ const AboutUs = () => {
               The principles that guide our mission and define our community
             </p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             variants={staggerContainer}
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
@@ -525,17 +525,17 @@ const AboutUs = () => {
               { icon: "🚀", title: "Constructive Approach", desc: "Focusing on solutions and positive outcomes" },
               { icon: "🌍", title: "Inclusive Community", desc: "Welcoming professionals from all backgrounds" }
             ].map((value, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 variants={fadeInUp}
-                whileHover={{ 
-                  scale: 1.05, 
+                whileHover={{
+                  scale: 1.05,
                   y: -10,
                   transition: { type: "spring", stiffness: 300 }
                 }}
                 className="group text-center p-8 rounded-2xl border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-xl cursor-pointer"
               >
-                <motion.div 
+                <motion.div
                   className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300"
                   whileHover={{ scale: 1.2, rotate: 5 }}
                 >
@@ -550,7 +550,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* CTA Section - REMOVED once: true */}
-      <motion.section 
+      <motion.section
         key="cta-section"
         initial="initial"
         whileInView="animate"
@@ -558,27 +558,27 @@ const AboutUs = () => {
         className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white"
       >
         <div className="container mx-auto px-6 text-center">
-          <motion.h2 
+          <motion.h2
             variants={fadeInUp}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
             Ready to Transform Your Medical Career?
           </motion.h2>
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
             className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto"
           >
             Join Egypt's largest medical professional community and unlock endless opportunities
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12"
           >
             <motion.a
-              href="https://mrfae.com"
+              href="https://medilinky.com"
               className="bg-white text-blue-700 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-blue-50 transition-all duration-300 shadow-2xl flex items-center space-x-3"
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 y: -5,
                 boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
@@ -586,10 +586,10 @@ const AboutUs = () => {
               whileTap={{ scale: 0.95 }}
             >
               <span>Start Your Journey Today</span>
-              <motion.svg 
-                className="w-5 h-5" 
-                fill="none" 
-                stroke="currentColor" 
+              <motion.svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -598,7 +598,7 @@ const AboutUs = () => {
               </motion.svg>
             </motion.a>
           </motion.div>
-          
+
           {/* <motion.div 
             variants={slideInUp}
             className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 max-w-4xl mx-auto"
@@ -614,7 +614,7 @@ const AboutUs = () => {
                 repeatType: "reverse"
               }}
             >
-              MRFAE - MRFAE - MRFAE - MRFAE - MRFAE - MRFAE
+            MEDILINKY
             </motion.p>
             <p className="text-xl text-blue-200">Innovation link with medical society</p>
             <p className="text-lg text-blue-300 mt-2">The only and perfect way you can select</p>
@@ -623,7 +623,7 @@ const AboutUs = () => {
       </motion.section>
 
       {/* Footer - REMOVED once: true */}
-      <motion.footer 
+      <motion.footer
         key="footer-section"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -632,26 +632,26 @@ const AboutUs = () => {
       >
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <motion.div 
+            <motion.div
               className="flex justify-center items-center space-x-4 mb-6"
               whileHover={{ scale: 1.05 }}
             >
-              <motion.img 
-                src={Logo} 
-                alt="MRFAE Logo" 
+              <motion.img
+                src={Logo}
+                alt="MEDILINKY Logo"
                 className="w-12 h-12 object-contain rounded"
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               />
-              <h3 className="text-2xl font-bold">MRFAE</h3>
+              <h3 className="text-2xl font-bold">MEDILINKY</h3>
             </motion.div>
             <p className="text-gray-400 mb-4">
               Medical Representatives For All Egypt • Connecting Professionals Since 2009
             </p>
             <p className="text-gray-500">
-              &copy; 2024 MRFAE. All rights reserved. | 
-              <a href="https://mrfae.com" className="text-blue-400 hover:text-blue-300 ml-2">
-                MREAE.COM
+              &copy; 2024 MEDILINKY. All rights reserved. |
+              <a href="https://medilinky.com" className="text-blue-400 hover:text-blue-300 ml-2">
+                MEDILINKY.COM
               </a>
             </p>
           </div>
