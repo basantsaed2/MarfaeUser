@@ -23,7 +23,7 @@ import {
 
 const animatedComponents = makeAnimated();
 
-const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional , onProfileUpdate }) => {
+const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional, onProfileUpdate }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   // API calls for data
@@ -65,8 +65,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
     last_name: "",
     email: "",
     phone: "",
-    password: "",
-    password_confirmation: "",
     user_address: "",
     age: "",
     specialization: [],
@@ -128,8 +126,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
         last_name: profile.last_name || "",
         email: profile.email || "",
         phone: profile.phone || "",
-        password: "",
-        password_confirmation: "",
         user_address: profile.user_address || "",
         age: profile.age ? String(profile.age) : "",
         specialization: profile.specializations?.map((spec) => spec.id.toString()) || [],
@@ -397,16 +393,13 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
 
     const errors = {};
     if (!formData.age) errors.age = "Age is required";
-    if (formData.password && formData.password !== formData.password_confirmation) {
-      errors.password_confirmation = "Passwords do not match";
-    }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
 
     const isMedical = isMedicalProfessional;
-    
+
     const payload = {
       ...(formData.first_name && { first_name: formData.first_name }),
       ...(formData.last_name && { last_name: formData.last_name }),
@@ -451,10 +444,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
       payload.image = formData.image;
     }
 
-    if (formData.password) {
-      payload.password = formData.password;
-      payload.password_confirmation = formData.password_confirmation;
-    }
 
     try {
       await changeState(
@@ -467,8 +456,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
       setFormErrors({});
       setFormData((prev) => ({
         ...prev,
-        password: "",
-        password_confirmation: "",
         image: null,
       }));
     } catch (error) {
@@ -604,40 +591,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                autoComplete="new-password"
-                placeholder="Enter new password"
-                className="w-full focus:ring-bg-primary focus:border-bg-primary"
-              />
-              {formErrors.password && (
-                <p className="text-sm text-red-600">{formErrors.password}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password_confirmation" className="text-sm font-medium text-gray-700">Confirm Password</Label>
-              <Input
-                id="password_confirmation"
-                name="password_confirmation"
-                type="password"
-                value={formData.password_confirmation}
-                onChange={handleInputChange}
-                autoComplete="new-password"
-                placeholder="Confirm new password"
-                className="w-full focus:ring-bg-primary focus:border-bg-primary"
-              />
-              {formErrors.password_confirmation && (
-                <p className="text-sm text-red-600">{formErrors.password_confirmation}</p>
-              )}
-            </div>
-          </div>
 
           {/* Professional Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -786,7 +739,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional 
                   )}
                 </div>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="qualification" className="text-sm font-medium text-gray-700">Qualification</Label>
                 <Input
