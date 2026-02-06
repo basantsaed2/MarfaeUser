@@ -117,12 +117,12 @@ const RegisterUser = () => {
   useEffect(() => {
     if (jobTitlesData) {
       // Assuming the API returns { job_titles: [], job_sub_titles: [] }
-      if (jobTitlesData.job_titles) {
-        const formattedJobTitles = jobTitlesData.job_titles.map(title => ({
+      if (jobTitlesData.user_job_titles) {
+        const formattedJobTitles = jobTitlesData.user_job_titles.map(title => ({
           value: title.id.toString(),
           label: title.name,
         }));
-        setJobTitles(jobTitlesData.job_titles);
+        setJobTitles(jobTitlesData.user_job_titles);
         setJobTitles(formattedJobTitles);
       }
 
