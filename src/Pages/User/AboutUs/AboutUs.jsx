@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Logo from "../../../assets/Logo.jpeg";
+import Logo from "../../../assets/Logo.png";
 import image_one from "../../../assets/image_one.jpeg";
 import image_two from "../../../assets/image_two.jpeg";
 import image_three from "../../../assets/image_three.jpeg";

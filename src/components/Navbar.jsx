@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, ChevronDown, X, MessageSquareWarning, Menu, Contact, BookOpen, Briefcase, Bookmark, List, Building, Pill } from "lucide-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Logo from "../assets/Logo.jpeg";
+import Logo from "../assets/Logo.png";
 import { FaUserDoctor } from "react-icons/fa6";
 
 export default function Navbar({ className }) {
@@ -79,24 +79,23 @@ export default function Navbar({ className }) {
     <header
       className={`w-full bg-white h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
     >
-      {/* <div className="flex items-center">
+      <div className="flex items-center">
         <Link to="/">
           <img
             src={Logo}
             alt="Logo"
             className="h-14 w-auto object-contain transition-transform hover:scale-105 cursor-pointer"
           />
-          <h1 className="text-2xl font-bold text-bg-primary cursor-pointer">Medilinky</h1>
         </Link>
-      </div> */}
-      <div className="flex items-center">
+      </div>
+      {/* <div className="flex items-center">
         <Link to="/" className="group">
           <h1 className="text-3xl font-bold text-bg-primary group-hover:text-blue-700 transition-colors duration-300">
             Medilinky
           </h1>
           <span className="block h-0.5 bg-bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
         </Link>
-      </div>
+      </div> */}
 
       {/* Middle - Navigation links (only for authenticated users) */}
       {userData && (
@@ -167,7 +166,7 @@ export default function Navbar({ className }) {
               onClick={handleProfileClick}
               className="flex items-center gap-2 group"
             >
-              <Avatar className="h-10 w-10 bg-white ring-2 ring-gray-200 group-hover:ring-bg-primary transition-all duration-200">
+              <Avatar className="hidden md:block h-10 w-10 bg-white ring-2 ring-gray-200 group-hover:ring-bg-primary transition-all duration-200">
                 <AvatarFallback className="text-bg-primary font-semibold">{userInitials}</AvatarFallback>
               </Avatar>
               <span className="text-lg text-bg-primary font-semibold tracking-tight group-hover:text-bg-primary transition-colors duration-200">
