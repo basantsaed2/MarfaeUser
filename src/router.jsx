@@ -6,6 +6,7 @@ import NotFound from "./Pages/NotFound";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import AuthLayout from "./Layout/AuthLayout";
 import RegisterUser from "./Pages/Autherzation/RegisterUser";
+import ForgotPassword from "./Pages/Autherzation/ForgotPassword";
 import Profile from "./Pages/User/Profile/Profile";
 import Companies from "./Pages/User/Companies/Companies";
 import Jobs from "./Pages/User/Jobs/Jobs";
@@ -38,6 +39,14 @@ const router = createBrowserRouter([
         element: (
           <ProtAuth>
             <RegisterUser />
+          </ProtAuth>
+        ),
+      },
+      {
+        path: "forgot-password",
+        element: (
+          <ProtAuth>
+            <ForgotPassword />
           </ProtAuth>
         ),
       },

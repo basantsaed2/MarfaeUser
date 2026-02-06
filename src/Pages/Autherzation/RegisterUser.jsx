@@ -42,12 +42,10 @@ const RegisterUser = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState("user");
 
-  // const [specializationOptions, setSpecializationOptions] = useState([]);
   const [experienceOptions, setExperienceOptions] = useState([]);
   const [cities, setCities] = useState([]);
   const [countries, setCountries] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
-  // const [selectedSpecializations, setSelectedSpecializations] = useState([]);
   const [selectedExperience, setSelectedExperience] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -88,11 +86,6 @@ const RegisterUser = () => {
 
   useEffect(() => {
     if (listData?.data) {
-      // const formattedSpecialization =
-      //   listData.data.specializations?.map((u) => ({
-      //     label: u.name || "—",
-      //     value: u.id.toString(),
-      //   })) || [];
       const formattedExperience = [
         { label: "No Experience", value: null },
         ...(listData.data.experince?.map((u) => ({
@@ -100,7 +93,6 @@ const RegisterUser = () => {
           value: u,
         })) || []),
       ];
-      // setSpecializationOptions(formattedSpecialization);
       setExperienceOptions(formattedExperience);
     }
   }, [listData]);
@@ -248,10 +240,6 @@ const RegisterUser = () => {
       toast.error("All fields are required");
       return;
     }
-    // if (selectedSpecializations.length === 0) {
-    //   toast.error("Please select at least one specialization");
-    //   return;
-    // }
     if (!selectedExperience) {
       toast.error("Please select an experience level");
       return;
@@ -275,7 +263,6 @@ const RegisterUser = () => {
         email: emailOrUsername,
         phone: phone,
         password: password,
-        // specialization: selectedSpecializations.map(spec => spec.value),
         experience: selectedExperience.value,
         country_id: selectedCountry?.value,
         city_id: selectedCity?.value,
@@ -681,28 +668,6 @@ const RegisterUser = () => {
                       </motion.div>
                     )}
 
-                    {/* Specializations */}
-                    {/* <motion.div
-                      className="relative"
-                      style={{ zIndex: 50 }}
-                      whileHover={{ scale: 1.03 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Select
-                        options={specializationOptions}
-                        value={selectedSpecializations}
-                        onChange={setSelectedSpecializations}
-                        placeholder="Select Specializations"
-                        isMulti
-                        isLoading={loadingList}
-                        isDisabled={loadingPost || isUploading}
-                        className="w-full"
-                        classNamePrefix="select"
-                        styles={selectStyles}
-                        menuPortalTarget={document.body}
-                      />
-                    </motion.div> */}
-
                     {/* Experience */}
                     <motion.div
                       className="relative"
@@ -781,15 +746,17 @@ const RegisterUser = () => {
                     </motion.div>
                   </form>
 
-                  <p className="text-center text-gray-500 mt-6 text-sm">
-                    Already have an account?{" "}
-                    <Link
-                      to="/login"
-                      className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
-                    >
-                      Log In
-                    </Link>
-                  </p>
+                  <div className="flex flex-col items-center space-y-2 mt-6">
+                    <p className="text-center text-gray-500 text-sm">
+                      Already have an account?{" "}
+                      <Link
+                        to="/login"
+                        className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                      >
+                        Log In
+                      </Link>
+                    </p>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div

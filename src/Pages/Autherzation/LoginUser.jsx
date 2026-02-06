@@ -687,15 +687,23 @@ const LoginUser = () => {
                     </motion.div>
                   </form>
 
-                  <p className="text-center text-gray-500 mt-6 text-sm">
-                    New to Medilinky?{" "}
+                  <div className="flex flex-col items-center space-y-2 mt-6">
                     <Link
-                      to="/register"
-                      className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                      to="/forgot-password"
+                      className="text-bg-primary text-sm font-medium hover:underline hover:text-blue-500 transition-colors duration-200"
                     >
-                      Register Now
+                      Forgot Password?
                     </Link>
-                  </p>
+                    <p className="text-center text-gray-500 text-sm">
+                      New to Medilinky?{" "}
+                      <Link
+                        to="/register"
+                        className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                      >
+                        Register Now
+                      </Link>
+                    </p>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div
