@@ -61,7 +61,7 @@ export default function Navbar({ className }) {
   const navItems = [
     { to: "/contact_us", label: t("Contact Us"), icon: Contact },
     { to: "/jobs", label: t("Jobs"), icon: Briefcase },
-    { to: "/about_us", label: t("About Us"), icon: MessageSquareWarning },
+    // { to: "/about_us", label: t("About Us"), icon: MessageSquareWarning },
   ];
 
   // Dropdown items for Lists
