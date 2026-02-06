@@ -8,7 +8,8 @@ body {
 
 @theme {
   /* Default Blue Colors (Egypt) */
-  --color-bg-primary: #1E90FF; /* Default blue */
+  --color-bg-primary: #1E90FF;
+  /* Default blue */
   --color-bg-secondary: #2563EB;
   --color-bg-tertiary: #E5E7EB;
   --color-white: #FFFFFF;
@@ -20,7 +21,8 @@ body {
 
 /* Green Theme for Gulf Region */
 .gulf-theme {
-  --color-bg-primary: #10B981; /* Green for Gulf */
+  --color-bg-primary: #10B981;
+  /* Green for Gulf */
   --color-bg-secondary: #059669;
   --color-bgBabyBlue: #34D399;
 }
@@ -95,4 +97,33 @@ body {
 .Toastify__toast {
   position: relative !important;
   z-index: 999999 !important;
+}
+
+/* Custom Scrollbar for Apply Dialog */
+.apply-dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.apply-dialog-content::-webkit-scrollbar-track {
+  background: rgba(var(--color-bg-primary), 0.05);
+  border-radius: 10px;
+}
+
+.apply-dialog-content::-webkit-scrollbar-thumb {
+  background: var(--color-bg-primary);
+  border-radius: 10px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+.apply-dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bg-secondary);
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Fallback for Firefox */
+.apply-dialog-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-bg-primary) transparent;
 }
