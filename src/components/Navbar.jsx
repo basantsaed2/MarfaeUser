@@ -77,25 +77,23 @@ export default function Navbar({ className }) {
 
   return (
     <header
-      className={`w-full bg-white h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
+      className={`w-full bg-white h-20 flex gap-2 items-center justify-between px-4 sm:px-6 lg:px-8 font-inter shadow-lg transition-all duration-300 ${className}`}
     >
       <div className="flex items-center">
-        <Link to="/">
+        <Link to="/" className="flex items-center gap-2 group">
           <img
             src={Logo}
             alt="Logo"
-            className="h-14 w-auto object-contain transition-transform hover:scale-105 cursor-pointer"
+            className="h-12 sm:h-16 md:h-18 w-auto object-contain transition-transform group-hover:scale-105"
           />
+          {/* <div className="flex flex-col">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-bg-primary group-hover:text-blue-700 transition-colors duration-300">
+              Medilinky
+            </h1>
+            <span className="block h-0.5 bg-bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+          </div> */}
         </Link>
       </div>
-      {/* <div className="flex items-center">
-        <Link to="/" className="group">
-          <h1 className="text-3xl font-bold text-bg-primary group-hover:text-blue-700 transition-colors duration-300">
-            Medilinky
-          </h1>
-          <span className="block h-0.5 bg-bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
-        </Link>
-      </div> */}
 
       {/* Middle - Navigation links (only for authenticated users) */}
       {userData && (

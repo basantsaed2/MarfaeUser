@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FiUpload, FiFileText, FiCheck, FiX } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 
 const ApplyJobDialog = ({
   jobId,
@@ -231,7 +232,13 @@ const ApplyJobDialog = ({
                     >
                       <span>Contact on WhatsApp</span>
                     </button>
-                    <p className="text-bg-primary text-xs mt-2">01277337807</p>
+                    <button
+                      onClick={openWhatsApp}
+                      className="flex items-center justify-center gap-1 text-bg-primary text-xs mt-2 hover:underline hover:text-green-600 transition-all duration-200"
+                    >
+                      <FaWhatsapp className="text-sm text-green-500" />
+                      <span>01277337807</span>
+                    </button>
                   </div>
                 </div>
 
