@@ -5,8 +5,9 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
 import companyImage from '@/assets/company.png';
-import { FlaskConical, Building2, CalendarDays, Tag, DollarSign, ArrowLeft, ArrowRight } from 'lucide-react';
+import { FlaskConical, Building2, CalendarDays, Tag, DollarSign, ArrowLeft, ArrowRight, FileSpreadsheet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 
 const Drugs = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -20,7 +21,7 @@ const Drugs = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedCompany, setSelectedCompany] = useState(null);
-    
+
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
@@ -105,6 +106,33 @@ const Drugs = () => {
         return `${parseFloat(price)}`;
     };
 
+    // Excel export handler
+    const handleDownloadExcel = () => {
+        const dataToExport = filteredDrugs.map(drug => ({
+            'Drug Name': drug.name,
+            'Category': drug.drug_category?.name || 'N/A',
+            'Manufacturer': drug.company?.name || 'N/A',
+            'Price (EGP)': drug.price ? parseFloat(drug.price) : 'N/A',
+            'Description': drug.description || 'No description available'
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Drugs");
+
+        // Adjust column widths
+        const maxWidths = [
+            { wch: 30 }, // Drug Name
+            { wch: 20 }, // Category
+            { wch: 20 }, // Manufacturer
+            { wch: 15 }, // Price
+            { wch: 50 }, // Description
+        ];
+        worksheet['!cols'] = maxWidths;
+
+        XLSX.writeFile(workbook, `Drugs_List_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+    };
+
     if (loadingDrugs) {
         return <FullPageLoader />;
     }
@@ -174,12 +202,19 @@ const Drugs = () => {
                                     borderColor: 'var(--color-bg-primary)',
                                 },
                             }),
+                            menuList: (provided) => ({
+                                ...provided,
+                                overflowX: 'hidden',
+                            }),
                             option: (provided, state) => ({
                                 ...provided,
                                 backgroundColor: state.isSelected ? 'var(--color-bg-primary)' : state.isFocused ? 'var(--color-bg-primary)/10' : null,
                                 color: state.isSelected ? 'white' : '#1f2937',
                                 borderRadius: '8px',
                                 margin: '2px 8px',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                             }),
                         }}
                     />
@@ -204,18 +239,25 @@ const Drugs = () => {
                                     borderColor: 'var(--color-bg-primary)',
                                 },
                             }),
+                            menuList: (provided) => ({
+                                ...provided,
+                                overflowX: 'hidden',
+                            }),
                             option: (provided, state) => ({
                                 ...provided,
                                 backgroundColor: state.isSelected ? 'var(--color-bg-primary)' : state.isFocused ? 'var(--color-bg-primary)/10' : null,
                                 color: state.isSelected ? 'white' : '#1f2937',
                                 borderRadius: '8px',
                                 margin: '2px 8px',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                             }),
                         }}
                     />
                     <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        className="flex gap-2"
+                        whileHover={{ scale: 1.02 }}
                     >
                         <Button
                             onClick={() => {
@@ -224,7 +266,7 @@ const Drugs = () => {
                                 setSelectedCompany(null);
                                 setCurrentPage(1);
                             }}
-                            className="bg-bg-primary hover:bg-bg-primary/90 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg"
+                            className="bg-bg-primary hover:bg-bg-primary/90 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg w-full"
                         >
                             Clear Filters
                         </Button>
@@ -233,18 +275,34 @@ const Drugs = () => {
 
                 {/* Results and Pagination Info */}
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 mb-6">
-                    <motion.div 
-                        className="text-gray-600 font-medium"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} products
-                    </motion.div>
-                    
+                    <div className="flex items-center gap-4">
+                        <motion.div
+                            className="text-gray-600 font-medium"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} products
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                        >
+                            <Button
+                                onClick={handleDownloadExcel}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl shadow-sm transition-all duration-200 hover:shadow-md flex items-center gap-2 text-sm"
+                                title="Download as Excel"
+                            >
+                                <FileSpreadsheet className="w-4 h-4" />
+                                <span>Export Excel</span>
+                            </Button>
+                        </motion.div>
+                    </div>
+
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
-                        <motion.div 
+                        <motion.div
                             className="flex items-center gap-2"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -277,11 +335,10 @@ const Drugs = () => {
                                         <button
                                             key={pageNum}
                                             onClick={() => handlePageChange(pageNum)}
-                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
-                                                currentPage === pageNum
-                                                    ? 'bg-bg-primary text-white shadow-md'
-                                                    : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
-                                            }`}
+                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${currentPage === pageNum
+                                                ? 'bg-bg-primary text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
+                                                }`}
                                         >
                                             {pageNum}
                                         </button>
@@ -321,7 +378,7 @@ const Drugs = () => {
                             >
                                 {/* Background Gradient */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-bg-primary/5 to-white opacity-50 rounded-2xl -z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
-                                
+
                                 {/* Product Image */}
                                 <motion.div
                                     className="h-48 w-full rounded-xl overflow-hidden mb-4 border border-gray-200 flex items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300"
@@ -407,11 +464,11 @@ const Drugs = () => {
                             <FlaskConical className="w-20 h-20 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-xl font-semibold text-gray-700 mb-2">No Products Found</h3>
                             <p className="text-gray-500 max-w-md mx-auto">
-                                {Object.values({searchTerm, selectedCategory, selectedCompany}).some(val => val) 
+                                {Object.values({ searchTerm, selectedCategory, selectedCompany }).some(val => val)
                                     ? "Try adjusting your search criteria or filters to see more results."
                                     : "There are currently no pharmaceutical products available in our database."}
                             </p>
-                            {Object.values({searchTerm, selectedCategory, selectedCompany}).some(val => val) && (
+                            {Object.values({ searchTerm, selectedCategory, selectedCompany }).some(val => val) && (
                                 <Button
                                     onClick={() => {
                                         setSearchTerm("");
@@ -430,7 +487,7 @@ const Drugs = () => {
 
                 {/* Bottom Pagination */}
                 {totalPages > 1 && (
-                    <motion.div 
+                    <motion.div
                         className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-6 bg-white rounded-2xl shadow-lg mx-6 mt-6 border border-gray-100"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -439,7 +496,7 @@ const Drugs = () => {
                         <div className="text-sm text-gray-600">
                             Page {currentPage} of {totalPages} • {totalItems} total products
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="outline"
@@ -468,11 +525,10 @@ const Drugs = () => {
                                         <button
                                             key={pageNum}
                                             onClick={() => handlePageChange(pageNum)}
-                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
-                                                currentPage === pageNum
-                                                    ? 'bg-bg-primary text-white shadow-md'
-                                                    : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
-                                            }`}
+                                            className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${currentPage === pageNum
+                                                ? 'bg-bg-primary text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-bg-primary/10 hover:text-bg-primary border border-transparent hover:border-bg-primary/20'
+                                                }`}
                                         >
                                             {pageNum}
                                         </button>

@@ -69,7 +69,7 @@ export default function Navbar({ className }) {
     { to: "/plans", label: t("Plans"), icon: BookOpen },
     { to: "/companies", label: t("Companies"), icon: Building },
     { to: "/doctors", label: t("Doctors"), icon: FaUserDoctor },
-    { to: "/drugs", label: t("Drugs"), icon: Pill },
+    { to: "/drugs", label: t("Drugs Eye"), icon: Pill },
     { to: "/saved_jobs", label: t("Saved Jobs"), icon: Bookmark },
     { to: "/tracking_jobs", label: t("Job Tracker"), icon: List },
     { to: "/articles", label: t("Articles"), icon: List },

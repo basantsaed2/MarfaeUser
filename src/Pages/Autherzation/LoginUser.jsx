@@ -789,7 +789,7 @@ const LoginUser = () => {
               <DialogFooter>
                 <Button
                   onClick={handleModalClose}
-                  className="bg-primary text-white hover:bg-blue-700 rounded-lg transition-colors duration-200"
+                  className="bg-bg-primary text-white hover:bg-blue-700 rounded-lg transition-colors duration-200"
                 >
                   OK
                 </Button>
