@@ -135,7 +135,7 @@ const SavedJobs = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="w-full px-4 md:px-8 py-8">
         {/* Simplified Filter Bar */}
         <div className="mb-8 bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

@@ -101,10 +101,10 @@ const JobsTracked = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-bg-primary/5 to-bg-secondary/5 py-10 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-4xl font-extrabold text-gray-900 text-center drop-shadow-sm">
+        <div className="min-h-screen bg-gradient-to-br from-bg-primary/5 to-bg-secondary/5 md:py-10 py-6 px-4 md:px-6 lg:px-8">
+            <div className="w-full p-4">
+                <div className="flex flex-col md:flex-row gap-4 md:justify-between md:items-center mb-6">
+                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 text-center drop-shadow-sm">
                         Your Job Applications
                     </h1>
                     <Button
@@ -207,12 +207,11 @@ const JobsTracked = () => {
                                         <h3 className="text-xl font-bold text-gray-900 leading-snug">
                                             {application.job_offer.job_titel.name}
                                         </h3>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                            application.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${application.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                             application.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                                            application.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                            'bg-gray-100 text-gray-800'
-                                        }`}>
+                                                application.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                    'bg-gray-100 text-gray-800'
+                                            }`}>
                                             {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                                         </span>
                                     </div>

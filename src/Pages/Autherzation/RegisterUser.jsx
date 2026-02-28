@@ -84,18 +84,38 @@ const RegisterUser = () => {
     refetchJobTitles();
   }, [refetchList, refetchRegion, refetchJobTitles]);
 
+  // Check if job title includes medical keywords
+  const isMedicalJob = () => {
+    if (!selectedJobTitle) return false;
+    const jobTitleLabel = selectedJobTitle.label;
+    const medicalKeywords = ['doctor', 'dentist', 'nurse', 'physician', 'pharmacist', 'therapist'];
+    return medicalKeywords.some(keyword =>
+      jobTitleLabel.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
+  // Update experience options based on job title
   useEffect(() => {
     if (listData?.data) {
+      const isMedical = isMedicalJob();
+      // Use doctor_experince if it's a medical job, otherwise use experince
+      const expList = isMedical ? (listData.data.doctor_experince || []) : (listData.data.experince || []);
+
       const formattedExperience = [
         { label: "No Experience", value: null },
-        ...(listData.data.experince?.map((u) => ({
+        ...expList.map((u) => ({
           label: u,
           value: u,
-        })) || []),
+        })),
       ];
       setExperienceOptions(formattedExperience);
+
+      // Check if current experience is still valid in the new list
+      if (selectedExperience && selectedExperience.value && !expList.includes(selectedExperience.value)) {
+        setSelectedExperience(null);
+      }
     }
-  }, [listData]);
+  }, [listData, selectedJobTitle]);
 
   useEffect(() => {
     if (regionData?.countries && regionData?.cities) {

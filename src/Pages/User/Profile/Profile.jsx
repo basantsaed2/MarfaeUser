@@ -57,7 +57,7 @@ const Profile = () => {
     if (!userData) return 0;
 
     const isMedical = isMedicalProfessional();
-    
+
     const fields = [
       { key: 'first_name', weight: 8 },
       { key: 'last_name', weight: 8 },
@@ -101,7 +101,10 @@ const Profile = () => {
 
   useEffect(() => {
     if (profileData && profileData.user) {
-      const userData = profileData.user;
+      const userData = {
+        ...profileData.user,
+        job_title: profileData.job_title?.name,
+      }
       setAllUserData(profileData)
       setProfile(userData);
       setProfileCompletion(calculateProfileCompletion(userData));
@@ -430,7 +433,7 @@ const Profile = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Job Title</p>
-                  <p className="font-medium">{profile.job_title?.name || "Not provided"}</p>
+                  <p className="font-medium">{profile.job_title || "Not provided"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Job Sub Title</p>
@@ -624,11 +627,11 @@ const Profile = () => {
       </div>
 
       {/* Edit Profile Dialog */}
-      <EditProfileDialog 
-        open={isEditOpen} 
+      <EditProfileDialog
+        open={isEditOpen}
         onOpenChange={setIsEditOpen}
         profile={profile}
-        isMedicalProfessional = {isMedicalProfessional()}
+        isMedicalProfessional={isMedicalProfessional()}
         onProfileUpdate={refetchProfile}
       />
 

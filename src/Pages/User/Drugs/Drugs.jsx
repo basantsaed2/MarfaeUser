@@ -139,7 +139,7 @@ const Drugs = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-bg-primary/5">
-            <div className="w-full">
+            <div className="w-full flex flex-col gap-4">
                 {/* Header Image */}
                 <motion.div
                     className="w-full h-64 relative overflow-hidden"
@@ -158,7 +158,7 @@ const Drugs = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
                     >
-                        <h1 className="text-4xl font-bold text-white drop-shadow-lg">Pharmaceutical Products</h1>
+                        <h1 className="text-2xl text-center md:text-3xl font-bold text-white drop-shadow-lg">Pharmaceutical Products</h1>
                     </motion.div>
                 </motion.div>
 
@@ -266,7 +266,7 @@ const Drugs = () => {
                                 setSelectedCompany(null);
                                 setCurrentPage(1);
                             }}
-                            className="bg-bg-primary hover:bg-bg-primary/90 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg w-full"
+                            className="bg-bg-primary hover:bg-bg-primary/90 w-full md:w-1/2 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg w-full"
                         >
                             Clear Filters
                         </Button>

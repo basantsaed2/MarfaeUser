@@ -230,6 +230,18 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional,
     }
   }, [regionData, selectedCountry]);
 
+  // Check if job title includes medical keywords
+  const isMedicalJob = () => {
+    const selectedJobTitleObj = jobTitleOptions.find(opt => opt.value === selectedJobTitle);
+    const jobTitleLabel = selectedJobTitleObj ? selectedJobTitleObj.label : "";
+
+    if (!jobTitleLabel) return false;
+    const medicalKeywords = ['doctor', 'dentist', 'nurse', 'physician', 'pharmacist', 'therapist'];
+    return medicalKeywords.some(keyword =>
+      jobTitleLabel.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
   useEffect(() => {
     if (specializationData && specializationData.specializations) {
       const formattedSpecializations = specializationData.specializations.map(spec => ({
@@ -237,16 +249,29 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional,
         label: spec.name
       }));
       setSpecializationOptions(formattedSpecializations);
-
-      if (specializationData.experince) {
-        const formattedExperiences = specializationData.experince.map(exp => ({
-          value: exp,
-          label: exp
-        }));
-        setExperienceOptions(formattedExperiences);
-      }
     }
   }, [specializationData]);
+
+  // Update experience options based on job title
+  useEffect(() => {
+    if (specializationData) {
+      const isMedical = isMedicalJob();
+      // Use doctor_experince if it's a medical job, otherwise use experince
+      const expList = isMedical ? (specializationData.doctor_experince || []) : (specializationData.experince || []);
+
+      const formattedExperiences = expList.map(exp => ({
+        value: exp,
+        label: exp
+      }));
+      setExperienceOptions(formattedExperiences);
+
+      // Check if current experience is still valid in the new list
+      if (selectedExperience && !expList.includes(selectedExperience)) {
+        setSelectedExperience("");
+        setFormData(prev => ({ ...prev, experience: "" }));
+      }
+    }
+  }, [specializationData, selectedJobTitle, jobTitleOptions]);
 
   useEffect(() => {
     if (companiesData && companiesData.companies) {
@@ -607,35 +632,6 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional,
               />
               {formErrors.age && <p className="text-sm text-red-600">{formErrors.age}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="experience" className="text-sm font-medium text-gray-700">Experience</Label>
-              <Select
-                value={getSelectedExperience()}
-                onChange={handleExperienceChange}
-                options={experienceOptions}
-                placeholder="Select experience level"
-                className="react-select-container"
-                classNamePrefix="react-select"
-                isClearable
-                styles={{
-                  menuPortal: base => ({ ...base, zIndex: 9999 }),
-                  control: (provided) => ({
-                    ...provided,
-                    borderColor: '#d1d5db',
-                    '&:hover': {
-                      borderColor: 'var(--color-bg-primary)',
-                    },
-                    '&:focus-within': {
-                      borderColor: 'var(--color-bg-primary)',
-                      boxShadow: '0 0 0 2px var(--color-bg-primary)/20',
-                    },
-                  }),
-                }}
-              />
-              {formErrors.experience && (
-                <p className="text-sm text-red-600">{formErrors.experience}</p>
-              )}
-            </div>
           </div>
 
           {/* Job Titles and Sub Titles */}
@@ -688,6 +684,38 @@ const EditProfileDialog = ({ open, onOpenChange, profile, isMedicalProfessional,
               />
               {formErrors.job_sub_title_id && (
                 <p className="text-sm text-red-600">{formErrors.job_sub_title_id}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="experience" className="text-sm font-medium text-gray-700">Experience</Label>
+              <Select
+                value={getSelectedExperience()}
+                onChange={handleExperienceChange}
+                options={experienceOptions}
+                placeholder="Select experience level"
+                className="react-select-container"
+                classNamePrefix="react-select"
+                isClearable
+                styles={{
+                  menuPortal: base => ({ ...base, zIndex: 9999 }),
+                  control: (provided) => ({
+                    ...provided,
+                    borderColor: '#d1d5db',
+                    '&:hover': {
+                      borderColor: 'var(--color-bg-primary)',
+                    },
+                    '&:focus-within': {
+                      borderColor: 'var(--color-bg-primary)',
+                      boxShadow: '0 0 0 2px var(--color-bg-primary)/20',
+                    },
+                  }),
+                }}
+              />
+              {formErrors.experience && (
+                <p className="text-sm text-red-600">{formErrors.experience}</p>
               )}
             </div>
           </div>
